@@ -105,16 +105,16 @@ object RevealDependency {
   }
 }
 
-object RevealOptions {
-  def apply() = js.Object.apply().asInstanceOf[RevealOptions]
-}
-
 @js.native
 trait RevealPosition extends js.Object {
   @JSName("h")
   def indexh: Int = js.native
   @JSName("v")
   def indexv: Int = js.native
+}
+
+object RevealOptions {
+  def apply() = js.Object.apply().asInstanceOf[RevealOptions]
 }
 
 @js.native
