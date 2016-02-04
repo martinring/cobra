@@ -44,6 +44,8 @@ object Cobra extends App {
     assume(directory.exists, "could not find " + directory.getAbsolutePath)
     assume(directory.isDirectory, directory.getPath + " is not a directory")
     assume(directory.canRead, "can not read " + directory.getPath)
+    assume(new File(directory.getPath + File.separator + "slides.html").exists(), "no slides.html found")
+    assume(new File(directory.getPath + File.separator + "cobra.conf").exists(), "no cobra.conf found")
 
     val server = new CobraServer(directory)
     server.start()

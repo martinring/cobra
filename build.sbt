@@ -14,6 +14,7 @@ lazy val server = (project in file("modules/cobra-server"))
     libraryDependencies += "org.webjars" % "webjars-locator" % "0.28",
     libraryDependencies += "org.webjars.bower" % "reveal.js" % "3.2.0",   
     libraryDependencies += "org.webjars.bower" % "codemirror" % "5.11.0",
+    includeFilter in (Assets, LessKeys.less) := "cobra.less",
     (resourceGenerators in Compile) <+=
       (fastOptJS in Compile in js, packageScalaJSLauncher in Compile in js, packageJSDependencies in Compile in js)
         .map((f1,f2,f3) => Seq(f1.data,f2.data,f3))
