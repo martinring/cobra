@@ -50,7 +50,6 @@ class CobraServer(val directory: File) {
   val index = Source.fromURL(getClass.getResource("/index.html")).mkString
     .replaceAll("""\{ *title *\}""",title)
     .replaceAll("""\{ *theme *\}""",theme)
-    .replaceAll("""\{ *slides *\}""",Source.fromFile(directory.getPath + File.separator + "slides.html").mkString)
 
   val routes = get {
     pathSingleSlash(complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))) ~

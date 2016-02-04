@@ -15,7 +15,7 @@ object Cobra extends App {
   if (args.nonEmpty && args.head == "new") {
     printLogo()
     val name = if (args.length > 1) args(1) else {
-      readLine("please enter a name for the new presentation: ")
+      scala.io.StdIn.readLine("please enter a name for the new presentation: ")
     }
     println(s"creating new cobra presentation '$name'...")
     sys.exit()
@@ -47,7 +47,7 @@ object Cobra extends App {
 
     val server = new CobraServer(directory)
     server.start()
-    readLine()
+    scala.io.StdIn.readLine()
     server.stop()
   }
 }
