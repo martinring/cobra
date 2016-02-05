@@ -26,6 +26,7 @@ object CobraJS extends JSApp {
               s.take(s.lastIndexWhere(!_.isWhitespace) + 1)
             }
             val editor = CodeMirror(code)
+            editor.setOption("mode","text/x-scala")
             editor.getDoc().setValue(stripped)
           }
           val settings = RevealOptions()

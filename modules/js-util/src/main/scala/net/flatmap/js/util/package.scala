@@ -4,6 +4,7 @@ import java.util.regex.Pattern
 
 import org.scalajs.dom._
 
+import scala.scalajs.js
 import scala.scalajs.js.Dynamic
 import scala.util.matching.Regex
 
