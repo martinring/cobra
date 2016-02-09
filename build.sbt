@@ -1,3 +1,5 @@
+import net.flatmap.js.webjar.ScalaJsWebJar
+
 val commonSettings = Seq(
   scalaVersion := "2.11.7",
   version := "0.1",
@@ -11,23 +13,15 @@ lazy val server = (project in file("modules/cobra-server"))
     name := "cobra.server",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.0.3",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.9",
-    libraryDependencies += "org.webjars" % "webjars-locator" % "0.28",
-    (compile in Compile) <<= (compile in Compile) dependsOn (fastOptJS in Compile in client)
+    libraryDependencies += "org.webjars" % "webjars-locator" % "0.28"
   ).dependsOn(commonJVM, client)
 
 lazy val client     = (project in file("modules/cobra-client"))
   .settings(commonSettings :_*)
-  .enablePlugins(ScalaJSPlugin,SbtWeb)
+  .enablePlugins(ScalaJsWebJar)
   .settings(
     name := "cobra.client",
-    includeFilter in (Assets, LessKeys.less) := "cobra.less",
-    persistLauncher := true,
-    persistLauncher in Test := false,
-    skip in packageJSDependencies := false,
-    artifactPath in (Compile,fastOptJS) := (WebKeys.webTarget.value / "classes" / "main" / "META-INF" / "resources" / "webjars" / moduleName.value / version.value / "javascript" / "cobra.js"),
-    artifactPath in (Compile,fullOptJS) := (WebKeys.webTarget.value / "classes" / "main" / "META-INF" / "resources" / "webjars" / moduleName.value / version.value / "javascript" / "cobra.js"),
-    artifactPath in (Compile,packageJSDependencies) := (WebKeys.webTarget.value / "classes" / "main" / "META-INF" / "resources" / "webjars" / moduleName.value / version.value / "javascript" / "cobra-deps.js"),
-    artifactPath in (Compile,packageScalaJSLauncher) := (WebKeys.webTarget.value / "classes" / "main" / "META-INF" / "resources" / "webjars" / moduleName.value / version.value / "javascript" / "cobra-run.js")
+    includeFilter in (Assets, LessKeys.less) := "cobra.less"
   ).dependsOn(reveal,codemirror,utilJS,commonJS)
 
 lazy val utilJS = (project in file("modules/js-util"))
@@ -35,9 +29,6 @@ lazy val utilJS = (project in file("modules/js-util"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "util.js",
-    unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
-    persistLauncher := true,
-    persistLauncher in Test := false,
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.0",
     skip in packageJSDependencies := false
   )

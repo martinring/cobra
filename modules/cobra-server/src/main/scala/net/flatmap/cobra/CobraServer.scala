@@ -47,19 +47,18 @@ class CobraServer(val directory: File) {
 
   val locator = new WebJarAssetLocator()
 
-  val index = Source.fromURL(getClass.getResource("/index.html")).mkString
+  val index = Source.fromURL(getClass.getResource(locator.getFullPath("cobra-client","index.html"))).mkString
     .replaceAll("""\{ *language *\}""",lang)
     .replaceAll("""\{ *title *\}""",title)
     .replaceAll("""\{ *theme *\}""",theme)
 
-  import scala.collection.JavaConversions._
-  getClass.getClassLoader.getResources("").foreach(println)
-
   val routes = get {
-    pathSingleSlash(complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))) ~
-    path("lib" / PathMatchers.Rest)(path => getFromResource(locator.getFullPath(path))) ~
-    path("js" / PathMatchers.Rest)(path => getFromResource(locator.getFullPath(path))) ~
-    path("cobra" / PathMatchers.Rest)(path => getFromResource(locator.getFullPath(path)))
+    pathSingleSlash {
+      complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
+    } ~
+    path("lib" / PathMatchers.Segment / PathMatchers.Rest) {
+      (segment,path) => getFromResource(locator.getFullPath(segment,path))
+    }
   } ~ getFromDirectory(directory.getPath)
 
   var binding = Option.empty[Http.ServerBinding]

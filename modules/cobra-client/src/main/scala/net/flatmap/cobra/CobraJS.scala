@@ -1,7 +1,7 @@
 package net.flatmap.cobra
 
 import net.flatmap.js.codemirror.CodeMirror
-import net.flatmap.js.reveal.{RevealOptions, Reveal}
+import net.flatmap.js.reveal.{RevealEvents, RevealOptions, Reveal}
 import org.scalajs.dom.ext.Ajax
 
 import scala.scalajs.js.JSApp
@@ -13,6 +13,8 @@ import scala.util.{Failure, Success}
   * Created by martin on 04.02.16.
   */
 object CobraJS extends JSApp {
+  val editors = collection.mutable.Buffer.empty[CodeMirror]
+
   def main(): Unit = {
     whenReady {
       $"#slides".loadFrom("slides.html").andThen {
@@ -28,10 +30,19 @@ object CobraJS extends JSApp {
             val editor = CodeMirror(code)
             editor.setOption("mode","text/x-scala")
             editor.getDoc().setValue(stripped)
+            editors += editor
           }
           val settings = RevealOptions()
           settings.history = true
           Reveal.initialize(settings)
+          Reveal.on(RevealEvents.Ready) { x =>
+            editors.foreach(_.refresh())
+            Reveal.sync()
+          }
+          Reveal.on(RevealEvents.SlideChanged) { x =>
+            editors.foreach(_.refresh())
+            Reveal.sync()
+          }
         case Failure(e) => //
       }
     }
