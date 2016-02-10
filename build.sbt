@@ -1,4 +1,4 @@
-import net.flatmap.js.webjar.ScalaJsWebJar
+import net.flatmap.js.webjar.ScalaJsWeb
 
 val commonSettings = Seq(
   scalaVersion := "2.11.7",
@@ -18,7 +18,7 @@ lazy val server = (project in file("modules/cobra-server"))
 
 lazy val client     = (project in file("modules/cobra-client"))
   .settings(commonSettings :_*)
-  .enablePlugins(ScalaJsWebJar)
+  .enablePlugins(ScalaJsWeb)
   .settings(
     name := "cobra.client",
     includeFilter in (Assets, LessKeys.less) := "cobra.less"
