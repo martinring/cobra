@@ -2,7 +2,11 @@ package net.flatmap.cobra
 
 import java.io.File
 
-import scala.io.Source
+import akka.http.scaladsl.model.ws.{BinaryMessage, Message}
+import akka.stream.scaladsl._
+import akka.util.ByteString
+
+import scala.io
 import akka.actor.ActorSystem
 import akka.event.{LogSource, Logging}
 import akka.stream.ActorMaterializer
@@ -47,7 +51,7 @@ class CobraServer(val directory: File) {
 
   val locator = new WebJarAssetLocator()
 
-  val index = Source.fromInputStream(
+  val index = io.Source.fromInputStream(
     getClass.getClassLoader.getResourceAsStream(locator.getFullPath("cobra-client","index.html"))
   ).mkString
     .replaceAll("""\{ *language *\}""",lang)
@@ -58,10 +62,20 @@ class CobraServer(val directory: File) {
     pathSingleSlash {
       complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
     } ~
+    path("socket")(handleWebsocketMessagesForProtocol(socket,"cobra")) ~
     path("lib" / PathMatchers.Segment / PathMatchers.Rest) {
       (segment,path) => getFromResource(locator.getFullPath(segment,path))
     }
   } ~ getFromDirectory(directory.getPath)
+
+  val socket: Flow[Message, Message, Unit] =
+    Flow[Message].map { case BinaryMessage.Strict(bytes) => ClientMessage.read(bytes.asByteBuffer) }
+      .flatMapMerge(1000, handleRequest)
+      .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
+
+  val handleRequest: ClientMessage => Source[ServerMessage,Unit] = {
+    case Ping => Source.single(Pong)
+  }
 
   var binding = Option.empty[Http.ServerBinding]
 

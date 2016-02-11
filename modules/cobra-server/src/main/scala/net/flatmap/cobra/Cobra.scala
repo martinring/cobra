@@ -49,5 +49,7 @@ object Cobra extends App {
 
     val server = new CobraServer(directory)
     server.start()
+    while (scala.io.StdIn.readLine != "exit") ()
+    server.stop()
   }
 }

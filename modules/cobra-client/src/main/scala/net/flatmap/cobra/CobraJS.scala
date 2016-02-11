@@ -2,9 +2,6 @@ package net.flatmap.cobra
 
 import net.flatmap.js.codemirror.CodeMirror
 import net.flatmap.js.reveal.{RevealEvents, RevealOptions, Reveal}
-import org.scalajs.dom.ext.Ajax
-
-import scala.scalajs.js.JSApp
 import net.flatmap.js.util._
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.util.{Failure, Success}
@@ -12,10 +9,17 @@ import scala.util.{Failure, Success}
 /**
   * Created by martin on 04.02.16.
   */
-object CobraJS extends JSApp {
+object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra")(
+  deserialize = ServerMessage.read,
+  serialize = ClientMessage.write
+) {
   val editors = collection.mutable.Buffer.empty[CodeMirror]
 
-  def main(): Unit = {
+  def receive = {
+    case _ => //
+  }
+
+  override def preStart(): Unit = {
     whenReady {
       $"#slides".loadFrom("slides.html").andThen {
         case Success(()) =>

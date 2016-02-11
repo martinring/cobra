@@ -1,3 +1,5 @@
+import net.flatmap.js.ScalaJSWeb.webjarDependenciesOf
+
 cancelable in Global := true
 
 val commonSettings = Seq(
@@ -20,25 +22,28 @@ lazy val clientWeb  = (project in file("modules/cobra-client"))
   .enablePlugins(SbtWeb,PlayScalaJS)
   .settings(commonSettings :_*)
   .settings(
+    autoScalaLibrary := false,
     scalaJSProjects := Seq(client),
     mappings in Assets <++= scalaJSDev.map { mappings =>
       mappings.map { case (file,path) =>
         file -> s"js/$path"
       }
     },
+    skip in Compile := true,
     pipelineStages := Seq(scalaJSProd),
     target := target.value / "assets",
-    name := "cobra.client",
+    name := "cobra.client.assets",
     moduleName := "cobra-client",
-    includeFilter in (Assets, LessKeys.less) := "cobra.less"
-  ).dependsOn(client.dependencies :_*)
+    includeFilter in (Assets, LessKeys.less) := "cobra.less",
+    libraryDependencies <++= webjarDependenciesOf(client)
+  )
 
 lazy val client     = (project in file("modules/cobra-client"))
   .enablePlugins(ScalaJSPlay)
   .settings(commonSettings :_*)
   .settings(
     target := target.value / "js",
-    name := "cobra.client",
+    name := "cobra.client.js",
     moduleName := "cobra-client",
     artifactPath in (Compile,fastOptJS) :=
       ((crossTarget in fastOptJS).value /
@@ -57,11 +62,11 @@ lazy val utilJS = (project in file("modules/js-util"))
     skip in packageJSDependencies := false
   )
 
-
 lazy val common = (crossProject in file("modules/cobra-common"))
   .settings(commonSettings :_*)
   .settings(
-    name := "cobra.common"
+    name := "cobra.common",
+    libraryDependencies += "me.chrons" %%% "boopickle" % "1.1.0"
   ).jvmSettings(
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
   )

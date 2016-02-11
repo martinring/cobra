@@ -4,7 +4,6 @@ import java.nio.ByteBuffer
 
 import org.scalajs.dom._
 import org.scalajs.dom.raw.WebSocket
-
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
@@ -12,7 +11,7 @@ import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
 /**
  * Created by martin on 08.09.15.
  */
-abstract class SocketApp[I,O](url: String)(deserialize: ByteBuffer => I, serialize: O => ByteBuffer) extends JSApp {
+abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBuffer => I, serialize: O => ByteBuffer) extends JSApp {
   var autoReload = true
 
   private var socket: Option[WebSocket] = None
@@ -47,7 +46,12 @@ abstract class SocketApp[I,O](url: String)(deserialize: ByteBuffer => I, seriali
 
   def main(): Unit = whenReady {
     println("starting")
-    val socket = new WebSocket(url)
+    val absoluteUrl = if (url.startsWith("ws://")) url
+      else if (url.startsWith("/"))
+        s"ws://${location.host}$url"
+      else
+        s"ws://${location.host}/${location.pathname}/url"
+    val socket = new WebSocket(absoluteUrl,protocol)
     socket.binaryType = "arraybuffer"
     socket.on(Event.Socket.Open)    (e => socketOpened(socket))
     socket.on(Event.Socket.Message) (e => rawReceive(e.data.asInstanceOf[ArrayBuffer]))
@@ -62,13 +66,14 @@ abstract class SocketApp[I,O](url: String)(deserialize: ByteBuffer => I, seriali
 
   def rawReceive(msg: ArrayBuffer) = {
     val it = deserialize(TypedArrayBuffer.wrap(msg))
-    console.log("[debug] received: " + it.toString)
+    console.log("received: " + it.toString)
     receive(it)
   }
 
   def socketClosed(): Unit = {
     this.socket = None
-    $"#offline".elements.head.setAttribute("style", "opacity:1")
+    console.log("socket closed")
+    $"#offline".elements.foreach(_.setAttribute("style", "opacity:1;display:block"))
     postStop()
     lazy val retry: Int = setInterval(() => {
       val xhr = new XMLHttpRequest()
