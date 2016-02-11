@@ -49,7 +49,5 @@ object Cobra extends App {
 
     val server = new CobraServer(directory)
     server.start()
-    scala.io.StdIn.readLine()
-    server.stop()
   }
 }

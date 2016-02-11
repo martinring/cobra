@@ -13,6 +13,8 @@ import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
  * Created by martin on 08.09.15.
  */
 abstract class SocketApp[I,O](url: String)(deserialize: ByteBuffer => I, serialize: O => ByteBuffer) extends JSApp {
+  var autoReload = true
+
   private var socket: Option[WebSocket] = None
 
   def receive: PartialFunction[I,Unit]
@@ -79,6 +81,6 @@ abstract class SocketApp[I,O](url: String)(deserialize: ByteBuffer => I, seriali
       }
       xhr.send()
     }, 1000)
-    retry
+    if (autoReload) retry
   }
 }

@@ -47,7 +47,9 @@ class CobraServer(val directory: File) {
 
   val locator = new WebJarAssetLocator()
 
-  val index = Source.fromURL(getClass.getResource(locator.getFullPath("cobra-client","index.html"))).mkString
+  val index = Source.fromInputStream(
+    getClass.getClassLoader.getResourceAsStream(locator.getFullPath("cobra-client","index.html"))
+  ).mkString
     .replaceAll("""\{ *language *\}""",lang)
     .replaceAll("""\{ *title *\}""",title)
     .replaceAll("""\{ *theme *\}""",theme)
