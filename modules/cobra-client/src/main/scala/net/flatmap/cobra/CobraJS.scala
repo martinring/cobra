@@ -21,33 +21,24 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra")
 
   override def preStart(): Unit = {
     whenReady {
-      $"#slides".loadFrom("slides.html").andThen {
-        case Success(()) =>
-          $"code.scala".elements foreach { code =>
-            val content =
-              code.innerHTML.lines.dropWhile(!_.exists(!_.isWhitespace)).toSeq
-            code.innerHTML = ""
-            val stripped = content.headOption.fold ("") { firstLine =>
-              val s = content.map(_.stripPrefix(firstLine.takeWhile(_.isWhitespace))).mkString("\n")
-              s.take(s.lastIndexWhere(!_.isWhitespace) + 1)
-            }
-            val editor = CodeMirror(code)
-            editor.setOption("mode","text/x-scala")
-            editor.getDoc().setValue(stripped)
-            editors += editor
-          }
-          val settings = RevealOptions()
-          settings.history = true
-          Reveal.initialize(settings)
-          Reveal.on(RevealEvents.Ready) { x =>
-            editors.foreach(_.refresh())
-            Reveal.sync()
-          }
-          Reveal.on(RevealEvents.SlideChanged) { x =>
-            editors.foreach(_.refresh())
-            Reveal.sync()
-          }
-        case Failure(e) => //
+      val slides = $"#slides"
+      for {
+        _ <- slides.loadFrom("slides.html")
+        _ <- Code.loadDelayed(slides)
+      } {
+        val snippets = Code.getCodeSnippets(slides)
+        Code.injectSnippets(slides,snippets)
+        val settings = RevealOptions()
+        settings.history = true
+        Reveal.initialize(settings)
+        Reveal.on(RevealEvents.Ready) { x =>
+          editors.foreach(_.refresh())
+          Reveal.sync()
+        }
+        Reveal.on(RevealEvents.SlideChanged) { x =>
+          editors.foreach(_.refresh())
+          Reveal.sync()
+        }
       }
     }
   }

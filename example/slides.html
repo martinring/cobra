@@ -1,3 +1,14 @@
+<code class="scala executable hidden" id="person">
+import scala.io._
+
+<code id="person-def">
+case class Person(name: String, age: Int)
+</code>
+
+val p = <code id="person-instance">Person("Martin",29)</code>
+println(p)
+</code>
+
 <section>
     <h2>Cobra Example</h2>
     <ul>
@@ -9,11 +20,9 @@
 
 <section>
     <h2>Thank you!</h2>
-    <code class="executable scala">
-        case class Person(name: String, age: Int) {
-          val x = 7
-        }
-        val p = Person("Martin",29)
-        println(p)
+    
+    <code class="scala" src="#person-def"/>
+    <code src="src/Test.scala"/>                    
+        
     </code>
 </section>

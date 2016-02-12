@@ -3,7 +3,9 @@ package net.flatmap.js
 import java.util.regex.Pattern
 
 import org.scalajs.dom._
+import org.scalajs.dom.ext.Ajax
 
+import scala.concurrent.{Promise, Future}
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic
 import scala.util.matching.Regex
@@ -81,6 +83,11 @@ package object util {
   def whenReady(init: => Unit) = {
     if (document.readyState != "loading") { init }
     else document.once(Event.Ready) { e => init }
+  }
+
+  def loadedDocument: Future[Document] = {
+    if (document.readyState != "loading") Future.successful(document)
+    else
   }
 
   def schedule(ms: Int)(task: => Unit) = window.setTimeout(() => task, ms)

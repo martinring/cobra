@@ -53,9 +53,9 @@ abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBu
         s"ws://${location.host}/${location.pathname}/url"
     val socket = new WebSocket(absoluteUrl,protocol)
     socket.binaryType = "arraybuffer"
-    socket.on(Event.Socket.Open)    (e => socketOpened(socket))
-    socket.on(Event.Socket.Message) (e => rawReceive(e.data.asInstanceOf[ArrayBuffer]))
-    socket.on(Event.Socket.Close)   (e => socketClosed())
+    socket.on(Event.Socket.Open)(e => socketOpened(socket))
+    socket.on(Event.Socket.Message)(e => rawReceive(e.data.asInstanceOf[ArrayBuffer]))
+    socket.on(Event.Socket.Close)(e => socketClosed())
   }
 
   def socketOpened(socket: WebSocket) {
