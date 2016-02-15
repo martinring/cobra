@@ -1,5 +1,6 @@
 package net.flatmap.cobra
 
+import net.flatmap.js.codemirror.CodeMirror
 import org.scalajs.dom.Element
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
@@ -31,17 +32,12 @@ object Code {
     def content_=(value: String): Unit = code.textContent = value
   }
 
-  def loadDelayed(root: NodeSeqQuery) = Future.sequence {
+  def loadDelayed(root: NodeSeqQuery): Future[Seq[String]] = Future.sequence {
     root.query(s"code[src]").elements.filter(!_.getAttribute("src").startsWith("#")).map { code =>
       val src = code.getAttribute("src")
-      Ajax.get(src).collect {
-        case response if response.status == 200 => code.textContent = response.responseText
-      }.recover {
-        case NonFatal(e) =>
-          code.textContent = s"NOT FOUND: $src"
-      }
+      code.html = Ajax.get(src).filter(_.status == 200).map(_.responseText)
     }
-  }.map(_ => ())
+  }
 
   def stripIndentation(raw: String): String = {
     val strippedFront = raw.lines.dropWhile(!_.exists(!_.isWhitespace)).toSeq
@@ -57,6 +53,17 @@ object Code {
     root.query("code[src^='#']").elements.foreach { code =>
       val src = code.getAttribute("src").tail
       code.innerHTML = snippets.get(src).map(_.content).getOrElse(s"UNDEFINED SRC '$src'")
+    }
+  }
+
+  def initializeEditors(root: NodeSeqQuery) = {
+    root.query("code").elements.collect {
+      case code if (!code.classes.contains("hidden")) =>
+        val text = code.textContent
+        code.innerHTML = ""
+        val editor = CodeMirror.apply(code)
+        editor.getDoc().setValue(text)
+        editor
     }
   }
 }

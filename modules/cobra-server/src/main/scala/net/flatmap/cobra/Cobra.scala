@@ -29,11 +29,11 @@ object Cobra extends App {
   }
 
   private def printLogo() = {
-    println("""     ____      _                 """)
-    println("""    / ___|___ | |__  _ __ __ _   """)
-    println("""   | |   / _ \| '_ \| '__/ _` |  """)
-    println("""   | |__| (_) | |_) | | | (_| |  """)
-    println("""    \____\___/|_.__/|_|  \__,_|  """)
+    println("""     ____      _                  """)
+    println("""    / ___|___ | |__  _ __ __ _    """)
+    println("""   | |   / _ \| '_ \| '__/ _` |   """)
+    println("""   | |__| (_) | |_) | | | (_| |   """)
+    println("""    \____\___/|_.__/|_|  \__,_|   """)
     println("""__________________________________""")
     println("""| version 0.1 - 2016 Martin Ring |""")
     println("")
