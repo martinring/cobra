@@ -3,11 +3,8 @@ package net.flatmap.js
 import java.util.regex.Pattern
 
 import org.scalajs.dom._
-import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.{Promise, Future}
-import scala.scalajs.js
-import scala.scalajs.js.Dynamic
 import scala.util.matching.Regex
 
 /**
@@ -16,8 +13,8 @@ import scala.util.matching.Regex
 package object util {
   import net.flatmap.js.util._
 
-  def query(selector: String): Seq[Node] = document.querySelectorAll(selector)
-  def query(elem: Node*): Seq[Node] = elem
+  def query(selector: String): NodeSeqQuery = QueryNodeSeq(document.querySelectorAll(selector))
+  def query(elem: Node*): NodeSeqQuery = elem
 
   trait EventSource {
     def on[T <: raw.Event](event: Event[T])(f: T => Unit): Subscription
@@ -45,20 +42,22 @@ package object util {
     }
   }
 
-  implicit class NodeListAsSeq(underlying: NodeList) extends Seq[Node] with NodeSeqQuery {
-    def length = underlying.length
-    def apply(idx: Int) = underlying.apply(idx)
+  implicit class NodeListAsSeq(u: NodeList) extends Seq[Node] {
+    def length = u.length
+    def apply(idx: Int) = u.apply(idx)
     def iterator: Iterator[Node] = Iterator.tabulate(length)(apply)
   }
 
-  implicit class QueryNodeSeq(underlying: Seq[Node]) extends Seq[Node] with NodeSeqQuery {
-    def length = underlying.length
-    def apply(idx: Int) = underlying.apply(idx)
-    def iterator: Iterator[Node] = underlying.iterator
+  implicit class QueryNode(u: Node) extends NodeSeqQuery {
+    def underlying = Seq(u)
+  }
+
+  implicit class QueryNodeSeq(u: Seq[Node]) extends NodeSeqQuery {
+    def underlying = u
   }
 
   implicit class QueryHelper(val sc: StringContext) extends AnyVal {
-    def $(args: Any*): Seq[Node] = query(sc.s(args :_*))
+    def $(args: Any*): NodeSeqQuery = query(sc.s(args :_*))
   }
 
   implicit class RegexStrings(val sc: StringContext) extends AnyVal {
@@ -73,7 +72,7 @@ package object util {
   def HTML(s: String): Seq[Node] = {
     val div = org.scalajs.dom.document.createElement("div")
     div.innerHTML = s
-    Seq(div.childNodes :_*)
+    div.childNodes
   }
 
   implicit class OptionExt(val underlying: Option.type) extends AnyVal {
@@ -86,8 +85,9 @@ package object util {
   }
 
   def loadedDocument: Future[Document] = {
-    if (document.readyState != "loading") Future.successful(document)
-    else
+    val doc = Promise[Document]
+    whenReady(doc.success(document))
+    doc.future
   }
 
   def schedule(ms: Int)(task: => Unit) = window.setTimeout(() => task, ms)

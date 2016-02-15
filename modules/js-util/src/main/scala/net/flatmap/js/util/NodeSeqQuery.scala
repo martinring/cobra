@@ -2,18 +2,22 @@ package net.flatmap.js.util
 
 import org.scalajs.dom.{Node,Element,raw}
 import org.scalajs.dom.ext.Ajax
+import scala.concurrent.Future
 import scala.scalajs.js.Dynamic
 import scala.util.{Failure, Success}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
-trait NodeSeqQuery extends EventSource { underlying: Seq[Node] =>
-  def elements = underlying.collect { case e if e.nodeType == 1 => e.asInstanceOf[Element] }
-  private def foreachElement(f: Element => Unit): Seq[Node] = {
+trait NodeSeqQuery extends EventSource { self =>
+  def underlying: Seq[Node]
+
+  def elements: Seq[Element] = underlying.collect{ case e if e.nodeType == 1 => e.asInstanceOf[Element] }
+
+  private def foreachElement(f: Element => Unit): NodeSeqQuery = {
     elements.filter(_ != null).foreach(f)
     this
   }
-  private def foreachNode(f: Node => Unit): Seq[Node] = {
-    filter(_ != null).foreach(f)
+  private def foreachNode(f: Node => Unit): NodeSeqQuery = {
+    underlying.filter(_ != null).foreach(f)
     this
   }
   def append(e: Node) = foreachNode(_.appendChild(e))
@@ -35,27 +39,31 @@ trait NodeSeqQuery extends EventSource { underlying: Seq[Node] =>
   def remove($: Seq[Node]) = foreachNode(e => $.foreach(e.removeChild(_)))
   def remove() = foreachNode(e => Option(e.parentNode).foreach(_.removeChild(e)))
   def insertBefore(e: Node) = foreachNode(e.parentNode.insertBefore(_,e))
-  def insertBefore($: Seq[Node]): Seq[Node] = { $.foreach(e => foreach(e.parentNode.insertBefore(_,e))); this }
+  def insertBefore($: Seq[Node]) = { $.foreach(e => underlying.foreach(e.parentNode.insertBefore(_,e))); this }
   def insertAfter(e: Node) = foreachNode { n =>
     for {
       parent <- Option(n.parentNode)
     } Option(n.nextSibling).fold(parent.appendChild(e))(next => parent.insertBefore(e,next))
   }
-  def insertAfter($: Seq[Node]): Seq[Node] = foreachNode { n =>
+  def insertAfter($: Seq[Node]) = foreachNode { n =>
     for {
       parent <- Option(n.parentNode)
     } Option(n.nextSibling).fold($.foreach(parent.appendChild(_)))(next => $.foreach(parent.insertBefore(_,next)))
   }
   def on[T <: raw.Event](event: Event[T])(f: T => Unit): Subscription = {
     val g: scalajs.js.Function1[T,_] = f
-    foreach(_.addEventListener(event.name, g))
-    Subscription(foreach(_.removeEventListener(event.name, g.asInstanceOf[scalajs.js.Function1[raw.Event,_]])))
+    underlying.foreach(_.addEventListener(event.name, g))
+    Subscription(underlying.foreach(_.removeEventListener(event.name, g.asInstanceOf[scalajs.js.Function1[raw.Event,_]])))
   }
-  def next(): Seq[Node] = underlying.map(_.nextSibling)
+  def next() = underlying.map(_.nextSibling)
 
   def html: String = elements.head.innerHTML
   def html_=(value: String): Unit = elements.foreach(_.innerHTML = value)
 
+  def html_=(value: Future[String]): Future[String] = value.map { x =>
+    elements.foreach(_.innerHTML = x)
+    x
+  }
 
   def title: String = elements.head.getAttribute("title")
   def title_=(value: String): Unit = elements.foreach(_.setAttribute("title",value))
@@ -66,14 +74,20 @@ trait NodeSeqQuery extends EventSource { underlying: Seq[Node] =>
   def focus() = foreachElement(_.asInstanceOf[Dynamic].focus())
   def blur() = foreachElement(_.asInstanceOf[Dynamic].blur())
 
-  def query(selector: String) = elements.flatMap(e => e.querySelectorAll(selector))
-
-  def loadFrom(file: String) = Ajax.get(file).map {
-    case value =>
-      elements.html = value.responseText
+  def query(selector: String) = new NodeSeqQuery {
+    override def underlying: Seq[Node] = self.elements.flatMap(e => e.querySelectorAll(selector))
   }
 
-  def ==(other: Seq[Node]) =
-    underlying.length == other.length &&
-      underlying.zip(other).forall { case (a,b) => a == b }
+  def <<< (url: String) = loadFrom(url).map(_ => this)
+
+  def loadFrom(file: String) = Ajax.get(file).map {
+    case value if value.status == 200 =>
+      html = value.responseText
+  }
+
+  def ==(other: Seq[Node]) = {
+    val ul = underlying.toSeq
+    ul.length == other.length &&
+      ul.zip(other).forall { case (a, b) => a == b }
+  }
 }
