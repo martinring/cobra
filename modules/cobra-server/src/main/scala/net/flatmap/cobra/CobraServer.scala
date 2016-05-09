@@ -2,6 +2,7 @@ package net.flatmap.cobra
 
 import java.io.File
 
+import akka.NotUsed
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message}
 import akka.stream.scaladsl._
 import akka.util.ByteString
@@ -62,20 +63,25 @@ class CobraServer(val directory: File) {
     pathSingleSlash {
       complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
     } ~
-    path("socket")(handleWebsocketMessagesForProtocol(socket,"cobra")) ~
+    path("socket")(handleWebSocketMessagesForProtocol(socket,"cobra")) ~
     path("lib" / PathMatchers.Segment / PathMatchers.Rest) {
       (segment,path) => getFromResource(locator.getFullPath(segment,path))
     }
   } ~ getFromDirectory(directory.getPath)
 
-  val socket: Flow[Message, Message, Unit] =
-    Flow[Message].map { case BinaryMessage.Strict(bytes) => ClientMessage.read(bytes.asByteBuffer) }
-      .flatMapMerge(1000, handleRequest)
-      .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
+  val deserialize: PartialFunction[Message,ClientMessage] = {
+    case BinaryMessage.Strict(bytes) => ClientMessage.read(bytes.asByteBuffer)
+    case other => sys.error(s"incompatible message from client: '$other'")
+  }
 
-  val handleRequest: ClientMessage => Source[ServerMessage,Unit] = {
+  val handleRequest: ClientMessage => Source[ServerMessage,NotUsed] = {
     case Ping => Source.single(Pong)
   }
+
+  val socket: Flow[Message, Message, NotUsed] =
+    Flow[Message].map(deserialize)
+     .flatMapMerge(1000, handleRequest)
+     .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
 
   var binding = Option.empty[Http.ServerBinding]
 
@@ -97,6 +103,6 @@ class CobraServer(val directory: File) {
     log.info("stopping server...")
     binding.foreach(_.unbind())
     binding = None
-    system.shutdown()
+    system.terminate()
   }
 }

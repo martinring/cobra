@@ -3,7 +3,7 @@ import net.flatmap.js.ScalaJSWeb.webjarDependenciesOf
 cancelable in Global := true
 
 val commonSettings = Seq(
-  scalaVersion := "2.11.7",
+  scalaVersion := "2.11.8",
   version := "0.1",
   organization := "net.flatmap",
   scalacOptions ++= Seq("-deprecation","-feature")
@@ -13,9 +13,10 @@ lazy val server = (project in file("modules/cobra-server"))
   .settings(commonSettings :_*)
   .settings(
     name := "cobra.server",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.0.3",
-    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.9",
-    libraryDependencies += "org.webjars" % "webjars-locator" % "0.28"
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.4",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4",
+    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7",
+    libraryDependencies += "org.webjars" % "webjars-locator" % "0.31"
   ).dependsOn(commonJVM, clientWeb)
 
 lazy val clientWeb  = (project in file("modules/cobra-client"))
@@ -58,7 +59,7 @@ lazy val utilJS = (project in file("modules/js-util"))
   .settings(commonSettings :_*)
   .settings(
     name := "util.js",
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
     skip in packageJSDependencies := false
   )
 
@@ -66,7 +67,7 @@ lazy val common = (crossProject in file("modules/cobra-common"))
   .settings(commonSettings :_*)
   .settings(
     name := "cobra.common",
-    libraryDependencies += "me.chrons" %%% "boopickle" % "1.1.0"
+    libraryDependencies += "me.chrons" %%% "boopickle" % "1.1.3"
   ).jvmSettings(
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
   )
@@ -83,7 +84,7 @@ lazy val reveal = (project in file("modules/js-bindings/reveal-js"))
   .settings(
     name := "reveal.js",
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
     jsDependencies += "org.webjars.bower" % "reveal.js" % "3.3.0" / "reveal.js",
     skip in packageJSDependencies := false
   ).dependsOn(utilJS)
@@ -94,7 +95,7 @@ lazy val codemirror = (project in file("modules/js-bindings/codemirror"))
   .settings(
     name := "codemirror",
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
     jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "codemirror.js",
     jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/clike/clike.js" dependsOn "codemirror.js",
     skip in packageJSDependencies := false
