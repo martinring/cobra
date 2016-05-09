@@ -15,24 +15,29 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra")
     case _ => //
   }
 
-  override def preStart(): Unit = for {
-    document <- loadedDocument
-    slides <- $"#slides" <<< "slides.html"
-    delayedSnippets <- Code.loadDelayed(slides)
-  } {
-    val snippets = Code.getCodeSnippets(slides)
-    Code.injectSnippets(slides,snippets)
-    val editors = Code.initializeEditors(slides)
-    val settings = RevealOptions()
-    settings.history = true
-    Reveal.initialize(settings)
-    Reveal.on(RevealEvents.Ready) { x =>
-      editors.foreach(_.refresh())
-      Reveal.sync()
-    }
-    Reveal.on(RevealEvents.SlideChanged) { x =>
-      editors.foreach(_.refresh())
-      Reveal.sync()
+  override def preStart(): Unit = {
+    send(Ping)
+    for {
+      document <- loadedDocument
+      slides <- $"#slides" <<< "slides.html"
+      delayedSnippets <- Code.loadDelayed(slides)
+    } {
+      val snippets = Code.getCodeSnippets(slides)
+      Code.injectSnippets(slides,snippets)
+      val editors = Code.initializeEditors(slides)
+      val settings = RevealOptions()
+      settings.history = true
+      Reveal.initialize(settings)
+      Reveal.on(RevealEvents.Ready) { x =>
+        editors.foreach(_.refresh())
+        Reveal.sync()
+      }
+      Reveal.on(RevealEvents.SlideChanged) { x =>
+        editors.foreach(_.refresh())
+        Reveal.sync()
+      }
     }
   }
+
+
 }

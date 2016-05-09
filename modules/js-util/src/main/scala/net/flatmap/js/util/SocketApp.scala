@@ -6,7 +6,8 @@ import org.scalajs.dom._
 import org.scalajs.dom.raw.WebSocket
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.typedarray.TypedArrayBufferOps._
-import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
+import scala.scalajs.js.typedarray._
+import scala.scalajs.js
 
 /**
  * Created by martin on 08.09.15.
@@ -18,7 +19,7 @@ abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBu
 
   def receive: PartialFunction[I,Unit]
 
-  def byteBuffer2ajax(data: ByteBuffer) = {
+  def byteBuffer2ajax(data: ByteBuffer): Int8Array = {
     if (data.hasTypedArray()) {
       // get relevant part of the underlying typed array
       data.typedArray().subarray(data.position, data.limit)
@@ -37,7 +38,7 @@ abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBu
   )(
   (s: WebSocket) => {
     console.log("[debug] send: ", msg.toString)
-    s.send(byteBuffer2ajax(serialize(msg)))
+    s.send(byteBuffer2ajax(serialize(msg)).buffer)
   })
 
   def preStart() = ()
@@ -48,9 +49,9 @@ abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBu
     println("starting")
     val absoluteUrl = if (url.startsWith("ws://")) url
       else if (url.startsWith("/"))
-        s"ws://${location.host}$url"
+        s"ws://${window.location.host}$url"
       else
-        s"ws://${location.host}/${location.pathname}/url"
+        s"ws://${window.location.host}/${window.location.pathname}/url"
     val socket = new WebSocket(absoluteUrl,protocol)
     socket.binaryType = "arraybuffer"
     socket.on(Event.Socket.Open)(e => socketOpened(socket))
@@ -75,13 +76,13 @@ abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBu
     console.log("socket closed")
     $"#offline".elements.foreach(_.setAttribute("style", "opacity:1;display:block"))
     postStop()
-    lazy val retry: Int = setInterval(() => {
+    lazy val retry: Int = window.setInterval(() => {
       val xhr = new XMLHttpRequest()
-      xhr.open("GET", location.href)
+      xhr.open("GET", window.location.href)
       xhr.on(Event.Load) { _ =>
         if (xhr.status == 200) {
           console.log("server is ready again... reloading")
-          location.reload()
+          window.location.reload()
         }
       }
       xhr.send()
