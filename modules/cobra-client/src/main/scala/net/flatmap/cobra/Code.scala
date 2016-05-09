@@ -1,12 +1,14 @@
 package net.flatmap.cobra
 
 import net.flatmap.js.codemirror.CodeMirror
-import org.scalajs.dom.Element
+import net.flatmap.js.reveal.Reveal
+import org.scalajs.dom.{Element, raw}
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.scalajs.js
 import scala.util.control.NonFatal
 
 /**
@@ -65,6 +67,16 @@ object Code {
         editor.getDoc().setValue(text)
         editor.setOption("mode","text/x-scala")
         editor.setOption("scrollbarStyle","null")
+        val handler: js.Function2[CodeMirror,raw.Event,Unit] = (instance: CodeMirror, event: raw.Event) => {
+          val changes = event.asInstanceOf[js.Array[js.Dynamic]]
+          if (changes.exists { change =>
+            change.from.line.asInstanceOf[Int] != change.to.line.asInstanceOf[Int] ||
+              change.text.asInstanceOf[js.Array[String]].length > 1
+          }) {
+            Reveal.sync()
+          }
+        }
+        editor.on("changes", handler)
         editor
     }
   }
