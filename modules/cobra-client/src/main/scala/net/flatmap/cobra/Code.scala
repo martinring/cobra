@@ -14,7 +14,7 @@ import scala.util.control.NonFatal
   */
 object Code {
   class Snippets private[Code] (root: NodeSeqQuery) extends Map[String,Snippet] {
-    def get(id: String) = root.query(s"code#$id").elements.headOption.map { code =>
+    def get(id: String) = root.query(s"snippet#$id").elements.headOption.map { code =>
       new Snippet(code)
     }
 
@@ -33,7 +33,7 @@ object Code {
   }
 
   def loadDelayed(root: NodeSeqQuery): Future[Seq[String]] = Future.sequence {
-    root.query(s"code[src]").elements.filter(!_.getAttribute("src").startsWith("#")).map { code =>
+    root.query(s"code[src]:not([src^='#'])").elements.map { code =>
       val src = code.getAttribute("src")
       code.html = Ajax.get(src).filter(_.status == 200).map(_.responseText)
     }
@@ -52,17 +52,18 @@ object Code {
   def injectSnippets(root: NodeSeqQuery, snippets: Snippets) = {
     root.query("code[src^='#']").elements.foreach { code =>
       val src = code.getAttribute("src").tail
-      code.innerHTML = snippets.get(src).map(_.content).getOrElse(s"UNDEFINED SRC '$src'")
+      code.innerHTML = snippets.get(src).map(_.content).getOrElse(s"Error: could not resolve '$src'")
     }
   }
 
   def initializeEditors(root: NodeSeqQuery) = {
-    root.query("code").elements.collect {
+    root.query("section code").elements.collect {
       case code if (!code.classes.contains("hidden")) =>
         val text = code.textContent
         code.innerHTML = ""
         val editor = CodeMirror(code)
         editor.getDoc().setValue(text)
+        editor.setOption("mode","text/x-scala")
         editor.setOption("scrollbarStyle","null")
         editor
     }
