@@ -84,7 +84,7 @@ lazy val reveal = (project in file("modules/js-bindings/reveal-js"))
     name := "reveal.js",
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-    jsDependencies += "org.webjars.bower" % "reveal.js" % "3.2.0" / "reveal.js",
+    jsDependencies += "org.webjars.bower" % "reveal.js" % "3.3.0" / "reveal.js",
     skip in packageJSDependencies := false
   ).dependsOn(utilJS)
 
@@ -95,8 +95,8 @@ lazy val codemirror = (project in file("modules/js-bindings/codemirror"))
     name := "codemirror",
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.11.0" / "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.11.0" / "mode/clike/clike.js" dependsOn "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/clike/clike.js" dependsOn "codemirror.js",
     skip in packageJSDependencies := false
   ).dependsOn(utilJS)
 
