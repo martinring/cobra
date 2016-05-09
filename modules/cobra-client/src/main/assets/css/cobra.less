@@ -1,10 +1,14 @@
 @import "fonts/FiraCode.less";
 
 .CodeMirror {
-  background: unset;
-  color: unset;
   height: auto;
-  font-family: "Fira Code";
+  font-family: "Fira Code" !important;
+  pre {
+    font-feature-settings: "calt" 1;
+    font-variant-ligatures: contextual !important;
+    text-rendering: optimizeLegibility;
+  }
+  font-size: 80% !important;
   .CodeMirror-scroll {
     margin: 0 -30px -30px 0 !important;
     padding: 0 0 30px 0 !important;
@@ -12,6 +16,11 @@
   .CodeMirror-line {
     box-shadow: none !important;
     width: auto !important;
+  }
+  .CodeMirror-cursor {
+    border-left: 1px solid black !important;
+    border-right: none !important;
+    width: 0 !important;
   }
 }
 
