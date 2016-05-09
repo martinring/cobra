@@ -16,10 +16,10 @@ package object util {
   def query(selector: String): NodeSeqQuery = QueryNodeSeq(document.querySelectorAll(selector))
   def query(elem: Node*): NodeSeqQuery = elem
 
-  trait EventSource {
-    def on[T <: raw.Event](event: Event[T])(f: T => Unit): Subscription
+  trait EventSource[T <: EventTarget] {
+    def on[E <: raw.Event](event: Event[T,E])(f: E => Unit): Subscription
 
-    def once[T <: raw.Event](event: Event[T])(f: T => Unit): Subscription = {
+    def once[E <: raw.Event](event: Event[T,E])(f: E => Unit): Subscription = {
       lazy val subscription: Subscription = on(event) { e =>
         if (!subscription.isCancelled) {
           f(e)
@@ -28,15 +28,11 @@ package object util {
       }
       subscription
     }
-
-    def onclick(f: => Unit): Subscription = {
-      on(Event.Mouse.Click)(_ => f)
-    }
   }
 
-  implicit class BetterEventTarget(underlying: EventTarget) extends EventSource{
-    def on[T <: raw.Event](event: Event[T])(f: T => Unit): Subscription = {
-      val g: scalajs.js.Function1[T,_] = f
+  implicit class BetterEventTarget[T <: EventTarget](underlying: T) extends EventSource[T] {
+    def on[E <: raw.Event](event: Event[T,E])(f: E => Unit): Subscription = {
+      val g: scalajs.js.Function1[E,_] = f
       underlying.addEventListener(event.name, g)
       Subscription(underlying.removeEventListener(event.name, g.asInstanceOf[scalajs.js.Function1[raw.Event,_]]))
     }
@@ -81,7 +77,7 @@ package object util {
 
   def whenReady(init: => Unit) = {
     if (document.readyState != "loading") { init }
-    else document.once(Event.Ready) { e => init }
+    else document.once(Event.Document.Ready) { e => init }
   }
 
   def loadedDocument: Future[Document] = {
@@ -90,5 +86,6 @@ package object util {
     doc.future
   }
 
-  def schedule(ms: Int)(task: => Unit) = window.setTimeout(() => task, ms)
+  def scheduleOnce(ms: Int)(task: => Unit) = window.setTimeout(() => task, ms)
+  def schedule(ms: Int)(task: => Unit) = window.setInterval(() => task, ms)
 }

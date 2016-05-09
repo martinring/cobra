@@ -5,8 +5,7 @@ import boopickle.Default._
 
 sealed abstract trait ClientMessage
 sealed abstract trait ServerMessage
-case object Ping extends ClientMessage
-case object Pong extends ServerMessage
+case object HeartBeat extends ClientMessage with ServerMessage
 
 object ClientMessage {
   def read(bytes: ByteBuffer): ClientMessage = Unpickle[ClientMessage].fromBytes(bytes)
