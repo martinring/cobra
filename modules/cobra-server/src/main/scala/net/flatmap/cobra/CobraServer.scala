@@ -75,7 +75,7 @@ class CobraServer(val directory: File) {
   }
 
   val handleRequest: ClientMessage => Source[ServerMessage,NotUsed] = {
-    case Ping => Source.single(Pong)
+    case HeartBeat => Source.single(HeartBeat)
   }
 
   val socket: Flow[Message, Message, NotUsed] =

@@ -4,6 +4,7 @@ import java.nio.ByteBuffer
 
 import org.scalajs.dom._
 import org.scalajs.dom.raw.WebSocket
+
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 import scala.scalajs.js.typedarray._
@@ -12,8 +13,12 @@ import scala.scalajs.js
 /**
  * Created by martin on 08.09.15.
  */
-abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBuffer => I, serialize: O => ByteBuffer) extends JSApp {
-  var autoReload = true
+abstract class SocketApp[I,O](
+  url: String,
+  protocol: String,
+  heartbeatMessage: O,
+  heartbeatAcknowledge: I,
+  autoReload: Boolean = true)(deserialize: ByteBuffer => I, serialize: O => ByteBuffer) extends JSApp {
 
   private var socket: Option[WebSocket] = None
 
@@ -57,21 +62,44 @@ abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBu
     socket.on(Event.Socket.Open)(e => socketOpened(socket))
     socket.on(Event.Socket.Message)(e => rawReceive(e.data.asInstanceOf[ArrayBuffer]))
     socket.on(Event.Socket.Close)(e => socketClosed())
+    window.on(Event.Window.BeforeUnload) { e =>
+      if (socket.readyState != WebSocket.CLOSED) {
+        console.log("[debug] closing socket before leaving page")
+        socket.close()
+      }
+    }
   }
 
-  def socketOpened(socket: WebSocket) {
+  private val heartbeatInterval = 5000
+
+  private var heartbeatAcknowledged = true
+
+  private def socketOpened(socket: WebSocket) {
     this.socket = Some(socket)
-    console.log("socket open")
+    console.info("socket open")
     preStart()
+    schedule(heartbeatInterval) {
+      if (!heartbeatAcknowledged) {
+        console.error(s"server did not respond to heartbeat message for ${heartbeatInterval}ms")
+        socket.close()
+      } else {
+        heartbeatAcknowledged = false
+        send(heartbeatMessage)
+      }
+    }
   }
 
-  def rawReceive(msg: ArrayBuffer) = {
+  private def rawReceive(msg: ArrayBuffer) = {
     val it = deserialize(TypedArrayBuffer.wrap(msg))
-    console.log("received: " + it.toString)
-    receive(it)
+    console.log("[debug] received: " + it.toString)
+    it match {
+      case `heartbeatAcknowledge` =>
+        heartbeatAcknowledged = true
+      case other => receive(it)
+    }
   }
 
-  def socketClosed(): Unit = {
+  private def socketClosed(): Unit = {
     this.socket = None
     console.log("socket closed")
     $"#offline".elements.foreach(_.setAttribute("style", "opacity:1;display:block"))
@@ -79,7 +107,7 @@ abstract class SocketApp[I,O](url: String, protocol: String)(deserialize: ByteBu
     lazy val retry: Int = window.setInterval(() => {
       val xhr = new XMLHttpRequest()
       xhr.open("GET", window.location.href)
-      xhr.on(Event.Load) { _ =>
+      xhr.on(Event.Progress.Load) { _ =>
         if (xhr.status == 200) {
           console.log("server is ready again... reloading")
           window.location.reload()

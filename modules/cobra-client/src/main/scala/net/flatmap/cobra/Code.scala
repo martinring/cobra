@@ -63,6 +63,7 @@ object Code {
         code.innerHTML = ""
         val editor = CodeMirror.apply(code)
         editor.getDoc().setValue(text)
+        editor.setOption("scrollbarStyle","null")
         editor
     }
   }

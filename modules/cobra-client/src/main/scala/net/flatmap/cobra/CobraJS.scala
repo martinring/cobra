@@ -7,16 +7,17 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 /**
   * Created by martin on 04.02.16.
   */
-object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra")(
+object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",HeartBeat,HeartBeat, autoReload = true)(
   deserialize = ServerMessage.read,
   serialize = ClientMessage.write
 ) {
   def receive = {
-    case _ => //
+    case _ =>
   }
 
+  var heartBeatAcknowledged: Boolean = true
+
   override def preStart(): Unit = {
-    send(Ping)
     for {
       document <- loadedDocument
       slides <- $"#slides" <<< "slides.html"

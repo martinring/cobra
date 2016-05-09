@@ -72,8 +72,8 @@ trait SlideChangedEvent extends org.scalajs.dom.Event {
 }
 
 object RevealEvents {
-  object SlideChanged extends Event[SlideChangedEvent]("slidechanged")
-  object Ready extends Event[org.scalajs.dom.Event]("ready")
+  object SlideChanged extends Event[Reveal.type ,SlideChangedEvent]("slidechanged")
+  object Ready extends Event[Reveal.type, org.scalajs.dom.Event]("ready")
 }
 
 object RevealMathOptions {
