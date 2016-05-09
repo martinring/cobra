@@ -28,6 +28,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       val editors = Code.initializeEditors(slides)
       val settings = RevealOptions()
       settings.history = true
+      settings.minScale = 1
+      settings.maxScale = 1
       Reveal.initialize(settings)
       Reveal.on(RevealEvents.Ready) { x =>
         editors.foreach(_.refresh())

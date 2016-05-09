@@ -206,4 +206,7 @@ sealed trait RevealOptions extends js.Object {
 
   var math: RevealMathOptions = js.native
   var dependencies: js.Array[RevealDependency] = js.native
+
+  var minScale: Double = js.native
+  var maxScale: Double = js.native
 }
