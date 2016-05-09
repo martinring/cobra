@@ -4,14 +4,14 @@
   height: auto;
   font-family: "Fira Code" !important;
   pre {
+    font-size: 90% !important;
     font-feature-settings: "calt" 1;
     font-variant-ligatures: contextual !important;
     text-rendering: optimizeLegibility;
   }
-  font-size: 80% !important;
   .CodeMirror-scroll {
     margin: 0 -30px -30px 0 !important;
-    padding: 0 0 30px 0 !important;
+    padding: 0 30px 30px 0 !important;
   }
   .CodeMirror-line {
     box-shadow: none !important;
@@ -24,6 +24,15 @@
   }
 }
 
-code.hidden {
-  display: none;
+code {
+  display: inline-block;
+  &.block {
+    display: block;
+  }
+  &.condense .CodeMirror pre {
+    font-size: 66.7% !important;
+  }
+  &.hidden {
+    display: none;
+  }
 }

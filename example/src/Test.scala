@@ -1,1 +1,2 @@
-case bla blub
+case class Person(age: Int, name: String)
+  extends Animal
