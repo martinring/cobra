@@ -61,7 +61,7 @@ object Code {
       case code if (!code.classes.contains("hidden")) =>
         val text = code.textContent
         code.innerHTML = ""
-        val editor = CodeMirror.apply(code)
+        val editor = CodeMirror(code)
         editor.getDoc().setValue(text)
         editor.setOption("scrollbarStyle","null")
         editor
