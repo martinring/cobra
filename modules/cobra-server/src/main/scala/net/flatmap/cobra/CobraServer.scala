@@ -34,7 +34,8 @@ class CobraServer(val directory: File) {
   ).withFallback(ConfigFactory.load().getConfig("cobra"))
 
   val title = config.getString("title")
-  val theme = config.getString("theme")
+  val slidesTheme = config.getString("theme.slides")
+  val codeTheme = config.getString("theme.code")
   val lang = config.getString("language")
 
   val interface = config.getString("binding.interface")
@@ -57,7 +58,8 @@ class CobraServer(val directory: File) {
   ).mkString
     .replaceAll("""\{ *language *\}""",lang)
     .replaceAll("""\{ *title *\}""",title)
-    .replaceAll("""\{ *theme *\}""",theme)
+    .replaceAll("""\{ *theme\.slides *\}""",slidesTheme)
+    .replaceAll("""\{ *theme\.code *\}""",codeTheme)
 
   val routes = get {
     pathSingleSlash {
