@@ -1,9 +1,13 @@
 package net.flatmap.cobra
 
-import net.flatmap.js.codemirror.CodeMirror
-import net.flatmap.js.reveal.{RevealEvents, RevealOptions, Reveal}
+import net.flatmap.cobra.isabelle.{IsabelleMode, IsabelleModeConfig, IsabelleModeState}
+import net.flatmap.js.codemirror.{CodeMirror, CodeMirrorConfiguration}
+import net.flatmap.js.reveal.{Reveal, RevealEvents, RevealOptions}
 import net.flatmap.js.util._
+
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js._
+
 /**
   * Created by martin on 04.02.16.
   */
@@ -18,6 +22,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
   var heartBeatAcknowledged: Boolean = true
 
   override def preStart(): Unit = {
+    CodeMirror.defineMode[IsabelleModeState]("isabelle", IsabelleMode.apply _)
+    CodeMirror.defineMIME("text/x-isabelle","isabelle")
     for {
       document <- loadedDocument
       slides <- $"#slides" <<< "slides.html"

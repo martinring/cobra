@@ -20,7 +20,7 @@ object Comments {
 sealed abstract class Mode(val name: String, val mime: String, val regex: Regex, val fileendings: Set[String])
 case object Scala extends Mode("scala","text/x-scala",Comments.line("\\/\\/\\/+"), Set("scala"))
 case object Haskell extends Mode("haskell","text/x-haskell",Comments.line("---+"), Set("hs"))
-case object Isabelle extends Mode("isabelle","text/x-isabelle",Comments.line("---+"), Set("thy"))
+case object Isabelle extends Mode("isabelle","text/x-isabelle",Comments.block("\\(\\*","\\*\\)"), Set("thy"))
 
 /**
   * Created by martin on 12.02.16.
@@ -35,7 +35,7 @@ object Code {
       val ext = src.split("\\.").last
       modes.find(_.fileendings.contains(ext)).foreach(code.classes += _.name)
       println(s"resolving '$src'")
-      code.html = Ajax.get(src).filter(_.status == 200).map(_.responseText).recover {
+      code.text = Ajax.get(src).filter(_.status == 200).map(_.responseText).recover {
         case NonFatal(e) =>
           console.error(s"could not load source from '$src'")
           s"could not load source from '$src'"

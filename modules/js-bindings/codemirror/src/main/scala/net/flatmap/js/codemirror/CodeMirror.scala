@@ -24,7 +24,7 @@ object CodeMirror extends js.Object with WithEvents {
   def copyState[S](mode: Mode[S], state: S): S = js.native
 
   def Pass: Nothing = js.native
-  def defineMode[S](name: String, constructor: js.Function2[CodeMirrorConfiguration, Any, Mode[S]]): Unit = js.native
+  def defineMode[S](name: String, constructor: js.Function2[CodeMirrorConfiguration, js.Any, Mode[S]]): Unit = js.native
   def defineMIME(mime: String, modeSpec: String): Unit = js.native
   def defineMIME[S](mime: String, modeSpec: Mode[S]): Unit = js.native
   def extendMode[S](mode: String, extensions: Mode[S]): Unit = js.native
