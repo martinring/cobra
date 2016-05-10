@@ -31,10 +31,8 @@ object Code {
   def loadDelayed(root: NodeSeqQuery): Future[Seq[String]] = Future.sequence {
     root.query(s"code[src]:not([src^='#'])").elements.map { code =>
       val src = code.getAttribute("src")
-      code.removeAttribute("src")
       val ext = src.split("\\.").last
       modes.find(_.fileendings.contains(ext)).foreach(code.classes += _.name)
-      println(s"resolving '$src'")
       code.text = Ajax.get(src).filter(_.status == 200).map(_.responseText).recover {
         case NonFatal(e) =>
           console.error(s"could not load source from '$src'")
@@ -70,11 +68,7 @@ object Code {
     starts.collect {
       case (name,sl) if ends.contains(name) =>
         val el = ends(name)
-        println(s"subdocument '#$name' from line $sl to $el")
-        name -> root.linkedDoc(new LinkedDocOptions(
-          from = sl,
-          to = el
-        ))
+        name -> root.linkedDoc(new LinkedDocOptions(from = sl, to = el))
     }
   }
 
@@ -99,8 +93,6 @@ object Code {
         val doc = code.attribute("id").flatMap(documents.get).orElse(
         code.attribute("src").collect {
           case src if src.startsWith("#") =>
-            println(src.tail)
-            println(documents.get(src.tail).map(_.getValue()))
             src.tail
         }.flatMap(documents.get)).getOrElse(CodeMirror.Doc(code.textContent, mode(code).map(_.mime).getOrElse("text/plain") : String))
         code.innerHTML = ""
