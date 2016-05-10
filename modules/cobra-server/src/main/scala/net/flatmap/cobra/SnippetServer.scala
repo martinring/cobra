@@ -20,15 +20,18 @@ class SnippetServer extends Actor with ActorLogging {
 
   def initialized(mode: Mode, server: Server[Char], listeners: Set[ActorRef]): Receive = {
     case Terminated(listener) =>
-      log.info("client disconnected")
+      log.debug("client disconnected")
       context.become(initialized(mode,server,listeners - listener))
     case InitDoc(id,content,mode) =>
-      log.info("client connected")
+      log.debug("client connected")
       context.watch(sender)
       context.become(initialized(mode,server,listeners + sender))
-      server.getHistory.foreach(op => sender ! RemoteEdit(id,op))
+      if (server.revision > 0) {
+        val combined = server.getHistory.reduceLeft((a, b) => Operation.compose(a, b).get)
+        sender ! RemoteEdit(id, combined)
+      }
     case Edit(id,op,rev) =>
-      log.info("applying edit")
+      log.debug("applying edit")
       server.applyOperation(op,rev) match {
         case Success(op) =>
           sender ! AcknowledgeEdit(id)
