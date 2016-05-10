@@ -1,12 +1,10 @@
 package net.flatmap.js.codemirror
 
-import org.scalajs.dom.raw.{ Event, Element, HTMLElement, HTMLTextAreaElement }
+import org.scalajs.dom.raw.{Element, Event, HTMLElement, HTMLTextAreaElement}
+
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
-import scala.scalajs.js.annotation.JSExport
-import scala.scalajs.js.annotation.JSExportDescendentObjects
-import scala.scalajs.js.RegExp
-import scala.scalajs.js.UndefOr
+import scala.scalajs.js.annotation._
+import scala.scalajs.js.{RegExp, UndefOr, |}
 
 @JSName("CodeMirror")
 @js.native
@@ -32,6 +30,8 @@ object CodeMirror extends js.Object with WithEvents {
   def extendMode[S](mode: String, extensions: Mode[S]): Unit = js.native
   
   def commands: CodeMirrorCommands = js.native
+
+  def Doc(test: String, mode: js.Any, firstLineNumber: Int = js.native): Doc = js.native
 }
 
 @js.native
@@ -299,13 +299,18 @@ trait WithEvents extends js.Object {
   def off(eventName: String, handler: js.Function2[CodeMirror,Event, Unit]): Unit = js.native
 }
 
-@JSName("Doc")
+@ScalaJSDefined
+class LinkedDocOptions(
+  val sharedHist: UndefOr[Boolean] = js.undefined,
+  val from: UndefOr[Int] = js.undefined,
+  val to: UndefOr[Int] = js.undefined,
+  val mode: UndefOr[String | js.Object] = js.undefined) extends js.Object
+
 @js.native
-class Doc protected () extends DocEditorCommon with WithEvents {
-  def this(text: String, mode: js.Any = js.native, firstLineNumber: Int = js.native) = this()
+trait Doc extends DocEditorCommon with WithEvents {
   def getEditor(): CodeMirror = js.native
   def copy(copyHistory: Boolean = js.native): Doc = js.native
-  
+  def linkedDoc(options: LinkedDocOptions): Doc = js.native
 }
 
 @js.native
