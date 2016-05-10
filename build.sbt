@@ -17,9 +17,9 @@ lazy val server = (project in file("modules/cobra-server"))
     libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7",
     libraryDependencies += "org.webjars" % "webjars-locator" % "0.31"
-  ).dependsOn(commonJVM, clientWeb)
+  ).dependsOn(commonJVM, clientAssets)
 
-lazy val clientWeb  = (project in file("modules/cobra-client"))
+lazy val clientAssets  = (project in file("modules/cobra-client"))
   .enablePlugins(SbtWeb,PlayScalaJS)
   .settings(commonSettings :_*)
   .settings(
@@ -36,7 +36,8 @@ lazy val clientWeb  = (project in file("modules/cobra-client"))
     name := "cobra.client.assets",
     moduleName := "cobra-client",
     includeFilter in (Assets, LessKeys.less) := "cobra.less",
-    libraryDependencies <++= webjarDependenciesOf(client)
+    libraryDependencies <++= webjarDependenciesOf(client),
+    libraryDependencies += "org.webjars" % "octicons" % "3.5.0"
   )
 
 lazy val client     = (project in file("modules/cobra-client"))
