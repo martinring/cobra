@@ -36,3 +36,22 @@ code {
     display: none;
   }
 }
+
+#connection {
+  position: fixed;
+  z-index: 100000;
+  top: 32px;
+  right: 32px;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  vertical-align: middle;
+  opacity: 1;
+  color: crimson;
+  transition: opacity 0.5s ease;
+  pointer-events: unset;
+  &.online {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
