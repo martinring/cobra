@@ -65,6 +65,15 @@ trait NodeSeqQuery extends EventSource[Node] { self =>
     x
   }
 
+  def text: String = elements.head.textContent
+  def text_=(value: String): Unit = elements.foreach(_.textContent = value)
+
+  def text_=(value: Future[String]): Future[String] = value.map { x =>
+    elements.foreach(_.textContent = x)
+    x
+  }
+
+
   def attribute(name: String): Option[String] = if (elements.head.hasAttribute(name)) Some(elements.head.getAttribute(name)) else None
 
   def title: String = elements.head.getAttribute("title")
