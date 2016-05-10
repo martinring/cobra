@@ -2,19 +2,21 @@ package net.flatmap.cobra
 
 import java.io.File
 
-import akka.NotUsed
+import akka.{Done, NotUsed}
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message}
 import akka.stream.scaladsl._
 import akka.util.ByteString
+import akka.pattern.ask
 
 import scala.io
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem, PoisonPill}
 import akka.event.{LogSource, Logging}
-import akka.http.scaladsl.model.StatusCodes
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, OverflowStrategy}
 import com.typesafe.config.ConfigFactory
 import org.webjars.WebJarAssetLocator
 
+import scala.collection.mutable
+import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 object CobraServer {
@@ -48,11 +50,13 @@ class CobraServer(val directory: File) {
   import akka.http.scaladsl.model.ContentType
   import akka.http.scaladsl.model.{HttpEntity, HttpCharsets, MediaTypes}
 
-  implicit val system = ActorSystem("cobra")
+  implicit val system = ActorSystem(directory.getName)
   implicit val materializer = ActorMaterializer()
   import system.dispatcher
 
   val locator = new WebJarAssetLocator()
+
+  val documents = mutable.Map.empty[String,ActorRef]
 
   val index = io.Source.fromInputStream(
     getClass.getClassLoader.getResourceAsStream(locator.getFullPath("cobra-client","index.html"))
@@ -62,7 +66,7 @@ class CobraServer(val directory: File) {
     .replaceAll("""\{ *theme\.slides *\}""",slidesTheme)
     .replaceAll("""\{ *theme\.code *\}""",codeTheme)
 
-  val routes = get {
+  def routes = get {
     pathSingleSlash {
       complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
     } ~
@@ -77,19 +81,36 @@ class CobraServer(val directory: File) {
     }
   } ~ getFromDirectory(directory.getPath)
 
-  val deserialize: PartialFunction[Message,ClientMessage] = {
+  def deserialize: PartialFunction[Message,ClientMessage] = {
     case BinaryMessage.Strict(bytes) => ClientMessage.read(bytes.asByteBuffer)
     case other => sys.error(s"incompatible message from client: '$other'")
   }
 
-  val handleRequest: ClientMessage => Source[ServerMessage,NotUsed] = {
+  def handleRequest(client: ActorRef): ClientMessage => Source[ServerMessage,NotUsed] = {
     case HeartBeat => Source.single(HeartBeat)
+    case msg@InitDoc(id,content,mode) =>
+      documents.get(id).fold[Unit] {
+        log.info(s"initializing new ${mode.name} document '$id'")
+        val doc = system.actorOf(SnippetServer.props, id)
+        doc.tell(msg, client)
+        documents += id -> doc
+      } { case doc =>
+        doc.tell(msg,client)
+      }
+      Source.empty
+    case msg@Edit(id,op,rev) =>
+      documents.get(id).foreach(doc => doc.tell(msg,client))
+      Source.empty
   }
 
-  val socket: Flow[Message, Message, NotUsed] =
+  def socket: Flow[Message, Message, NotUsed] = {
+    val (ref,pub) = Source.actorRef[ServerMessage](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
+    val source = Source.fromPublisher(pub)
     Flow[Message].map(deserialize)
-     .flatMapMerge(1000, handleRequest)
-     .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
+      .flatMapMerge(300, handleRequest(ref)).merge(source)
+      .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
+      .watchTermination(){ (n: NotUsed, f: Future[Done]) => f.foreach(_ => ref ! PoisonPill); NotUsed }
+  }
 
   var binding = Option.empty[Http.ServerBinding]
 

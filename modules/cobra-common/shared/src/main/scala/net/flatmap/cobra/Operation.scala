@@ -27,31 +27,12 @@
  * @see https://github.com/Operational-Transformation/ot.hs
  * @author Martin Ring
  */
-package net.flatmap.collaboration
+package net.flatmap.cobra
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-sealed trait Action[+T] {
-  override def toString = this match {
-    case Retain(n) => n.toString
-    case Insert(s) => "\""+s+"\""
-    case Delete(n) => (-n).toString
-  }
-}
-
-/** Skip the next `n` positions */
-@SerialVersionUID(1L)
-case class Retain(n: Int) extends Action[Nothing] { require(n>=0) }
-/** Insert the given text at the current position */
-@SerialVersionUID(1L)
-case class Insert[T](s: Seq[T]) extends Action[T]
-/** Delete the next `n` characters */
-@SerialVersionUID(1L)
-case class Delete(n: Int) extends Action[Nothing] { require(n>=0) }
-
-@SerialVersionUID(1L)
-case class Operation[+T](actions: List[Action[T]]) extends AnyVal {
+case class Operation[+T](actions: List[Action[T]]) {
   override def toString = "[" + actions.mkString(",") + "]"
 }
 

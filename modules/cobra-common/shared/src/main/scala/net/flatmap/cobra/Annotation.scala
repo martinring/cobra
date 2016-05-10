@@ -21,7 +21,7 @@
  **  along with Clide.  If not, see <http://www.gnu.org/licenses/>.           **
  \*                                                                           */
 
-package net.flatmap.collaboration
+package net.flatmap.cobra
 
 import scala.annotation.tailrec
 import scala.util._
@@ -32,13 +32,13 @@ import scala.util._
 sealed trait Annotation {
   val length: Int
   def withLength(n: Int): Annotation = this match {
-    case Plain(_) => Plain(n)
+    case Empty(_) => Empty(n)
     case Annotate(_,c) => Annotate(n,c)
   }
 }
 
 @SerialVersionUID(1L)
-case class Plain(length: Int) extends Annotation {
+case class Empty(length: Int) extends Annotation {
   override def toString = length.toString
 }
 
@@ -83,7 +83,7 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
 
   def positions(tpe: (AnnotationType.Value,String)): List[Int] = {
     val (_,result) = ((0,List.empty[Int]) /: annotations) {
-      case ((offset,ps),Plain(n)) => (offset+n,ps)
+      case ((offset,ps),Empty(n)) => (offset+n,ps)
       case ((offset,ps),Annotate(n,c)) =>
         if (c.contains(tpe)) (offset+n,offset::ps)
         else (offset+n,ps)
@@ -93,7 +93,7 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
 
   def positions(tpe: AnnotationType.Value): List[(Int,String)] = {
     val (_,result) = ((0,List.empty[(Int,String)]) /: annotations) {
-      case ((offset,ps),Plain(n)) => (offset+n,ps)
+      case ((offset,ps),Empty(n)) => (offset+n,ps)
       case ((offset,ps),Annotate(n,c)) =>
         c.find(_._1 == tpe).fold(offset+n,ps) {
           case (_,value) => (offset+n,(offset,value)::ps)
@@ -119,8 +119,8 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
 
   def plain(n: Int): Annotations = if (n > 0) {
     annotations.lastOption match {
-      case Some(Plain(m)) => Annotations(annotations.init :+ Plain(n+m), responses)
-      case _ => Annotations(annotations :+ Plain(n), responses)
+      case Some(Empty(m)) => Annotations(annotations.init :+ Empty(n+m), responses)
+      case _ => Annotations(annotations :+ Empty(n), responses)
     }
   } else this
 
@@ -129,7 +129,7 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
 
   def :+ (a: Annotation): Annotations = {
     (annotations.lastOption,a) match {
-      case (Some(Plain(n)),Plain(m)) => Annotations(annotations.init :+ Plain(n+m), responses)
+      case (Some(Empty(n)),Empty(m)) => Annotations(annotations.init :+ Empty(n+m), responses)
       case (Some(Annotate(n,c)),Annotate(m,d)) if c == d => Annotations(annotations.init :+ Annotate(n+m,c), responses)
       case _ => Annotations(annotations :+ a, responses)
     }
@@ -137,7 +137,7 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
 
   def ++ (a: Annotations): Annotations = {
     (annotations.lastOption, a.annotations.headOption) match {
-      case (Some(Plain(n)),Some(Plain(m))) => Annotations(annotations.init ++ (Plain(n+m) +: a.annotations.tail), responses)
+      case (Some(Empty(n)),Some(Empty(m))) => Annotations(annotations.init ++ (Empty(n+m) +: a.annotations.tail), responses)
       case (Some(Annotate(n,c)),Some(Annotate(m,d))) if c == d => Annotations(annotations.init ++ (Annotate(n+m,c) +: a.annotations.tail), responses)
       case _ => Annotations(annotations ++ a.annotations, responses)
     }
@@ -151,8 +151,8 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
 
 object Annotations {
   private def addPlain(n: Int, as: List[Annotation]): List[Annotation] = as match {
-    case Plain(m)::xs => Plain(n+m)::xs
-    case xs if n > 0 => Plain(n)::xs
+    case Empty(m)::xs => Empty(n+m)::xs
+    case xs if n > 0 => Empty(n)::xs
     case _ => as
   }
 
@@ -162,12 +162,12 @@ object Annotations {
   }
 
   private def add(a: Annotation, as: List[Annotation]): List[Annotation] = a match {
-    case Plain(n) => addPlain(n,as)
+    case Empty(n) => addPlain(n,as)
     case Annotate(n,c) => addAnnotate(n,c,as)
   }
 
   private def addWithLength(n: Int, a: Annotation, as: List[Annotation]): List[Annotation] = a match {
-    case Plain(_)      => addPlain(n,as)
+    case Empty(_)      => addPlain(n,as)
     case Annotate(_,c) => addAnnotate(n,c,as)
   }
 
@@ -180,11 +180,11 @@ object Annotations {
         case (a,Retain(m)) =>
           if (a.length < m)       loop(as,Retain(m-a.length)::bs,add(a,xs))
           else if (a.length == m) loop(as,bs,add(a,xs))
-          else                    loop(addWithLength(a.length-m,a,as),bs,addWithLength(m,a,xs))        
-        case (a,Delete(d)) => 
+          else                    loop(addWithLength(a.length-m,a,as),bs,addWithLength(m,a,xs))
+        case (a,Delete(d)) =>
           if (a.length < d)       loop(as,Delete(d-a.length)::bs,xs)
           else if (a.length == d) loop(as,bs,xs)
-          else                    loop(addWithLength(a.length-d,a,as),bs,xs)        
+          else                    loop(addWithLength(a.length-d,a,as),bs,xs)
       }
       case (Nil,Insert(i)::bs,xs) => loop(Nil,bs,addPlain(i.length,xs))
       case _ =>
@@ -199,15 +199,15 @@ object Annotations {
     def loop(as: List[Annotation], bs: List[Annotation], xs: List[Annotation]): Try[List[Annotation]] = (as,bs,xs) match {
       case (Nil,Nil,xs) => Success(xs)
       case ((a::as),(b::bs),xs) => (a,b) match {
-        case (Plain(n),Plain(m)) => 
+        case (Empty(n),Empty(m)) =>
           if (n < m)       loop(as,addPlain(m-n,bs),addPlain(n,xs))
           else if (n == m) loop(as,bs,addPlain(n,xs))
           else             loop(addPlain(n-m,as),bs,addPlain(m,xs))
-        case (Plain(n),Annotate(m,c)) => 
+        case (Empty(n),Annotate(m,c)) =>
           if (n < m)       loop(as,addAnnotate(m-n,c,bs),addAnnotate(n,c,xs))
           else if (n == m) loop(as,bs,addAnnotate(n,c,xs))
-          else             loop(addPlain(n-m,as),bs,addAnnotate(m,c,xs))        
-        case (Annotate(n,c),Plain(m)) => 
+          else             loop(addPlain(n-m,as),bs,addAnnotate(m,c,xs))
+        case (Annotate(n,c),Empty(m)) =>
           if (n < m)       loop(as,addPlain(m-n,bs),addAnnotate(n,c,xs))
           else if (n == m) loop(as,bs,addAnnotate(n,c,xs))
           else             loop(addAnnotate(n-m,c,as),bs,addAnnotate(m,c,xs))        

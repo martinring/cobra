@@ -5,6 +5,7 @@ import net.flatmap.js.codemirror.{CodeMirror, CodeMirrorConfiguration}
 import net.flatmap.js.reveal.{Reveal, RevealEvents, RevealOptions}
 import net.flatmap.js.util._
 
+import scala.collection.mutable
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js._
 
@@ -15,8 +16,14 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
   deserialize = ServerMessage.read,
   serialize = ClientMessage.write
 ) {
+  private val handlers = mutable.Map.empty[String,Set[ServerMessage with SnippetMessage => Unit]].withDefaultValue(Set.empty)
+
+  def listenOn(id: String)(f: PartialFunction[ServerMessage with SnippetMessage, Unit]) = {
+    handlers(id) += f
+  }
+
   def receive = {
-    case _ =>
+    case msg: SnippetMessage => handlers(msg.id).foreach(_(msg))
   }
 
   var heartBeatAcknowledged: Boolean = true
