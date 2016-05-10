@@ -102,7 +102,7 @@ abstract class SocketApp[I,O](
   private def socketClosed(): Unit = {
     this.socket = None
     console.log("socket closed")
-    $"#offline".elements.foreach(_.setAttribute("style", "opacity:1;display:block"))
+    $"#connection".classes.remove("online")
     postStop()
     lazy val retry: Int = window.setInterval(() => {
       val xhr = new XMLHttpRequest()
