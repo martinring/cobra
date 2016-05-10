@@ -1,16 +1,19 @@
+<code class="executable hidden scala" id="person">
+    import scala.io._
+
+    /// begin #person-def
+    /// begin #blub
+    case class Person(name: String, age: Int)
+    /// end #person-def
+
+    val p = Person("Martin",29)
+    /// end #blub
+    println(p)
+</code>
+
+<code class="hidden" id="person-hs" src="src/Example.hs"></code>
+
 <section>
-    <code class="scala executable hidden" id="person">
-        import scala.io._
-
-        /// begin #person-def
-        /// begin #blub
-        case class Person(name: String, age: Int)
-        /// end #person-def
-
-        val p = Person("Martin",29)
-        /// end #blub
-        println(p)
-    </code>
     <h2>Introducing Cobra</h2>
     <code src="#person-def"></code>
     <code src="#blub"></code>
@@ -18,7 +21,7 @@
 
 <section>
     <h2>External Sources</h2>
-    <code class="scala condense block" src="src/Test.scala"></code>
+    <code class="condense block" src="src/Test.scala"></code>
     <ul>
         <li>Inline <code class="scala">case class Person()</code>!</li>
     </ul>
@@ -27,7 +30,7 @@
 <section>
     <h2>Bla</h2>
     <ul>
-        <li>It</li>
+        <li><code src="#person-def-hs"></code></li>
         <li>Just</li>
         <li>Works</li>
     </ul>

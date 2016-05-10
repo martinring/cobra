@@ -2,7 +2,7 @@ package net.flatmap.cobra
 
 import net.flatmap.js.codemirror.{CodeMirror, Doc, LinkedDocOptions}
 import net.flatmap.js.reveal.Reveal
-import org.scalajs.dom.{Element, raw}
+import org.scalajs.dom.{Element, raw, console}
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
 
@@ -12,16 +12,33 @@ import scala.scalajs.js
 import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
+object Comments {
+  def line(start: String) = new Regex(s"^\\s*$start\\s*(begin|end)\\s*\\#(\\w[\\w\\d-_]*)\\s*$$")
+  def block(start: String, end: String) = new Regex(s"^\\s*$start\\s*(begin|end)\\s*\\#(\\w[\\w\\d-_]*)\\s*$end\\s*$$")
+}
+
+sealed abstract class Mode(val name: String, val mime: String, val regex: Regex, val fileendings: Set[String])
+case object Scala extends Mode("scala","text/x-scala",Comments.line("\\/\\/\\/+"), Set("scala"))
+case object Haskell extends Mode("haskell","text/x-haskell",Comments.line("---+"), Set("hs"))
+case object Isabelle extends Mode("isabelle","text/x-isabelle",Comments.line("---+"), Set("thy"))
+
 /**
   * Created by martin on 12.02.16.
   */
 object Code {
+  val modes = Set(Scala,Haskell,Isabelle)
+
   def loadDelayed(root: NodeSeqQuery): Future[Seq[String]] = Future.sequence {
     root.query(s"code[src]:not([src^='#'])").elements.map { code =>
       val src = code.getAttribute("src")
       code.removeAttribute("src")
+      val ext = src.split("\\.").last
+      modes.find(_.fileendings.contains(ext)).foreach(code.classes += _.name)
+      println(s"resolving '$src'")
       code.html = Ajax.get(src).filter(_.status == 200).map(_.responseText).recover {
-        case NonFatal(e) => s"could not load '$src'"
+        case NonFatal(e) =>
+          console.error(s"could not load source from '$src'")
+          s"could not load source from '$src'"
       }
     }
   }
@@ -34,9 +51,7 @@ object Code {
     }
   }
 
-  def snippetRegex(comment: String = "\\/\\/\\/") = new Regex(s"^\\s*$comment\\s*(begin|end)\\s*\\#(\\w[\\w\\d-_]*)\\s*$$")
-
-  def subdocuments(root: Doc, Regex: Regex = snippetRegex()): Map[String,Doc] = {
+  def subdocuments(root: Doc, Regex: Regex): Map[String,Doc] = {
     var line = root.firstLine()
     var starts = Map.empty[String,Int]
     var ends = Map.empty[String,Int]
@@ -63,15 +78,18 @@ object Code {
     }
   }
 
+  def mode(code: Element): Option[Mode] =
+    modes.find(mode => code.classes.contains(mode.name))
+
   def initializeDocuments(root: NodeSeqQuery): Map[String,Doc] = {
     root.query("code").elements.flatMap { code =>
-      val mode =
-        if (code.classes.contains("scala")) "text/x-scala"
-        else if (code.classes.contains("haskell")) "text/x-haskell"
-        else if (code.classes.contains("isabelle")) "text/x-isabelle"
-        else "text/plain"
-      val doc = CodeMirror.Doc(stripIndentation(code.textContent),mode)
-      code.attribute("id").map(_ -> doc) ++ subdocuments(doc)
+      mode(code).fold {
+        val doc = CodeMirror.Doc(stripIndentation(code.textContent),"text/plain")
+        code.attribute("id").map(_ -> doc).toIterable
+      } { mode =>
+        val doc = CodeMirror.Doc(stripIndentation(code.textContent),mode.mime)
+        code.attribute("id").map(_ -> doc) ++ subdocuments(doc,mode.regex)
+      }
     }.toMap
   }
 
@@ -84,7 +102,7 @@ object Code {
             println(src.tail)
             println(documents.get(src.tail).map(_.getValue()))
             src.tail
-        }.flatMap(documents.get)).getOrElse(CodeMirror.Doc(code.textContent,"text/x-scala"))
+        }.flatMap(documents.get)).getOrElse(CodeMirror.Doc(code.textContent, mode(code).map(_.mime).getOrElse("text/plain") : String))
         code.innerHTML = ""
         val editor = CodeMirror(code)
         editor.swapDoc(doc)

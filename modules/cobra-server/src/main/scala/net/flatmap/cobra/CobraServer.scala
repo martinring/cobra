@@ -66,6 +66,9 @@ class CobraServer(val directory: File) {
       complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
     } ~
     path("socket")(handleWebSocketMessagesForProtocol(socket,"cobra")) ~
+    path("lib" / "codemirror" / "theme" / "default.css") {
+      complete(HttpEntity(ContentType(MediaTypes.`text/css`, HttpCharsets.`UTF-8`), ""))
+    } ~
     path("lib" / PathMatchers.Segment / PathMatchers.Rest) {
       (segment,path) => getFromResource(locator.getFullPath(segment,path))
     }
