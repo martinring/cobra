@@ -65,6 +65,8 @@ trait NodeSeqQuery extends EventSource[Node] { self =>
     x
   }
 
+  def attribute(name: String): Option[String] = if (elements.head.hasAttribute(name)) Some(elements.head.getAttribute(name)) else None
+
   def title: String = elements.head.getAttribute("title")
   def title_=(value: String): Unit = elements.foreach(_.setAttribute("title",value))
 

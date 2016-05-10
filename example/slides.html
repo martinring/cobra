@@ -2,20 +2,26 @@
     <code class="scala executable hidden" id="person">
         import scala.io._
 
-        <snippet id="person-def">
+        /// begin #person-def
+        /// begin #blub
         case class Person(name: String, age: Int)
-        </snippet>
+        /// end #person-def
 
-        val p = <snippet id="person-instance">Person("Martin",29)</snippet>
+        val p = Person("Martin",29)
+        /// end #blub
         println(p)
     </code>
     <h2>Introducing Cobra</h2>
-    <code class="scala" src="#person-def"></code>
+    <code src="#person-def"></code>
+    <code src="#blub"></code>
 </section>
 
 <section>
     <h2>External Sources</h2>
-    <code class="scala condense" src="src/Test.scala"></code>
+    <code class="scala condense block" src="src/Test.scala"></code>
+    <ul>
+        <li>Inline <code class="scala">case class Person()</code>!</li>
+    </ul>
 </section>
 
 <section>

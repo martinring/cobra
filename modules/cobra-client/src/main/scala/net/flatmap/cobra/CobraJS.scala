@@ -23,9 +23,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       slides <- $"#slides" <<< "slides.html"
       delayedSnippets <- Code.loadDelayed(slides)
     } {
-      val snippets = Code.getCodeSnippets(slides)
-      Code.injectSnippets(slides,snippets)
-      val editors = Code.initializeEditors(slides)
+      val documents = Code.initializeDocuments(slides)
+      val editors = Code.initializeEditors(slides, documents)
       val settings = RevealOptions()
       settings.history = true
       settings.minScale = 1
