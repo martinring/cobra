@@ -10,11 +10,12 @@ import akka.util.ByteString
 import scala.io
 import akka.actor.ActorSystem
 import akka.event.{LogSource, Logging}
+import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import org.webjars.WebJarAssetLocator
 
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 object CobraServer {
   implicit val logSource: LogSource[CobraServer] = new LogSource[CobraServer] {
@@ -66,11 +67,13 @@ class CobraServer(val directory: File) {
       complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
     } ~
     path("socket")(handleWebSocketMessagesForProtocol(socket,"cobra")) ~
-    path("lib" / "codemirror" / "theme" / "default.css") {
-      complete(HttpEntity(ContentType(MediaTypes.`text/css`, HttpCharsets.`UTF-8`), ""))
-    } ~
     path("lib" / PathMatchers.Segment / PathMatchers.Rest) {
-      (segment,path) => getFromResource(locator.getFullPath(segment,path))
+      (segment,path) =>
+        val res = Try(locator.getFullPath(segment,path))
+        res.toOption.fold[Route](reject)(getFromResource)
+    } ~
+    path("lib" / "codemirror" / "theme" / "default.css") {
+      complete(HttpEntity(ContentType(MediaTypes.`text/css`, HttpCharsets.`UTF-8`), "/* default cm theme */"))
     }
   } ~ getFromDirectory(directory.getPath)
 
