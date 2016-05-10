@@ -22,6 +22,7 @@ object CodeMirror extends js.Object with WithEvents {
   def Pos(line: Int, ch: Int = js.native): Position = js.native
   def changeEnd(change: js.Any): Position = js.native
   def copyState[S](mode: Mode[S], state: S): S = js.native
+  def signal(target: js.Any, name: String, args: js.Any*) = js.native
 
   def Pass: Nothing = js.native
   def defineMode[S](name: String, constructor: js.Function2[CodeMirrorConfiguration, js.Any, Mode[S]]): Unit = js.native
@@ -204,7 +205,7 @@ trait DocEditorCommon extends js.Object {
   /** Get the text between the given points in the editor, which should be {line, ch} objects. An optional third argument can be given to indicate the line separator string to use (defaults to "\n"). */
   def getRange(from: Position, to: Position, separator: String = js.native): String = js.native
   /** Replace the part of the document between from and to with the given string. from and to must be {line, ch} objects. to can be left off to simply insert the string at position from. When origin is given, it will be passed on to "change" events, and its first letter will be used to determine whether this change can be merged with previous history events, in the way described for selection origins. */
-  def replaceRange(replacement: String, from: Position, to: Position, origin: String = js.native): Unit = js.native
+  def replaceRange(replacement: String, from: Position, to: Position = js.native, origin: String = js.native): Unit = js.native
   /** Get the content of line n. */
   def getLine(n: Int): String = js.native
   /** Get the number of lines in the editor. */

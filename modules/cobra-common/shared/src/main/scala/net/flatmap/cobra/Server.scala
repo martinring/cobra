@@ -22,33 +22,53 @@
 **   If not, see <http://www.gnu.org/licenses/>.                              **
 \*                                                                            */
 
-package net.flatmap.collaboration
+package net.flatmap.cobra
 
-import scala.annotation.tailrec
-import scala.util.{Failure, Success, Try}
+import scala.collection.mutable.Buffer
+import scala.util.{Success, Try}
 
-/**
- * @author Martin Ring <martin.ring@dfki.de>
- */
-case class Document[T](content: Seq[T]) extends AnyVal {
-  def apply(op: Operation[T]): Try[Document[T]] = {
-    @tailrec
-    def loop(ops: List[Action[T]], it: Seq[T], ot: Seq[T]): Try[Seq[T]] = (ops,it,ot) match {
-      case (Nil,Seq(),ot) => Success(ot)
-      case (op::ops,it,ot) => op match {
-        case Retain(r) => if (it.length < r)
-            Failure(new Exception("operation can't be applied to the document: operation is longer than the text"))
-          else {
-            val (before,after) = it.splitAt(r)
-            loop(ops,after,ot ++ before)
-          }
-        case Insert(i) => loop(ops,it,ot ++ i)
-        case Delete(d) => if (d > it.length)
-            Failure(new Exception("operation can't be applied to the document: operation is longer than the text"))
-          else loop(ops,it.drop(d),ot)
-      }
-      case _ => Failure(new Exception("operation can't be applied to the document: text is longer than the operation"))
-    }
-    loop(op.actions,content,Seq()).map(new Document(_))
+class Server[T](initialState: Document[T]) {
+  private val history: Buffer[Operation[T]] = Buffer.empty
+  private var state: Document[T] = initialState
+
+  def text = state.content
+  def revision = history.length
+  def getHistory = history.view
+
+  /**
+   * an operation arrives from a client
+    *
+    * @param rev the revision the client refers to
+   */
+  def applyOperation(operation: Operation[T], rev: Long): Try[Operation[T]] = {
+    val result = for {
+	  concurrentOps <- Try {
+	    require((0 to revision) contains rev, "invalid revision: " + rev)
+	    history.view(rev.toInt, revision) // TODO: Long Revisions
+	  }
+	  operation <- concurrentOps.foldLeft(Success(operation): Try[Operation[T]]) {
+	    case (a,b) => a.flatMap(a => Operation.transform(a,b).map(_._1)) }
+	  nextState <- state(operation)
+	} yield (nextState, operation)
+	result.map {
+	  case (nextState,operation) =>
+	    history.append(operation)
+	    state = nextState
+	    operation
+	}
   }
+
+  /**
+   * transform a client annotation to fit the most recent revision
+    *
+    * @param rev the revision the client refers to
+   */
+  def transformAnnotation(rev: Int, as: Annotations): Try[Annotations] = for {
+      concurrentOps <- Try {
+        require((0 to revision) contains rev, "invalid revision: " + rev)
+        history.view(rev, revision)
+      }
+      annotation <- concurrentOps.foldLeft(Success(as): Try[Annotations]) {
+        case (a,b) => a.flatMap(a => Annotations.transform(a,b)) }
+  } yield annotation
 }

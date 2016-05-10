@@ -1,4 +1,4 @@
-package net.flatmap.collaboration
+package net.flatmap.cobra
 
 case class Client[T](val rev: Long, pending: Option[Operation[T]] = None, buffer: Option[Operation[T]] = None) {
   def localEdit(operation: Operation[T]): (Boolean, Client[T]) = 
