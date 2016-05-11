@@ -18,6 +18,7 @@ import org.webjars.WebJarAssetLocator
 import scala.collection.mutable
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
+import scala.collection.JavaConversions._
 
 object CobraServer {
   implicit val logSource: LogSource[CobraServer] = new LogSource[CobraServer] {
@@ -43,6 +44,10 @@ class CobraServer(val directory: File) {
 
   val interface = config.getString("binding.interface")
   val port = config.getInt("binding.port")
+
+  val env = config.getConfig("env").entrySet().toIterable.map { kv =>
+    kv.getKey.toUpperCase() -> kv.getValue.unwrapped().toString
+  }.toMap
 
   import akka.http.scaladsl.Http
   import akka.http.scaladsl.server._
@@ -93,7 +98,7 @@ class CobraServer(val directory: File) {
     case msg@InitDoc(id,content,mode) =>
       documents.get(id).fold[Unit] {
         log.info(s"initializing new ${mode.name} document '$id'")
-        val doc = system.actorOf(SnippetServer.props, id)
+        val doc = system.actorOf(SnippetServer.props(env), id)
         doc.tell(msg, client)
         documents += id -> doc
       } { case doc =>

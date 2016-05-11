@@ -21,70 +21,65 @@
  **  along with Clide.  If not, see <http://www.gnu.org/licenses/>.           **
  \*                                                                           */
 
-package net.flatmap.cobra
+package net.flatmap.collaboration
 
 import scala.annotation.tailrec
 import scala.util._
 
-/**
- * @author Martin Ring
- */
+
 sealed trait Annotation {
   val length: Int
   def withLength(n: Int): Annotation = this match {
     case Empty(_) => Empty(n)
-    case Annotate(_,c) => Annotate(n,c)
+    case Annotated(_,c) => Annotated(n,c)
   }
 }
 
-@SerialVersionUID(1L)
 case class Empty(length: Int) extends Annotation {
   override def toString = length.toString
 }
 
-object AnnotationType extends Enumeration {
-  /** supported values are ... TODO */
-  val Class          = Value("c")
-  /** currently supports "running", "finished" and "failed" */
-  val Progress      = Value("ls")
-  /** can be set to arbitary content and will set a html title attribute */
-  val Tooltip        = Value("t")
-  /** can be html */
-  val ErrorMessage   = Value("e")
-  /** can be html */
-  val WarningMessage = Value("w")
-  /** can be html */
-  val InfoMessage    = Value("i")
-  /** can be html */
-  val Output         = Value("o")
-  /** must be an url-safe document-unique id */
-  val Entity         = Value("n")
-  /** must be an id of the format
-   *
-   *  "<id>" for local references (as marked with Entity)
-   *  "/<file>/<id>" for references in the same project
-   *  "//<url>" for external urls
-   */
-  val Ref            = Value("l")
-  /** can be used to substitute a text span with some text or html. must not be overlapping. */
-  val Substitution   = Value("s")
-  /** not supported yet */
-  val HelpRequest    = Value("h")
-}
-
-@SerialVersionUID(1L)
-case class Annotate(length: Int, content: List[(AnnotationType.Value,String)]) extends Annotation {
+case class Annotated(length: Int, content: List[(AnnotationType.Value,String)]) extends Annotation {
   override def toString = length.toString + ":{" + content.map{case(k,v)=>k+": " +v}.mkString(",") + "}"
 }
 
-@SerialVersionUID(1L)
+object AnnotationType extends Enumeration {
+  /** supported values are ... TODO */
+  val Class = Value
+  /** currently supports "running", "finished" and "failed" */
+  val Progress = Value
+  /** can be set to arbitary content and will set a html title attribute */
+  val Tooltip = Value
+  /** can be html */
+  val ErrorMessage = Value
+  /** can be html */
+  val WarningMessage = Value
+  /** can be html */
+  val InfoMessage = Value
+  /** can be html */
+  val Output = Value
+  /** must be an url-safe document-unique id */
+  val Entity = Value
+  /** must be an id of the format
+    *
+    *  "<id>" for local references (as marked with Entity)
+    *  "/<file>/<id>" for references in the same project
+    *  "//<url>" for external urls
+    */
+  val Ref = Value
+  /** can be used to substitute a text span with some text or html. must not be overlapping. */
+  val Substitution = Value
+  /** not supported yet */
+  val HelpRequest = Value
+}
+
 case class Annotations(annotations: List[Annotation] = Nil, responses: List[(String,String)] = Nil) {
   override def toString = annotations.mkString(";")
 
   def positions(tpe: (AnnotationType.Value,String)): List[Int] = {
     val (_,result) = ((0,List.empty[Int]) /: annotations) {
       case ((offset,ps),Empty(n)) => (offset+n,ps)
-      case ((offset,ps),Annotate(n,c)) =>
+      case ((offset,ps),Annotated(n,c)) =>
         if (c.contains(tpe)) (offset+n,offset::ps)
         else (offset+n,ps)
     }
@@ -94,7 +89,7 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
   def positions(tpe: AnnotationType.Value): List[(Int,String)] = {
     val (_,result) = ((0,List.empty[(Int,String)]) /: annotations) {
       case ((offset,ps),Empty(n)) => (offset+n,ps)
-      case ((offset,ps),Annotate(n,c)) =>
+      case ((offset,ps),Annotated(n,c)) =>
         c.find(_._1 == tpe).fold(offset+n,ps) {
           case (_,value) => (offset+n,(offset,value)::ps)
         }
@@ -104,16 +99,8 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
 
   def annotate(n: Int, c: List[(AnnotationType.Value,String)]): Annotations = if (n >= 0) {
     annotations.lastOption match {
-      case Some(Annotate(m,c2)) if c == c2 => Annotations(annotations.init :+ Annotate(n+m,c), responses)
-      case _ => Annotations(annotations :+ Annotate(n,c.toList), responses)
-    }
-  } else this
-
-  @deprecated("use overloaded annotate with list instead", "2014-01-30")
-  def annotate(n: Int, c: Set[(AnnotationType.Value,String)]): Annotations = if (n >= 0) {
-    annotations.lastOption match {
-      case Some(Annotate(m,c2)) if c == c2 => Annotations(annotations.init :+ Annotate(n+m,c.toList), responses)
-      case _ => Annotations(annotations :+ Annotate(n,c.toList), responses)
+      case Some(Annotated(m,c2)) if c == c2 => Annotations(annotations.init :+ Annotated(n+m,c), responses)
+      case _ => Annotations(annotations :+ Annotated(n,c.toList), responses)
     }
   } else this
 
@@ -130,7 +117,7 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
   def :+ (a: Annotation): Annotations = {
     (annotations.lastOption,a) match {
       case (Some(Empty(n)),Empty(m)) => Annotations(annotations.init :+ Empty(n+m), responses)
-      case (Some(Annotate(n,c)),Annotate(m,d)) if c == d => Annotations(annotations.init :+ Annotate(n+m,c), responses)
+      case (Some(Annotated(n,c)),Annotated(m,d)) if c == d => Annotations(annotations.init :+ Annotated(n+m,c), responses)
       case _ => Annotations(annotations :+ a, responses)
     }
   }
@@ -138,7 +125,7 @@ case class Annotations(annotations: List[Annotation] = Nil, responses: List[(Str
   def ++ (a: Annotations): Annotations = {
     (annotations.lastOption, a.annotations.headOption) match {
       case (Some(Empty(n)),Some(Empty(m))) => Annotations(annotations.init ++ (Empty(n+m) +: a.annotations.tail), responses)
-      case (Some(Annotate(n,c)),Some(Annotate(m,d))) if c == d => Annotations(annotations.init ++ (Annotate(n+m,c) +: a.annotations.tail), responses)
+      case (Some(Annotated(n,c)),Some(Annotated(m,d))) if c == d => Annotations(annotations.init ++ (Annotated(n+m,c) +: a.annotations.tail), responses)
       case _ => Annotations(annotations ++ a.annotations, responses)
     }
   }
@@ -157,31 +144,31 @@ object Annotations {
   }
 
   private def addAnnotate(n: Int, c: List[(AnnotationType.Value,String)], as: List[Annotation]): List[Annotation] = as match {
-    case Annotate(m,c2)::xs if c2 == c => Annotate(n+m,c)::xs
-    case xs => Annotate(n,c)::xs
+    case Annotated(m,c2)::xs if c2 == c => Annotated(n+m,c)::xs
+    case xs => Annotated(n,c)::xs
   }
 
   private def add(a: Annotation, as: List[Annotation]): List[Annotation] = a match {
     case Empty(n) => addPlain(n,as)
-    case Annotate(n,c) => addAnnotate(n,c,as)
+    case Annotated(n,c) => addAnnotate(n,c,as)
   }
 
   private def addWithLength(n: Int, a: Annotation, as: List[Annotation]): List[Annotation] = a match {
     case Empty(_)      => addPlain(n,as)
-    case Annotate(_,c) => addAnnotate(n,c,as)
+    case Annotated(_,c) => addAnnotate(n,c,as)
   }
 
   def transform[T](a: Annotations, o: Operation[T]): Try[Annotations] = {
     @tailrec
     def loop(as: List[Annotation], bs: List[Action[T]], xs: List[Annotation]): Try[List[Annotation]] = (as,bs,xs) match {
       case (Nil,Nil,xs) => Success(xs)
-      case (aa@(a::as),bb@(b::bs),xs) => (a,b) match {
-        case (a,Insert(i)) => loop(aa,bs,addWithLength(i.length,a,xs))
-        case (a,Retain(m)) =>
+      case (aa@(a::as),bb@(b::bs),xs) => b match {
+        case Insert(i) => loop(aa,bs,addWithLength(i.length,a,xs))
+        case Retain(m) =>
           if (a.length < m)       loop(as,Retain(m-a.length)::bs,add(a,xs))
           else if (a.length == m) loop(as,bs,add(a,xs))
           else                    loop(addWithLength(a.length-m,a,as),bs,addWithLength(m,a,xs))
-        case (a,Delete(d)) =>
+        case Delete(d) =>
           if (a.length < d)       loop(as,Delete(d-a.length)::bs,xs)
           else if (a.length == d) loop(as,bs,xs)
           else                    loop(addWithLength(a.length-d,a,as),bs,xs)
@@ -203,15 +190,15 @@ object Annotations {
           if (n < m)       loop(as,addPlain(m-n,bs),addPlain(n,xs))
           else if (n == m) loop(as,bs,addPlain(n,xs))
           else             loop(addPlain(n-m,as),bs,addPlain(m,xs))
-        case (Empty(n),Annotate(m,c)) =>
+        case (Empty(n),Annotated(m,c)) =>
           if (n < m)       loop(as,addAnnotate(m-n,c,bs),addAnnotate(n,c,xs))
           else if (n == m) loop(as,bs,addAnnotate(n,c,xs))
           else             loop(addPlain(n-m,as),bs,addAnnotate(m,c,xs))
-        case (Annotate(n,c),Empty(m)) =>
+        case (Annotated(n,c),Empty(m)) =>
           if (n < m)       loop(as,addPlain(m-n,bs),addAnnotate(n,c,xs))
           else if (n == m) loop(as,bs,addAnnotate(n,c,xs))
           else             loop(addAnnotate(n-m,c,as),bs,addAnnotate(m,c,xs))        
-        case (Annotate(n,c),Annotate(m,c2)) => 
+        case (Annotated(n,c),Annotated(m,c2)) =>
           if (n < m)       loop(as,addAnnotate(m-n,c2,bs),addAnnotate(n,c ++ c2,xs))
           else if (n == m) loop(as,bs,addAnnotate(n,c ++ c2,xs))
           else             loop(addAnnotate(n-m,c,as),bs,addAnnotate(m,c ++ c2,xs))        

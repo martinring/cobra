@@ -1,5 +1,3 @@
-section \<open>Finite sequences\<close>
-
 theory Seq
 imports Main
 begin
@@ -11,15 +9,15 @@ where
   "conc Empty ys = ys"
 | "conc (Seq x xs) ys = Seq x (conc xs ys)"
 
+(* begin #lemma-conc *)
 fun reverse :: "'a seq \<Rightarrow> 'a seq"
 where
   "reverse Empty = Empty"
 | "reverse (Seq x xs) = conc (reverse xs) (Seq x Empty)"
+(* end #lemma-conc *)
 
-(* begin #lemma-conc *)
 lemma conc_empty: "conc xs Empty = xs"
   by (induct xs) simp_all
-(* end #lemma-conc *)
 
 lemma conc_assoc: "conc (conc xs ys) zs = conc xs (conc ys zs)"
   by (induct xs) simp_all

@@ -27,10 +27,23 @@
  * @see https://github.com/Operational-Transformation/ot.hs
  * @author Martin Ring
  */
-package net.flatmap.cobra
+package net.flatmap.collaboration
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
+
+sealed trait Action[+T]
+
+/** Skip the next `n` positions */
+case class Retain(n: Int) extends Action[Nothing] { require(n>=0) }
+/** Insert the given text at the current position */
+case class Insert[T](s: Seq[T]) extends Action[T]
+/** Delete the next `n` characters */
+case class Delete(n: Int) extends Action[Nothing] { require(n>=0) }
+
+object Action {
+  implicit val charActionPickler = boopickle.Default.compositePickler[Action[Char]]
+}
 
 case class Operation[+T](actions: List[Action[T]]) {
   override def toString = "[" + actions.mkString(",") + "]"

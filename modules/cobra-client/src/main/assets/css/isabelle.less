@@ -1,0 +1,179 @@
+/* outer syntax */
+.cm-s-default {
+  span.sup {
+    font-size: 66%;
+    line-height: 0;
+    vertical-align: super;
+  }
+  span.sub {
+    font-size: 66%;
+    line-height: 0;
+    vertical-align: sub;
+  }
+  span.bold {
+    font-weight: bold;
+  }
+  .symbol {
+    /*font-family: 'AMS', 'Math';*/
+  }
+  span.cm-operator {
+
+  }
+  span.cm-command, span.cm-command {
+    color: blue;
+    font-weight: bold;
+  }
+  span.cm-altstring {
+    background: rgba(0,0,0,0.05);
+  }
+  span.cm-verbatim {
+    /*background: rgba(0,0,0,0.05);*/
+    color: fuchsia;
+  }
+  span.comment {
+    color: fuchsia;
+  }
+  span.cm-malformed {
+    text-decoration: line-through;
+  }
+
+  span.command_span {
+
+  }
+  span.ignored_span {
+
+  }
+  span.malformed_span {
+
+  }
+  /* inner syntax */
+  span.cm-tfree {
+    font-style: italic;
+    color: cadetblue;
+  }
+  span.cm-tvar {
+    color: cadetblue;
+  }
+  span.cm-entity {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  span.cm-free, span.cm-term, span.free, span.term {
+    color: blue;
+  }
+  span.skolem {
+    color: #d2691e
+  }
+  span.bound {
+    color: green
+  }
+  span.var {
+    color: darkorange;
+  }
+  span.numeral {
+
+  }
+  span.literal {
+
+  }
+  span.delimiter, span.control {
+    color: gray;
+  }
+  span.inner_string {
+
+  }
+  span.inner_comment {
+
+  }
+  span.token_range {
+
+  }
+  span.sort {
+
+  }
+  span.typ {
+
+  }
+  span.term {
+
+  }
+  span.prop {
+
+  }
+
+  span.typing {
+
+  }
+
+  span.attribute {
+
+  }
+
+  span.method {
+
+  }
+
+
+  /* embedded source text */
+  span.ML_source {
+
+  }
+  span.doc_source {
+
+  }
+  span.antiq {
+
+  }
+
+    /* ML syntax */
+
+  span.ML_keyword {
+    color: blue
+  }
+  span.ML_delimiter {
+
+  }
+  span.ML_tvar {
+
+  }
+  span.ML_numeral {
+    color: red
+  }
+  span.ML_char {
+    color: crimson
+  }
+  span.ML_string {
+    color: crimson
+  }
+  span.ML_comment {
+    color: #8b0000
+  }
+  span.ML_malform {
+    color: #ff6a6a
+  }
+  span.ML_def {
+
+  }
+  span.ML_open {
+
+  }
+  span.ML_struct {
+
+  }
+  span.ML_typing {
+
+  }
+
+  span.error, span.bad {
+    background-color: fade(red,20%);
+  }
+
+  span.warning {
+    background-color: fade(orange,20%);
+  }
+
+  span.info, span.writeln {
+    background-color: fade(dodgerblue,20%);
+  }
+}

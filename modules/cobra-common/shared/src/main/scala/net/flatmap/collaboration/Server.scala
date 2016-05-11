@@ -22,7 +22,7 @@
 **   If not, see <http://www.gnu.org/licenses/>.                              **
 \*                                                                            */
 
-package net.flatmap.cobra
+package net.flatmap.collaboration
 
 import scala.collection.mutable.Buffer
 import scala.util.{Success, Try}
