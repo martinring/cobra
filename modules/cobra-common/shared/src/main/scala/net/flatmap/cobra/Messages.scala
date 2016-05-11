@@ -35,6 +35,8 @@ case class Edit(id: String, operation: Operation[Char], revision: Long) extends 
 
 case class AcknowledgeEdit(id: String) extends ServerMessage with SnippetMessage
 case class RemoteEdit(id: String, op: Operation[Char]) extends ServerMessage with SnippetMessage
+case class CombinedRemoteEdit(id: String, op: Operation[Char], revisions: Long) extends ServerMessage with SnippetMessage
+case class ResetSnippet(id: String, content: String, revision: Long) extends ServerMessage with SnippetMessage
 
 object ClientMessage {
   def read(bytes: ByteBuffer): ClientMessage = Unpickle[ClientMessage].fromBytes(bytes)

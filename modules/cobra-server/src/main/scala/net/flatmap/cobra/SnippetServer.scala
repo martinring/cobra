@@ -27,7 +27,7 @@ class SnippetServer extends Actor with ActorLogging {
       context.watch(sender)
       context.become(initialized(mode,server,listeners + sender))
       if (server.revision > 0) {
-        sender ! RemoteEdit(id, server.getCombinedHistory)
+        sender ! CombinedRemoteEdit(id, server.getCombinedHistory, server.revision)
       }
     case Edit(id,op,rev) =>
       log.debug("applying edit")
@@ -37,6 +37,7 @@ class SnippetServer extends Actor with ActorLogging {
           (listeners - sender).foreach(_ ! RemoteEdit(id,op))
         case Failure(e) =>
           log.error(e,"could not apply operation")
+          sender ! ResetSnippet(id,server.text.mkString,server.revision)
       }
   }
 }
