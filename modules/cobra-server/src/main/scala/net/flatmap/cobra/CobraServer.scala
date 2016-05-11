@@ -82,10 +82,10 @@ class CobraServer(val directory: File) {
   } ~ getFromDirectory(directory.getPath)
 
   def deserialize: PartialFunction[Message,Source[ClientMessage,NotUsed]] = {
-    case BinaryMessage.Strict(bytes) => Source.single(ClientMessage.read(bytes.asByteBuffer))
+    case BinaryMessage.Strict(bytes) =>
+      Source.single(ClientMessage.read(bytes.asByteBuffer))
     case BinaryMessage.Streamed(bytes) =>
-      log.error(s"streamed message cannot be processed")
-      Source.empty
+      bytes.reduce(_ ++ _).map(bytes => ClientMessage.read(bytes.asByteBuffer)).mapMaterializedValue(_ => NotUsed)
   }
 
   def handleRequest(client: ActorRef): ClientMessage => Source[ServerMessage,NotUsed] = {

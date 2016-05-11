@@ -38,6 +38,7 @@ trait ClientInterface[T] {
   def serverAck()
   def remoteEdit(operation: Operation[T])
   def localEdit(operation: Operation[T])
+  def reset(revision: Long)
 }
 
 object ClientInterface {
@@ -56,10 +57,20 @@ object ClientInterface {
       editorInterface.applyOperation(apply)
     }
 
+    def combinedRemoteEdit(operation: Operation[T], revisions: Long) = {
+      val (apply,nc) = client.remoteEdit(operation)
+      client = nc.copy(rev = client.rev + revisions)
+      editorInterface.applyOperation(apply)
+    }
+
     def localEdit(operation: Operation[T]) = {
       val (send,nc) = client.localEdit(operation)
       client = nc
       if (send) editorInterface.sendOperation(operation, client.rev)
+    }
+
+    def reset(revision: Long) = {
+      client = new Client[T](revision)
     }
   }
 }

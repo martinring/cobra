@@ -89,6 +89,12 @@ object Code {
     CobraJS.listenOn(id) {
       case AcknowledgeEdit(_) => client.serverAck()
       case RemoteEdit(_,op) => client.remoteEdit(op)
+      case CombinedRemoteEdit(_,op,revs) =>
+        client.combinedRemoteEdit(op,revs)
+      case ResetSnippet(_,content,rev) =>
+        console.warn(s"snippet $id was resetted by the server")
+        client.reset(rev)
+        silently(doc.setValue(content))
     }
 
     val changeHandler: js.Function2[CodeMirror,org.scalajs.dom.Event,Unit] =
