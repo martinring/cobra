@@ -71,45 +71,31 @@ object Code {
 
   def attachDocument(id: String, doc: Doc, mode: Mode) = {
     CobraJS.send(InitDoc(id,doc.getValue(), mode))
-    var client = Client[Char](0)
+
     var silent = false
+    def silently[T](f: => T): T = {
+      silent = true; val t = f; silent = false; t
+    }
+
+    val editorInterface = new EditorInterface[Char] {
+      def applyOperation(operation: Operation[Char]) =
+        silently(CodeMirrorOps.applyOperation(doc,operation))
+      def sendOperation(operation: Operation[Char], revision: Long) =
+        CobraJS.send(Edit(id,operation,revision))
+    }
+
+    var client = ClientInterface[Char](editorInterface)
+
     CobraJS.listenOn(id) {
-      case AcknowledgeEdit(_) =>
-        val (send,newClient) = client.ack
-        send.foreach(op => CobraJS.send(Edit(id,op,newClient.rev)))
-        client = newClient
-      case RemoteEdit(_,op) =>
-        val (apply,newClient) = client.remoteEdit(op)
-        silent = true
-        var offset = 0
-        apply.actions.foreach {
-          case Retain(n) =>
-            offset += n
-          case Insert(s) =>
-            doc.replaceRange(s.mkString,doc.posFromIndex(offset))
-            offset += s.length
-          case Delete(n) => doc.replaceRange("",doc.posFromIndex(offset),doc.posFromIndex(offset + n))
-        }
-        assert(offset == doc.getValue().length)
-        silent = false
-        client = newClient
+      case AcknowledgeEdit(_) => client.serverAck()
+      case RemoteEdit(_,op) => client.remoteEdit(op)
     }
-    val changeHandler: js.Function2[CodeMirror,org.scalajs.dom.Event,Unit] = (cm: CodeMirror, e: org.scalajs.dom.Event) => if (!silent) {
-      val change = e.asInstanceOf[EditorChange]
-      val from = doc.indexFromPos(change.from)
-      val to = doc.indexFromPos(change.to)
-      val end = doc.getValue().length
-      val text = change.text.mkString("\n")
-      val retainPrefix = if (from > 0) Some(Retain(from)) else None
-      val retainSuffix = if (end > to) Some(Retain(end - to)) else None
-      val insert = if (text.nonEmpty) Some(Insert(text)) else None
-      val delete = if (to > from) Some(Delete(to - from)) else None
-      val operation = Operation(retainPrefix.toList ++ insert ++ delete ++ retainSuffix)
-      val (send,newClient) = client.localEdit(operation)
-      val rev = client.rev
-      client = newClient
-      if (send) CobraJS.send(Edit(id,operation,rev))
-    }
+
+    val changeHandler: js.Function2[CodeMirror,org.scalajs.dom.Event,Unit] =
+      (cm: CodeMirror, e: org.scalajs.dom.Event) => if (!silent) {
+        client.localEdit(CodeMirrorOps.changeToOperation(doc,e.asInstanceOf[EditorChange]))
+      }
+
     doc.on("beforeChange",changeHandler)
   }
 
