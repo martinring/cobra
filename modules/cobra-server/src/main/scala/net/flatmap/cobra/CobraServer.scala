@@ -81,9 +81,11 @@ class CobraServer(val directory: File) {
     }
   } ~ getFromDirectory(directory.getPath)
 
-  def deserialize: PartialFunction[Message,ClientMessage] = {
-    case BinaryMessage.Strict(bytes) => ClientMessage.read(bytes.asByteBuffer)
-    case other => sys.error(s"incompatible message from client: '$other'")
+  def deserialize: PartialFunction[Message,Source[ClientMessage,NotUsed]] = {
+    case BinaryMessage.Strict(bytes) => Source.single(ClientMessage.read(bytes.asByteBuffer))
+    case BinaryMessage.Streamed(bytes) =>
+      log.error(s"streamed message cannot be processed")
+      Source.empty
   }
 
   def handleRequest(client: ActorRef): ClientMessage => Source[ServerMessage,NotUsed] = {
@@ -106,7 +108,7 @@ class CobraServer(val directory: File) {
   def socket: Flow[Message, Message, NotUsed] = {
     val (ref,pub) = Source.actorRef[ServerMessage](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
     val source = Source.fromPublisher(pub)
-    Flow[Message].map(deserialize)
+    Flow[Message].flatMapConcat(deserialize)
       .flatMapMerge(300, handleRequest(ref)).merge(source)
       .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
       .watchTermination(){ (n: NotUsed, f: Future[Done]) => f.foreach(_ => ref ! PoisonPill); NotUsed }
