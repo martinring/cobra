@@ -105,30 +105,30 @@ object Operation {
     @tailrec
     def loop(as: List[Action[T]], bs: List[Action[T]], xs: List[Action[T]]): Try[List[Action[T]]] = (as,bs,xs) match {
       case (Nil,Nil,xs) => Success(xs)
+      case (Delete(d)::as,bs,xs) => loop(as,bs,addDelete(d,xs))
+      case (as,Insert(i)::bs,xs) => loop(as,bs,addInsert(i,xs))
       case (aa@(a::as),bb@(b::bs),xs) => (a,b) match {
-        case (Delete(d),_) => loop(as,bb,addDelete(d,xs))
-        case (_,Insert(i)) => loop(aa,bs,addInsert(i,xs))
         case (Retain(n),Retain(m)) =>
           if (n < m)       loop(as,Retain(m-n)::bs,addRetain(n,xs))
           else if (n == m) loop(as,bs,addRetain(n,xs))
-          else             loop(Retain(n-m)::as,bs,addRetain(m,xs))        
+          else             loop(Retain(n-m)::as,bs,addRetain(m,xs))
         case (Retain(r),Delete(d)) => 
           if (r < d)       loop(as,Delete(d-r)::bs,addDelete(r,xs))
           else if (r == d) loop(as,bs,addDelete(d,xs))
-          else             loop(Retain(r-d)::as,bs,addDelete(d,xs))        
+          else             loop(Retain(r-d)::as,bs,addDelete(d,xs))
         case (Insert(i),Retain(m)) => 
           if (i.length < m)       loop(as,Retain(m-i.length)::bs,addInsert(i,xs))
           else if (i.length == m) loop(as,bs,addInsert(i,xs))
           else {
             val (before,after) = i.splitAt(m)
-            loop(Insert(after)::as,bs,addInsert(before,xs))        
+            loop(Insert(after)::as,bs,addInsert(before,xs))
           }
-        case (Insert(i),Delete(d)) => 
+        case (Insert(i),Delete(d)) =>
           if (i.length < d)       loop(as,Delete(d-i.length)::bs,xs)
           else if (i.length == d) loop(as,bs,xs)
-          else                    loop(Insert(i.drop(d))::as,bs,xs)        
+          else                    loop(Insert(i.drop(d))::as,bs,xs)
       }
-      case _ => Failure(new Exception("the operations cannot be composed: output-length of a must match input-length of a"))
+      case _ => Failure(new Exception(s"the operations cannot be composed: output-length of a ($a) must match input-length of b ($b)"))
     }
     loop(a.actions,b.actions,Nil).map(x => Operation(x.reverse))
   }
