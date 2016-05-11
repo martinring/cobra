@@ -27,8 +27,7 @@ class SnippetServer extends Actor with ActorLogging {
       context.watch(sender)
       context.become(initialized(mode,server,listeners + sender))
       if (server.revision > 0) {
-        val combined = server.getHistory.reduceLeft((a, b) => Operation.compose(a, b).get)
-        sender ! RemoteEdit(id, combined)
+        sender ! RemoteEdit(id, server.getCombinedHistory)
       }
     case Edit(id,op,rev) =>
       log.debug("applying edit")

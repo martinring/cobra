@@ -29,11 +29,17 @@ import scala.util.{Success, Try}
 
 class Server[T](initialState: Document[T]) {
   private val history: Buffer[Operation[T]] = Buffer.empty
+  private var combinedHistory: Operation[T] = Operation(List(Retain(initialState.content.length)))
+  private def appendOperation(op: Operation[T]) = {
+    history.append(op)
+    combinedHistory = Operation.compose(combinedHistory,op).get
+  }
   private var state: Document[T] = initialState
 
   def text = state.content
   def revision = history.length
   def getHistory = history.view
+  def getCombinedHistory = combinedHistory
 
   /**
    * an operation arrives from a client
@@ -52,7 +58,7 @@ class Server[T](initialState: Document[T]) {
 	} yield (nextState, operation)
 	result.map {
 	  case (nextState,operation) =>
-	    history.append(operation)
+	    appendOperation(operation)
 	    state = nextState
 	    operation
 	}

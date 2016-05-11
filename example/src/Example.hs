@@ -6,4 +6,4 @@ data Person =
 --- end #person-def-hs
 
 main :: IO ()
-main = bla blub
+main =
