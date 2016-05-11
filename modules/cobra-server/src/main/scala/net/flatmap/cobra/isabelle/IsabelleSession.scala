@@ -80,7 +80,6 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
       state.clientInterface.localAnnotations("output", IsabelleMarkup.output(snapshot, Set.empty))
       state.clientInterface.localAnnotations("errors", IsabelleMarkup.errors(snapshot))
       state.clientInterface.localAnnotations("warnings", IsabelleMarkup.warnings(snapshot))
-      //control.annotate(state, "typing tooltips", IsabelleMarkup.typeInfo(snapshot))
       state.clientInterface.localAnnotations("progress", IsabelleMarkup.progress(state.state, snapshot))
     }
     outdated = Set.empty

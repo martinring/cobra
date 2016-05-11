@@ -47,6 +47,11 @@ object CodeMirrorOps {
             options.className = "error"
             options.title = msg
             doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
+          case (AnnotationType.Tooltip, msg) =>
+            val options = TextMarkerOptions()
+            options.shared = true
+            options.title = msg
+            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
           case (AnnotationType.Substitution, msg) =>
             val options = TextMarkerOptions()
             options.shared = true
