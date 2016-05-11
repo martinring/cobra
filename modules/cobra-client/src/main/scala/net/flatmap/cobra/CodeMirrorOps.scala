@@ -1,6 +1,8 @@
 package net.flatmap.cobra
 
-import net.flatmap.js.codemirror.{Doc, EditorChange}
+import net.flatmap.collaboration._
+import net.flatmap.js.codemirror.{Doc, EditorChange, TextMarker, TextMarkerOptions}
+import org.scalajs.dom.raw.HTMLElement
 
 object CodeMirrorOps {
   def changeToOperation(doc: Doc, change: EditorChange): Operation[Char] = {
@@ -27,5 +29,32 @@ object CodeMirrorOps {
         offset
     }
     assert(opLen == doc.getValue().length)
+  }
+
+  def applyAnnotations(doc: Doc, annotations: Annotations): () => Unit = {
+    val (_,markers) = annotations.annotations.foldLeft((0,Seq.empty[TextMarker])) {
+      case ((offset,markers),Empty(n)) => (offset + n, markers)
+      case ((offset,markers),Annotated(l,c)) =>
+        val newMarkers = c.collect {
+          case (AnnotationType.Class, cs) =>
+            val options = TextMarkerOptions()
+            options.shared = true
+            options.className = cs
+            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
+          case (AnnotationType.ErrorMessage, msg) =>
+            val options = TextMarkerOptions()
+            options.shared = true
+            options.className = "error"
+            options.title = msg
+            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
+          case (AnnotationType.Substitution, msg) =>
+            val options = TextMarkerOptions()
+            options.shared = true
+            options.replacedWith = net.flatmap.js.util.HTML(s"<span>$msg</span>").head.asInstanceOf[HTMLElement]
+            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
+        }
+        (offset + l, markers ++ newMarkers)
+    }
+    () => markers.foreach(_.clear())
   }
 }

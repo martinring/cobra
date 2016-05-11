@@ -1,11 +1,13 @@
 package net.flatmap.cobra
 
+import net.flatmap.collaboration.{Annotations, ClientInterface, EditorInterface, Operation}
 import net.flatmap.js.codemirror.{CodeMirror, Doc, EditorChange, LinkedDocOptions}
 import net.flatmap.js.reveal.Reveal
 import org.scalajs.dom.{Element, console, raw}
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
 
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
@@ -77,11 +79,19 @@ object Code {
       silent = true; val t = f; silent = false; t
     }
 
+    val removeAnnotations = mutable.Map.empty[String,() => Unit].withDefaultValue(() => ())
+
     val editorInterface = new EditorInterface[Char] {
       def applyOperation(operation: Operation[Char]) =
         silently(CodeMirrorOps.applyOperation(doc,operation))
       def sendOperation(operation: Operation[Char], revision: Long) =
         CobraJS.send(Edit(id,operation,revision))
+      def sendAnnotations(aid: String, annotations: Annotations, revision: Long) =
+        CobraJS.send(Annotate(id,aid,annotations,revision))
+      def applyAnnotations(aid: String, annotations: Annotations) = {
+        removeAnnotations(aid)()
+        removeAnnotations(aid) = CodeMirrorOps.applyAnnotations(doc, annotations)
+      }
     }
 
     var client = ClientInterface[Char](editorInterface)
@@ -95,6 +105,8 @@ object Code {
         console.warn(s"snippet $id was resetted by the server")
         client.reset(rev)
         silently(doc.setValue(content))
+      case RemoteAnnotations(_,aid,annotations) =>
+        client.remoteAnnotations(aid,annotations)
     }
 
     val changeHandler: js.Function2[CodeMirror,org.scalajs.dom.Event,Unit] =
