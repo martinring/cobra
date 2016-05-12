@@ -44,9 +44,12 @@ trait Picklers {
       .addConcreteType[Plain.type]
       .addConcreteType[Haskell.type]
 
-  implicit val annotationTypePickler: Pickler[AnnotationType.Value] =
-    transformPickler[AnnotationType.Value,Int](_.id,AnnotationType.apply)
-
+  implicit val annotationMessagePickler: Pickler[AnnotationMessage] =
+    compositePickler[AnnotationMessage]
+      .addConcreteType[ErrorMessage]
+      .addConcreteType[WarningMessage]
+      .addConcreteType[InfoMessage]
+      .addConcreteType[OutputMessage]
 }
 
 object ClientMessage extends Picklers {

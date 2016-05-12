@@ -25,7 +25,7 @@
 package net.flatmap.cobra.isabelle
 
 import isabelle._
-import net.flatmap.collaboration.{AnnotationType, Annotations}
+import net.flatmap.collaboration.{Document => _, _}
 
 object IsabelleMarkup {
   val classes = Map(
@@ -70,7 +70,7 @@ object IsabelleMarkup {
       })
     cs.foldLeft(new Annotations) {
       case (as, Text.Info(range,None))    => as.plain(range.length)
-      case (as, Text.Info(range,Some(c))) => as.annotate(range.length, List(AnnotationType.Class -> c))
+      case (as, Text.Info(range,Some(c))) => as.annotate(range.length, AnnotationOptions(classes = Set(c)))
     }
   }
 
@@ -82,7 +82,7 @@ object IsabelleMarkup {
       })
     es.foldLeft(new Annotations) {
       case (as, Text.Info(range,None))    => as.plain(range.length)
-      case (as, Text.Info(range,_)) => as.annotate(range.length, List(AnnotationType.Class -> "error"))
+      case (as, Text.Info(range,_)) => as.annotate(range.length, AnnotationOptions(classes = Set("error")))
     }
   }
 
@@ -94,7 +94,7 @@ object IsabelleMarkup {
       })
     ws.foldLeft(new Annotations) {
       case (as, Text.Info(range,None))    => as.plain(range.length)
-      case (as, Text.Info(range,_)) => as.annotate(range.length, List(AnnotationType.Class -> "warning"))
+      case (as, Text.Info(range,_)) => as.annotate(range.length, AnnotationOptions(classes = Set("warning")))
     }
   }
 
@@ -106,13 +106,13 @@ object IsabelleMarkup {
           .filterNot(Protocol.is_result(_))
           .collect{
             case XML.Elem(markup,body) if markup.name == Markup.WRITELN_MESSAGE =>
-              AnnotationType.Output -> XML.content(body) //isabelle.Pretty.formatted(body, 120.0, isabelle.Pretty.Metric_Default).mkString("\n")
+              OutputMessage(XML.content(body))
             case XML.Elem(markup,body) if markup.name == Markup.ERROR_MESSAGE =>
-              AnnotationType.ErrorMessage -> XML.content(body) //isabelle.Pretty.formatted(body, 120.0, isabelle.Pretty.Metric_Default).mkString("\n")
+              ErrorMessage(XML.content(body)) //isabelle.Pretty.formatted(body, 120.0, isabelle.Pretty.Metric_Default).mkString("\n")
             case XML.Elem(markup,body) if markup.name == Markup.WARNING_MESSAGE =>
-              AnnotationType.WarningMessage -> XML.content(body)
+              WarningMessage(XML.content(body))
           })
-        as.annotate(cmd.length, outputs.toList)
+        as.annotate(cmd.length, AnnotationOptions(messages = outputs))
       } else {
         as.plain(cmd.length)
       }
@@ -129,25 +129,25 @@ object IsabelleMarkup {
   def scripts(state: String): Annotations =
     Symbol.iterator(state).foldLeft((new Annotations, false, false, false, false)){
       case ((as,sub,sup,bsub,bsup),sym) if sym.length() > 1 && Symbol.decode(sym) == Symbol.sub_decoded =>
-        (as.annotate(sym.length, List(AnnotationType.Substitution -> "")),true,false,bsub,bsup)
+        (as.annotate(sym.length, AnnotationOptions(substitute = Some(""))),true,false,bsub,bsup)
       case ((as,sub,sup,bsub,bsup),sym) if sym.length() > 1 && Symbol.decode(sym) == Symbol.sup_decoded =>
-        (as.annotate(sym.length, List(AnnotationType.Substitution -> "")),false,true,bsub,bsup)
+        (as.annotate(sym.length, AnnotationOptions(substitute = Some(""))),false,true,bsub,bsup)
       case ((as,sub,sup,bsub,bsup),sym) if sym.length() > 1 && Symbol.decode(sym) == Symbol.bsub_decoded =>
-        (as.annotate(sym.length, List(AnnotationType.Substitution -> "")),false,false,true,bsup)
+        (as.annotate(sym.length, AnnotationOptions(substitute = Some(""))),false,false,true,bsup)
       case ((as,sub,sup,bsub,bsup),sym) if sym.length() > 1 && Symbol.decode(sym) == Symbol.bsup_decoded =>
-        (as.annotate(sym.length, List(AnnotationType.Substitution -> "")),false,false,bsub,true)
+        (as.annotate(sym.length, AnnotationOptions(substitute = Some(""))),false,false,bsub,true)
       case ((as,sub,sup,bsub,bsup),sym) if sym.length() > 1 && Symbol.decode(sym) == Symbol.esub_decoded =>
-        (as.annotate(sym.length, List(AnnotationType.Substitution -> "")),false,false,false,bsup)
+        (as.annotate(sym.length, AnnotationOptions(substitute = Some(""))),false,false,false,bsup)
       case ((as,sub,sup,bsub,bsup),sym) if sym.length() > 1 && Symbol.decode(sym) == Symbol.esup_decoded =>
-        (as.annotate(sym.length, List(AnnotationType.Substitution -> "")),false,false,bsub,false)
+        (as.annotate(sym.length, AnnotationOptions(substitute = Some(""))),false,false,bsub,false)
       case ((as,true,sup,bsub,bsup),sym) =>
-        (as.annotate(sym.length(), List(AnnotationType.Class -> "sub")),false,false,bsub,bsup)
+        (as.annotate(sym.length(), AnnotationOptions(classes = Set("sub"))),false,false,bsub,bsup)
       case ((as,sub,true,bsub,bsup),sym) =>
-        (as.annotate(sym.length(), List(AnnotationType.Class -> "sup")),false,false,bsub,bsup)
+        (as.annotate(sym.length(), AnnotationOptions(classes = Set("sup"))),false,false,bsub,bsup)
       case ((as,sub,sup,true,bsup),sym) =>
-        (as.annotate(sym.length(), List(AnnotationType.Class -> "sub")),false,false,true,bsup)
+        (as.annotate(sym.length(), AnnotationOptions(classes = Set("sub"))),false,false,true,bsup)
       case ((as,sub,sup,bsub,true),sym) =>
-        (as.annotate(sym.length(), List(AnnotationType.Class -> "sup")),false,false,bsub,true)
+        (as.annotate(sym.length(), AnnotationOptions(classes = Set("sup"))),false,false,bsub,true)
       case ((as,sub,sup,bsub,bsup),sym) =>
         (as.plain(sym.length),sub,sup,bsub,bsup)
     }._1
@@ -157,11 +157,11 @@ object IsabelleMarkup {
       case (as, sym) if sym.length == 1 || Symbol.decode(sym) == sym =>
         as.plain(sym.length)
       case (as, sym) =>
-        as.annotate(sym.length, List(AnnotationType.Class -> "symbol",AnnotationType.Substitution -> Symbol.decode(sym)))
+        as.annotate(sym.length, AnnotationOptions(classes = Set("symbol"), substitute = Some(Symbol.decode(sym))))
     }
 
 
-  def progress(state: String, snapshot: Document.Snapshot): Annotations = {
+  /*def progress(state: String, snapshot: Document.Snapshot): Annotations = {
     var offset = 0
     val it = state.linesWithSeparators
     var result = new Annotations
@@ -174,7 +174,7 @@ object IsabelleMarkup {
       offset += line.length()
     }
     result
-  }
+  }*/
 
   private val overview_include = Markup.Elements(Markup.WARNING, Markup.ERROR, Markup.RUNNING, Markup.ACCEPTED, Markup.FAILED)
 

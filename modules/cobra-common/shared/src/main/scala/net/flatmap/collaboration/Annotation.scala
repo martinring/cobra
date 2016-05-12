@@ -39,68 +39,35 @@ case class Empty(length: Int) extends Annotation {
   override def toString = length.toString
 }
 
-case class Annotated(length: Int, content: List[(AnnotationType.Value,String)]) extends Annotation {
-  override def toString = length.toString + ":{" + content.map{case(k,v)=>k+": " +v}.mkString(",") + "}"
+sealed trait AnnotationMessage
+case class ErrorMessage(content: String) extends AnnotationMessage
+case class WarningMessage(content: String) extends AnnotationMessage
+case class InfoMessage(content: String) extends AnnotationMessage
+case class OutputMessage(content: String) extends AnnotationMessage
+
+case class AnnotationOptions(
+  val classes: Set[String] = Set.empty,
+  val substitute: Option[String] = None,
+  val messages: List[AnnotationMessage] = List.empty,
+  val tooltip: Option[String] = None
+) {
+  def ++(other: AnnotationOptions) = AnnotationOptions(
+    classes = classes ++ other.classes,
+    substitute = other.substitute orElse substitute,
+    messages = messages ++ other.messages,
+    tooltip = other.tooltip orElse tooltip
+  )
 }
 
-object AnnotationType extends Enumeration {
-  /** supported values are ... TODO */
-  val Class = Value
-  /** currently supports "running", "finished" and "failed" */
-  val Progress = Value
-  /** can be set to arbitary content and will set a html title attribute */
-  val Tooltip = Value
-  /** can be html */
-  val ErrorMessage = Value
-  /** can be html */
-  val WarningMessage = Value
-  /** can be html */
-  val InfoMessage = Value
-  /** can be html */
-  val Output = Value
-  /** must be an url-safe document-unique id */
-  val Entity = Value
-  /** must be an id of the format
-    *
-    *  "<id>" for local references (as marked with Entity)
-    *  "/<file>/<id>" for references in the same project
-    *  "//<url>" for external urls
-    */
-  val Ref = Value
-  /** can be used to substitute a text span with some text or html. must not be overlapping. */
-  val Substitution = Value
-  /** not supported yet */
-  val HelpRequest = Value
-}
+case class Annotated(length: Int, content: AnnotationOptions) extends Annotation
 
 case class Annotations(annotations: List[Annotation] = Nil, responses: List[(String,String)] = Nil) {
   override def toString = annotations.mkString(";")
 
-  def positions(tpe: (AnnotationType.Value,String)): List[Int] = {
-    val (_,result) = ((0,List.empty[Int]) /: annotations) {
-      case ((offset,ps),Empty(n)) => (offset+n,ps)
-      case ((offset,ps),Annotated(n,c)) =>
-        if (c.contains(tpe)) (offset+n,offset::ps)
-        else (offset+n,ps)
-    }
-    result
-  }
-
-  def positions(tpe: AnnotationType.Value): List[(Int,String)] = {
-    val (_,result) = ((0,List.empty[(Int,String)]) /: annotations) {
-      case ((offset,ps),Empty(n)) => (offset+n,ps)
-      case ((offset,ps),Annotated(n,c)) =>
-        c.find(_._1 == tpe).fold(offset+n,ps) {
-          case (_,value) => (offset+n,(offset,value)::ps)
-        }
-    }
-    result
-  }
-
-  def annotate(n: Int, c: List[(AnnotationType.Value,String)]): Annotations = if (n >= 0) {
+  def annotate(n: Int, c: AnnotationOptions): Annotations = if (n >= 0) {
     annotations.lastOption match {
       case Some(Annotated(m,c2)) if c == c2 => Annotations(annotations.init :+ Annotated(n+m,c), responses)
-      case _ => Annotations(annotations :+ Annotated(n,c.toList), responses)
+      case _ => Annotations(annotations :+ Annotated(n,c), responses)
     }
   } else this
 
@@ -143,7 +110,7 @@ object Annotations {
     case _ => as
   }
 
-  private def addAnnotate(n: Int, c: List[(AnnotationType.Value,String)], as: List[Annotation]): List[Annotation] = as match {
+  private def addAnnotate(n: Int, c: AnnotationOptions, as: List[Annotation]): List[Annotation] = as match {
     case Annotated(m,c2)::xs if c2 == c => Annotated(n+m,c)::xs
     case xs => Annotated(n,c)::xs
   }
