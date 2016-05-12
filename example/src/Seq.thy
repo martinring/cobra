@@ -9,12 +9,12 @@ where
   "conc Empty ys = ys"
 | "conc (Seq x xs) ys = Seq x (conc xs ys)"
 
-(* begin #lemma-conc *)
+--- begin #fun-reverse
 fun reverse :: "'a seq \<Rightarrow> 'a seq"
 where
   "reverse Empty = Empty"
 | "reverse (Seq x xs) = conc (reverse xs) (Seq x Empty)"
-(* end #lemma-conc *)
+--- end #fun-reverse
 
 lemma conc_empty: "conc xs Empty = xs"
   by (induct xs) simp_all
@@ -25,7 +25,9 @@ lemma conc_assoc: "conc (conc xs ys) zs = conc xs (conc ys zs)"
 lemma reverse_conc: "reverse (conc xs ys) = conc (reverse ys) (reverse xs)"
   by (induct xs) (simp_all add: conc_empty conc_assoc)
 
+--- begin #lemma-reverse
 lemma reverse_reverse: "reverse (reverse xs) = xs"
   by (induct xs) (simp_all add: reverse_conc)
+--- end #lemma-reverse
 
 end

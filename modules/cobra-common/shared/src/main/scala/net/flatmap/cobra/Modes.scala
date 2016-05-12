@@ -10,7 +10,7 @@ object Comments {
 sealed abstract class Mode(val name: String, val mime: String, val regex: Regex, val fileendings: Set[String])
 case object Scala extends Mode("scala","text/x-scala",Comments.line("\\/\\/\\/+"), Set("scala"))
 case object Haskell extends Mode("haskell","text/x-haskell",Comments.line("---+"), Set("hs"))
-case object Isabelle extends Mode("isabelle","text/x-isabelle",Comments.block("\\(\\*","\\*\\)"), Set("thy"))
+case object Isabelle extends Mode("isabelle","text/x-isabelle",Comments.line("---+"), Set("thy"))
 case object Plain extends Mode("plain","text/plain",new Regex("$^"),Set.empty)
 
 object Mode {
