@@ -4,6 +4,8 @@ import net.flatmap.collaboration._
 import net.flatmap.js.codemirror.{Doc, EditorChange, TextMarker, TextMarkerOptions}
 import org.scalajs.dom.raw.HTMLElement
 
+import scala.scalajs.js
+
 object CodeMirrorOps {
   def changeToOperation(doc: Doc, change: EditorChange): Operation[Char] = {
     val from = doc.indexFromPos(change.from)
@@ -35,30 +37,21 @@ object CodeMirrorOps {
     val (_,markers) = annotations.annotations.foldLeft((0,Seq.empty[TextMarker])) {
       case ((offset,markers),Empty(n)) => (offset + n, markers)
       case ((offset,markers),Annotated(l,c)) =>
-        val newMarkers = c.collect {
-          case (AnnotationType.Class, cs) =>
-            val options = TextMarkerOptions()
-            options.shared = true
-            options.className = cs
-            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
-          case (AnnotationType.ErrorMessage, msg) =>
-            val options = TextMarkerOptions()
-            options.shared = true
-            options.className = "error"
-            options.title = msg
-            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
-          case (AnnotationType.Tooltip, msg) =>
-            val options = TextMarkerOptions()
-            options.shared = true
-            options.title = msg
-            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
-          case (AnnotationType.Substitution, msg) =>
-            val options = TextMarkerOptions()
-            options.shared = true
-            options.replacedWith = net.flatmap.js.util.HTML(s"<span class='cm-m-isabelle delimiter'>$msg</span>").head.asInstanceOf[HTMLElement]
-            doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
+        val marker = c.substitute.fold {
+          val options = TextMarkerOptions()
+          options.shared = true
+          if (c.classes.nonEmpty) options.className = c.classes.mkString(" ")
+          c.tooltip.foreach(options.title = _)
+          doc.markText(doc.posFromIndex(offset), doc.posFromIndex(offset + l), options)
+        } { substitution =>
+          val options = TextMarkerOptions()
+          options.shared = true
+          options.replacedWith =
+            net.flatmap.js.util.HTML(s"<span class='cm-m-isabelle ${c.classes.mkString(" ")}'>$substitution</span>").head.asInstanceOf[HTMLElement]
+          c.tooltip.foreach(options.replacedWith.title = _)
+          doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
         }
-        (offset + l, markers ++ newMarkers)
+        (offset + l, markers :+ marker)
     }
     () => markers.foreach(_.clear())
   }
