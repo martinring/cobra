@@ -4,6 +4,7 @@ import net.flatmap.cobra.isabelle.{IsabelleMode, IsabelleModeConfig, IsabelleMod
 import net.flatmap.js.codemirror.{CodeMirror, CodeMirrorConfiguration}
 import net.flatmap.js.reveal._
 import net.flatmap.js.util._
+import org.scalajs.dom.raw.HTMLLinkElement
 
 import scala.collection.mutable
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -29,6 +30,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
 
   var heartBeatAcknowledged: Boolean = true
 
+  lazy val printing = org.scalajs.dom.window.location.search.contains("print-pdf")
+
   override def preStart(): Unit = {
     CodeMirror.defineMode[IsabelleModeState]("isabelle", IsabelleMode.apply _)
     CodeMirror.defineMIME("text/x-isabelle","isabelle")
@@ -37,6 +40,18 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       slides <- $"#slides" <<< "slides.html"
       delayedSnippets <- Code.loadDelayed(slides)
     } {
+      val link = document.createElement("link").asInstanceOf[HTMLLinkElement]
+      link.rel = "stylesheet"
+      link.`type` = "text/css"
+      link.href = if (printing) "/lib/reveal.js/css/print/pdf.css" else "/lib/reveal.js/css/print/paper.css"
+      if (printing) {
+        val link2 = document.createElement("link").asInstanceOf[HTMLLinkElement]
+        link2.rel = "stylesheet"
+        link2.`type` = "text/css"
+        link2.href = "/lib/cobra-client/print.css"
+        document.getElementsByTagName("head")(0).appendChild(link2)
+      }
+      document.getElementsByTagName("head")(0).appendChild(link)
       val documents = Code.initializeDocuments(slides)
       val editors = Code.initializeEditors(slides, documents)
       val settings = RevealOptions()
