@@ -11,6 +11,7 @@ import akka.pattern.ask
 import scala.io
 import akka.actor.{ActorRef, ActorSystem, PoisonPill}
 import akka.event.{LogSource, Logging}
+import akka.http.scaladsl.model.{HttpHeader, HttpMethods, HttpProtocols}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import com.typesafe.config.ConfigFactory
 import org.webjars.WebJarAssetLocator
@@ -19,6 +20,8 @@ import scala.collection.mutable
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 import scala.collection.JavaConversions._
+import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.CacheDirectives
 
 object CobraServer {
   implicit val logSource: LogSource[CobraServer] = new LogSource[CobraServer] {
@@ -71,7 +74,7 @@ class CobraServer(val directory: File) {
     .replaceAll("""\{ *theme\.slides *\}""",slidesTheme)
     .replaceAll("""\{ *theme\.code *\}""",codeTheme)
 
-  def routes = get {
+  def routes = respondWithHeader(headers.`Cache-Control`(CacheDirectives.`no-cache`)) { get {
     pathSingleSlash {
       complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
     } ~
@@ -84,7 +87,7 @@ class CobraServer(val directory: File) {
     path("lib" / "codemirror" / "theme" / "default.css") {
       complete(HttpEntity(ContentType(MediaTypes.`text/css`, HttpCharsets.`UTF-8`), "/* default cm theme */"))
     }
-  } ~ getFromDirectory(directory.getPath)
+  } ~ getFromDirectory(directory.getPath) }
 
   def deserialize: PartialFunction[Message,Source[ClientMessage,NotUsed]] = {
     case BinaryMessage.Strict(bytes) =>
