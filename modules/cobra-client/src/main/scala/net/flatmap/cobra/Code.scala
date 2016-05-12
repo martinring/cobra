@@ -155,6 +155,7 @@ object Code {
         code.innerHTML = ""
         val editor = CodeMirror(code)
         editor.swapDoc(doc)
+        editor.setOption("addModeClass",true)
         editor.setOption("scrollbarStyle","null")
         val handler: js.Function2[CodeMirror,raw.Event,Unit] = (instance: CodeMirror, event: raw.Event) => {
           val changes = event.asInstanceOf[js.Array[js.Dynamic]]

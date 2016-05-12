@@ -2,11 +2,12 @@ package net.flatmap.cobra
 
 import net.flatmap.cobra.isabelle.{IsabelleMode, IsabelleModeConfig, IsabelleModeState}
 import net.flatmap.js.codemirror.{CodeMirror, CodeMirrorConfiguration}
-import net.flatmap.js.reveal.{Reveal, RevealEvents, RevealOptions}
+import net.flatmap.js.reveal._
 import net.flatmap.js.util._
 
 import scala.collection.mutable
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
 import scala.scalajs.js._
 
 /**
@@ -42,6 +43,13 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       settings.history = true
       settings.minScale = 1
       settings.maxScale = 1
+      val mathOptions = RevealMathOptions()
+      mathOptions.mathjax = "/lib/MathJax/2.6.1/MathJax.js"
+      mathOptions.config = "TeX-AMS_HTML-full"
+      settings.dependencies = js.Array(
+        RevealDependency(src = "/lib/reveal.js/plugin/math/math.js", async = true)
+      )
+      settings.math = mathOptions
       Reveal.initialize(settings)
       Reveal.on(RevealEvents.Ready) { x =>
         editors.foreach(_.refresh())

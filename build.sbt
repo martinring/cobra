@@ -37,6 +37,7 @@ lazy val clientAssets  = (project in file("modules/cobra-client"))
     moduleName := "cobra-client",
     includeFilter in (Assets, LessKeys.less) := "cobra.less",
     libraryDependencies <++= webjarDependenciesOf(client),
+    libraryDependencies += "org.webjars" % "MathJax" % "2.6.1",
     libraryDependencies += "org.webjars" % "octicons" % "3.5.0"
   )
 
@@ -87,6 +88,7 @@ lazy val reveal = (project in file("modules/js-bindings/reveal-js"))
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
     jsDependencies += "org.webjars.bower" % "reveal.js" % "3.3.0" / "reveal.js",
+    jsDependencies += "org.webjars.bower" % "reveal.js" % "3.3.0" / "lib/js/head.min.js" dependsOn "reveal.js",
     skip in packageJSDependencies := false
   ).dependsOn(utilJS)
 
