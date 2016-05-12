@@ -157,6 +157,7 @@ object Code {
         editor.swapDoc(doc)
         editor.setOption("addModeClass",true)
         editor.setOption("scrollbarStyle","null")
+        if (CobraJS.printing) editor.setOption("readOnly","nocursor")
         val handler: js.Function2[CodeMirror,raw.Event,Unit] = (instance: CodeMirror, event: raw.Event) => {
           val changes = event.asInstanceOf[js.Array[js.Dynamic]]
           if (changes.exists { change =>
