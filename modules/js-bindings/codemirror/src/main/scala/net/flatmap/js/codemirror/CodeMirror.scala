@@ -312,6 +312,10 @@ trait Doc extends DocEditorCommon with WithEvents {
   def getEditor(): CodeMirror = js.native
   def copy(copyHistory: Boolean = js.native): Doc = js.native
   def linkedDoc(options: LinkedDocOptions): Doc = js.native
+  /** Will call the given function for all documents linked to the target
+    * document. It will be passed two arguments, the linked document and a
+    * boolean indicating whether that document shares history with the target.*/
+  def iterLinkedDocs(function: js.Function2[Doc,Boolean,Unit])
 }
 
 @js.native
@@ -332,15 +336,18 @@ trait LineHandle extends WithEvents {
 }
 
 @js.native
-trait TextMarker extends WithEvents {
-  def clear(): Unit = js.native
+trait TextMarker extends WithEvents with Clearable{
   def find(): FromTo = js.native
   def getOptions(copyWidget: Boolean): TextMarkerOptions = js.native
 }
 
 @js.native
-trait LineWidget extends WithEvents {
+trait Clearable extends js.Object {
   def clear(): Unit = js.native
+}
+
+@js.native
+trait LineWidget extends WithEvents with Clearable {
   def changed(): Unit = js.native
 }
 
@@ -501,7 +508,7 @@ trait CodeMirrorCommands extends js.Object {
   /** Not defined by the core library, but defined in the search addon (or custom client addons). */
   var replace: Command = js.native
   /** Not defined by the core library, but defined in the search addon (or custom client addons). */
-  var replaceAll: Command = js.native    
+  var replaceAll: Command = js.native
 }
 
 object TextMarkerOptions {
