@@ -1,9 +1,10 @@
 package net.flatmap.cobra
 
 import net.flatmap.collaboration._
-import net.flatmap.js.codemirror.{Doc, EditorChange, TextMarker, TextMarkerOptions}
+import net.flatmap.js.codemirror._
 import org.scalajs.dom.raw.HTMLElement
 
+import scala.collection.mutable
 import scala.scalajs.js
 
 object CodeMirrorOps {
@@ -34,7 +35,7 @@ object CodeMirrorOps {
   }
 
   def applyAnnotations(doc: Doc, annotations: Annotations): () => Unit = {
-    val (_,markers) = annotations.annotations.foldLeft((0,Seq.empty[TextMarker])) {
+    val (_,markers) = annotations.annotations.foldLeft((0,Seq.empty[Clearable])) {
       case ((offset,markers),Empty(n)) => (offset + n, markers)
       case ((offset,markers),Annotated(l,c)) =>
         val marker = c.substitute.fold {
@@ -51,7 +52,34 @@ object CodeMirrorOps {
           c.tooltip.foreach(options.replacedWith.title = _)
           doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
         }
-        (offset + l, markers :+ marker)
+        val buf = mutable.Buffer.empty[Clearable]
+        c.messages.foreach {
+          case WarningMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
+            Option(doc.getEditor()).foreach { editor =>
+              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+              //buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
+            }
+          }
+          case InfoMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
+            Option(doc.getEditor()).foreach { editor =>
+              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+              //buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
+            }
+          }
+          case OutputMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
+            Option(doc.getEditor()).foreach { editor =>
+              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+              //buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
+            }
+          }
+          case ErrorMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
+            Option(doc.getEditor()).foreach { editor =>
+              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+              buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
+            }
+          }
+        }
+        (offset + l, markers ++ buf :+ marker)
     }
     () => markers.foreach(_.clear())
   }
