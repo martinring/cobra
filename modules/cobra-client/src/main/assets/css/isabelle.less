@@ -1,5 +1,25 @@
-/* outer syntax */
-.cm-s-default {
+.CodeMirror {
+  span.cm-m-isabelle.cm-identifier, span.cm-m-isabelle.cm-ident {
+    font-family: "MathJax_Math" !important;
+    font-style: italic;
+  }
+
+  span.cm-m-isabelle.string, span.cm-m-isabelle.cm-string {
+    font-family: "MathJax_Main";
+  }
+
+  span.cm-m-isabelle.cm-tfree, span.cm-m-isabelle.cm-free {
+    font-family: "MathJax_Math" !important;
+  }
+
+  span.cm-m-isabelle.delimiter:not(:first-child) {
+    font-family: "MathJax_Math" !important;
+  }
+
+  span.cm-m-isabelle.cm-keyword, span.cm-m-isabelle.cm-def {
+    font-family: "MathJax_Main" !important;
+  }
+
   span.sup {
     font-size: 66%;
     line-height: 0;

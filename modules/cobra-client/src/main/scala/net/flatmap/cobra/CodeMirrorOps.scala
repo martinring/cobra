@@ -55,7 +55,7 @@ object CodeMirrorOps {
           case (AnnotationType.Substitution, msg) =>
             val options = TextMarkerOptions()
             options.shared = true
-            options.replacedWith = net.flatmap.js.util.HTML(s"<span>$msg</span>").head.asInstanceOf[HTMLElement]
+            options.replacedWith = net.flatmap.js.util.HTML(s"<span class='cm-m-isabelle delimiter'>$msg</span>").head.asInstanceOf[HTMLElement]
             doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
         }
         (offset + l, markers ++ newMarkers)

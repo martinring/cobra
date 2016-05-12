@@ -27,7 +27,6 @@ package net.flatmap.cobra.isabelle
 import akka.actor.{ActorLogging, PoisonPill}
 import isabelle._
 
-import scala.concurrent.Promise
 import isabelle.Session
 import isabelle.Build
 import isabelle.Path
@@ -36,16 +35,11 @@ import isabelle.XML
 import isabelle.Isabelle_System
 import net.flatmap.collaboration.ClientInterface
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
 import scala.concurrent.Promise
 import scala.language.postfixOps
-import scala.concurrent.Future
 
 trait IsabelleSession { self: IsabelleService with IsabelleConversions with ActorLogging =>
   var session: Session     = null
-  //var project: ProjectInfo = null
-  //var cursors = Set.empty[Cursor]
 
   var outdated = Set.empty[Document.Node.Name]
 

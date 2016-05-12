@@ -401,7 +401,7 @@ class IsabelleMode(config: CodeMirrorConfiguration, parserConfig: IsabelleModeCo
     if (char == "\"") {
       stream.next()
       state.tokenize = tokenString
-      return state.tokenize(stream, state)
+      return "string"
     }
 
     if (char == "`") {
