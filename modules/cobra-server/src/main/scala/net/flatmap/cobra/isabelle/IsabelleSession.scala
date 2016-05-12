@@ -119,6 +119,7 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
     session.commands_changed += Session.Consumer("clide"){ msg =>
       log.info("commands_changed: " + msg)
       outdated ++= msg.nodes
+      refreshAnnotations()
     }
     session.start("clide", List("-S","HOL"))
     initialized.future

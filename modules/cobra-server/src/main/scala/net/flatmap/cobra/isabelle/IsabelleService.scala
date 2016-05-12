@@ -48,7 +48,7 @@ class IsabelleService(env: Map[String,String]) extends Actor with ActorLogging w
 
     Await.ready(updateFile(fileToNodeName(id),OpenedFile(id,clientInterface,content),initEdits(id,content)), 5 seconds)
 
-    context.system.scheduler.schedule(1 second, 1 second)(refreshAnnotations())
+    //context.system.scheduler.schedule(1 second, 1 second)(refreshAnnotations())
 
     {
       case AcknowledgeEdit(id2) if id == id2 => clientInterface.serverAck()

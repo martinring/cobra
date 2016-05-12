@@ -2,6 +2,7 @@ package net.flatmap.cobra
 
 import net.flatmap.collaboration._
 import net.flatmap.js.codemirror._
+import net.flatmap.js.reveal.Reveal
 import org.scalajs.dom.raw.HTMLElement
 
 import scala.collection.mutable
@@ -38,49 +39,46 @@ object CodeMirrorOps {
     val (_,markers) = annotations.annotations.foldLeft((0,Seq.empty[Clearable])) {
       case ((offset,markers),Empty(n)) => (offset + n, markers)
       case ((offset,markers),Annotated(l,c)) =>
+        val from = doc.posFromIndex(offset)
+        val to = doc.posFromIndex(offset + l)
         val marker = c.substitute.fold {
           val options = TextMarkerOptions()
           options.shared = true
           if (c.classes.nonEmpty) options.className = c.classes.mkString(" ")
           c.tooltip.foreach(options.title = _)
-          doc.markText(doc.posFromIndex(offset), doc.posFromIndex(offset + l), options)
+          doc.markText(from,to, options)
         } { substitution =>
           val options = TextMarkerOptions()
           options.shared = true
           options.replacedWith =
             net.flatmap.js.util.HTML(s"<span class='cm-m-isabelle ${c.classes.mkString(" ")}'>$substitution</span>").head.asInstanceOf[HTMLElement]
           c.tooltip.foreach(options.replacedWith.title = _)
-          doc.markText(doc.posFromIndex(offset),doc.posFromIndex(offset + l),options)
+          doc.markText(from,to,options)
         }
         val buf = mutable.Buffer.empty[Clearable]
-        c.messages.foreach {
-          case WarningMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
-            Option(doc.getEditor()).foreach { editor =>
-              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-              //buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
-            }
-          }
-          case InfoMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
-            Option(doc.getEditor()).foreach { editor =>
-              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-              //buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
-            }
-          }
-          case OutputMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
-            Option(doc.getEditor()).foreach { editor =>
-              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-              //buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
-            }
-          }
-          case ErrorMessage(txt) => doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
-            Option(doc.getEditor()).foreach { editor =>
-              val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-              buf += editor.addLineWidget(doc.posFromIndex(offset + l).line,elem)
-            }
+        c.messages.foreach { message =>
+          doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
+            Option(doc.getEditor()).foreach { editor => if (doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
+              message match {
+                case ErrorMessage(txt) =>
+                  val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                  buf += editor.addLineWidget(to.line, elem)
+                case WarningMessage(txt) =>
+                  val elem = net.flatmap.js.util.HTML(s"<div class='warning ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                  buf += editor.addLineWidget(to.line, elem)
+                case InfoMessage(txt) =>
+                  val elem = net.flatmap.js.util.HTML(s"<div class='info ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                  buf += editor.addLineWidget(to.line, elem)
+                case OutputMessage(txt) =>
+                  val elem = net.flatmap.js.util.HTML(s"<div class='output ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                  buf += editor.addLineWidget(to.line, elem)
+              }
+            } }
           }
         }
         (offset + l, markers ++ buf :+ marker)
     }
+    Reveal.sync()
     () => markers.foreach(_.clear())
   }
 }
