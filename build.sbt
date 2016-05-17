@@ -10,6 +10,7 @@ val commonSettings = Seq(
 )
 
 lazy val server = (project in file("modules/cobra-server"))
+  .enablePlugins(UniversalPlugin,LinuxPlugin)
   .settings(commonSettings :_*)
   .settings(
     name := "cobra.server",
@@ -30,15 +31,18 @@ lazy val clientAssets  = (project in file("modules/cobra-client"))
         file -> s"js/$path"
       }
     },
-    skip in Compile := true,
+    (sourceDirectories in Compile) := Seq.empty,
+    (unmanagedSourceDirectories in Compile) := Seq.empty,
+    (compile in Compile) <<= (compile in Compile) dependsOn (LessKeys.less in Assets),
     pipelineStages := Seq(scalaJSProd),
     target := target.value / "assets",
     name := "cobra.client.assets",
     moduleName := "cobra-client",
+    watchSources <++= (sourceDirectory in Assets) map { assets =>
+      (assets ** "*").get
+    },
     includeFilter in (Assets, LessKeys.less) := "cobra.less" | "print.less",
-    libraryDependencies <++= webjarDependenciesOf(client),
-    libraryDependencies += "org.webjars" % "MathJax" % "2.6.1",
-    libraryDependencies += "org.webjars" % "octicons" % "3.5.0"
+    libraryDependencies <++= webjarDependenciesOf(client)
   )
 
 lazy val client     = (project in file("modules/cobra-client"))
@@ -53,7 +57,9 @@ lazy val client     = (project in file("modules/cobra-client"))
         ((moduleName in fastOptJS).value + ".js")),
     artifactPath in (Compile,fullOptJS) <<= artifactPath in (Compile,fastOptJS),
     persistLauncher in Compile := true,
-    persistLauncher in Test := false
+    persistLauncher in Test := false,
+    libraryDependencies += "org.webjars" % "MathJax" % "2.6.1",
+    libraryDependencies += "org.webjars" % "octicons" % "3.5.0"
   ).dependsOn(reveal,codemirror,utilJS,commonJS)
 
 lazy val utilJS = (project in file("modules/js-util"))
