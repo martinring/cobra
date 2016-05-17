@@ -106,11 +106,11 @@ object IsabelleMarkup {
           .filterNot(Protocol.is_result(_))
           .collect{
             case XML.Elem(markup,body) if markup.name == Markup.WRITELN_MESSAGE =>
-              OutputMessage(XML.content(body))
+              OutputMessage(body.mkString)
             case XML.Elem(markup,body) if markup.name == Markup.ERROR_MESSAGE =>
-              ErrorMessage(XML.content(body)) //isabelle.Pretty.formatted(body, 120.0, isabelle.Pretty.Metric_Default).mkString("\n")
+              ErrorMessage(body.mkString) //isabelle.Pretty.formatted(body, 120.0, isabelle.Pretty.Metric_Default).mkString("\n")
             case XML.Elem(markup,body) if markup.name == Markup.WARNING_MESSAGE =>
-              WarningMessage(XML.content(body))
+              WarningMessage(body.mkString)
           })
         as.annotate(cmd.length, AnnotationOptions(messages = outputs))
       } else {

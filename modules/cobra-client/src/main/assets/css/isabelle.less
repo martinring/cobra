@@ -1,12 +1,74 @@
 .CodeMirror {
   .CodeMirror-linewidget {
+    block {
+      display: inline-block;
+    }
+
+    text_fold {
+      display: block;
+    }
+
+    subgoal {
+      margin-left: 1em;
+    }
+
+    xml_elem xml_body {
+      display: none;
+    }
+
+    position {
+      display: none;
+    }
+
+    delimiter {
+      font-family: "MathJax_Math";
+    }
+
+    keyword1 {
+      color: blue;
+      font-weight: bold;
+    }
+
+    bound {
+      color: green;
+    }
+
+    keyword2 {
+      color: blue;
+    }
+
+    free {
+      color: blue;
+      font-style: italic;
+    }
+
+    var {
+      color: darkblue;
+      font-style: italic;
+    }
+
+    entity {
+      font-family: "MathJax_Math";
+    }
+
+    tfree {
+      font-family: "MathJax_Math";
+      font-style: italic;
+      color: cadetblue;
+    }
+
+    literal {
+      color: dodgerblue;
+    }
+
     .error {
       font-family: "MathJax_Main";
       font-size: 66%;
       text-align: left;
       border-left: 5px solid crimson;
       padding-left: 10px;
-      margin-left: 5px;
+      background-color: #eee;
+      margin: 4px 5px 8px 0;
     }
 
     .info {
@@ -15,7 +77,8 @@
       text-align: left;
       border-left: 5px solid dodgerblue;
       padding-left: 10px;
-      margin-left: 5px;
+      background-color: #eee;
+      margin: 4px 5px 8px 0;
     }
 
     .warning {
@@ -24,7 +87,8 @@
       text-align: left;
       border-left: 5px solid darkorange;
       padding-left: 10px;
-      margin-left: 5px;
+      margin: 4px 5px 8px 0;
+      background-color: #eee;
     }
 
     .output {
@@ -33,7 +97,8 @@
       text-align: left;
       border-left: 5px solid gray;
       padding-left: 10px;
-      margin-left: 5px;
+      margin: 4px 5px 8px 0;
+      background-color: #eee;
     }
   }
   span.cm-m-isabelle.cm-identifier, span.cm-m-isabelle.cm-ident {
@@ -223,11 +288,61 @@
   }
 
   span.error, span.bad {
-    background-color: fade(red,20%);
+    position: relative;
+    &:after {
+      border: .2em solid #f44336;
+      border-top: none;
+      border-radius: 1.2em 1em 2em 1.5em;
+      bottom: -.3em;
+      content: '';
+      left: -.2em;
+      position: absolute;
+      right: -.3em;
+      top: -.1em;
+      transform: rotate(-1deg);
+    }
+    &:before {
+      border-top: .2em solid #f44336;
+      border-radius: .5em;
+      content: '';
+      height: 1em;
+      left: 0;
+      position: absolute;
+      top: -.3em;
+      transform: rotate(-10deg);
+      width: 2em;
+    }
+    /*
+    &:after {
+      content: "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+      font-family: "Fira Code";
+      color: #f44336;
+      position: absolute;
+      letter-spacing: -0.23em;
+      left: 0px;
+      top: 0.3em;
+      right: 0;
+      height: 1em;
+      overflow: hidden;
+      padding-left: 0.2em;
+    }*/
   }
 
   span.warning {
-    background-color: fade(orange,20%);
+    position: relative;
+    &:after {
+      content: "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+      font-family: "Fira Code";
+      color: orange;
+      position: absolute;
+      letter-spacing: -0.23em;
+      left: 0px;
+      top: 0.3em;
+      right: 0;
+      height: 1em;
+      overflow: hidden;
+      padding-left: 0.2em;
+    }
   }
 
   span.info, span.writeln {
