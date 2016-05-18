@@ -70,8 +70,14 @@ object CodeMirrorOps {
                   val elem = net.flatmap.js.util.HTML(s"<div class='info ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
                   buf += editor.addLineWidget(to.line, elem)
                 case OutputMessage(txt) =>
-                  val elem = net.flatmap.js.util.HTML(s"<div class='output ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                  val elem = if (editor.getOption("state-fragments") == "all")
+                    net.flatmap.js.util.HTML(s"<div class='output all fragment ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                  else if (editor.getOption("state-fragments") == "single")
+                    net.flatmap.js.util.HTML(s"<div class='output fragment ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                  else
+                    net.flatmap.js.util.HTML(s"<div class='output ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
                   buf += editor.addLineWidget(to.line, elem)
+
               }
             } }
           }
