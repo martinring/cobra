@@ -155,6 +155,8 @@ object Code {
         code.innerHTML = ""
         val editor = CodeMirror(code)
         editor.swapDoc(doc)
+        editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
+          (if (code.classes.contains("current-only")) "single" else "all") else null)
         editor.setOption("addModeClass",true)
         editor.setOption("scrollbarStyle","null")
         if (CobraJS.printing) editor.setOption("readOnly","nocursor")

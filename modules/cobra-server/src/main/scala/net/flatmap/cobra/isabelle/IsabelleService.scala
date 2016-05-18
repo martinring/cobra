@@ -1,7 +1,7 @@
 package net.flatmap.cobra.isabelle
 
 import isabelle.Session
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
 import net.flatmap.cobra.{CombinedRemoteEdit, RemoteEdit, _}
 import net.flatmap.collaboration._
 
@@ -51,6 +51,7 @@ class IsabelleService(env: Map[String,String]) extends Actor with ActorLogging w
     //context.system.scheduler.schedule(1 second, 1 second)(refreshAnnotations())
 
     {
+
       case AcknowledgeEdit(id2) if id == id2 => clientInterface.serverAck()
       case RemoteEdit(id2, op) if id == id2 => clientInterface.remoteEdit(op)
       case RemoteAnnotations(id2, aid, as) if id == id2 => clientInterface.remoteAnnotations(aid, as)

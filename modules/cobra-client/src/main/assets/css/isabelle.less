@@ -1,5 +1,7 @@
 .CodeMirror {
   .CodeMirror-linewidget {
+    overflow: visible;
+
     block {
       display: inline-block;
     }
@@ -99,15 +101,41 @@
       padding-left: 10px;
       margin: 4px 5px 8px 0;
       background-color: #eee;
+
+      &.fragment {
+        max-height: 0;
+        margin: 0;
+        opacity: 0 !important;
+        &.visible.all, &.current-fragment {
+          max-height: 250px;
+          margin: 4px 5px 8px 0;
+          opacity: 1 !important;
+        }
+      }
     }
   }
+
+  span.cm-m-isabelle.delimiter:first-child + span.cm-m-isabelle {
+    font-family: "Fira Code";
+  }
+
+  span.cm-m-isabelle.delimiter:first-child {
+      font-family: "Fira Code";
+  }
+  span.cm-m-isabelle:first-child {
+      font-family: "Fira Code";
+  }
+  span.cm-m-isabelle {
+      font-family: MathJax_Main;
+  }
+
   span.cm-m-isabelle.cm-identifier, span.cm-m-isabelle.cm-ident {
     font-family: "MathJax_Math" !important;
     font-style: italic;
   }
 
   span.cm-m-isabelle.string, span.cm-m-isabelle.cm-string {
-    font-family: "MathJax_Main";
+    font-family: "MathJax_Math";
   }
 
   span.cm-m-isabelle.cm-tfree, span.cm-m-isabelle.cm-free {
