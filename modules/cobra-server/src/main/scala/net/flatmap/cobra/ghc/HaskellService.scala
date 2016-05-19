@@ -66,7 +66,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
 
     val proc1: Seq[String] = Seq("ghc-mod", "info", name, it)
     val output = proc1.lineStream.mkString("\n").replaceAll("-- Defined at (.+?):(\\d+):(\\d+)", "").replace('\0','\n').split("\n").mkString("<br>")
-    output.foreach(char => println(char + ":" + char.toInt))
+    
     if (!output.startsWith("Cannot show info"))
       Some(Information(id,from,to,HaskellMarkup.prettify(output)))
     else {
