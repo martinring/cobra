@@ -19,11 +19,15 @@ case class InitDoc(id: String, content: String, mode: Mode) extends ClientMessag
 case class Edit(id: String, operation: Operation[Char], revision: Long) extends ClientMessage with SnippetMessage
 case class Annotate(id: String, aid: String, annotations: Annotations, revision: Long) extends ClientMessage with SnippetMessage
 
+case class RequestInfo(id: String, from: Int, to: Int) extends ClientMessage with ServerMessage with SnippetMessage
+case class Information(id: String, from: Int, to: Int, body: String) extends ClientMessage with ServerMessage with SnippetMessage
+
 case class AcknowledgeEdit(id: String) extends ServerMessage with SnippetMessage
 case class RemoteEdit(id: String, op: Operation[Char]) extends ServerMessage with SnippetMessage
 case class RemoteAnnotations(id: String, aid: String, annotations: Annotations) extends ServerMessage with SnippetMessage
 case class CombinedRemoteEdit(id: String, op: Operation[Char], revisions: Long) extends ServerMessage with SnippetMessage
 case class ResetSnippet(id: String, content: String, revision: Long) extends ServerMessage with SnippetMessage
+
 
 trait Picklers {
   implicit val charActionPickler: Pickler[Action[Char]] =

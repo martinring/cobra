@@ -1,11 +1,12 @@
 package net.flatmap.cobra
 
 import net.flatmap.collaboration.{Annotations, ClientInterface, EditorInterface, Operation}
-import net.flatmap.js.codemirror.{CodeMirror, Doc, EditorChange, LinkedDocOptions}
+import net.flatmap.js.codemirror._
 import net.flatmap.js.reveal.Reveal
 import org.scalajs.dom.{Element, console, raw}
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
+import org.scalajs.dom.raw.HTMLElement
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -60,10 +61,8 @@ object Code {
       case (name,sl) if ends.contains(name) =>
         val el = ends(name)
         val doc = root.linkedDoc(new LinkedDocOptions(from = sl, to = el, sharedHist = true))
-        doc.on("beforeChange",(x: CodeMirror,y: org.scalajs.dom.Event) => {
-          CodeMirror.signal(root, "beforeChange", x, y)
-          ()
-        })
+        doc.on("beforeChange",(x: Doc, y: EditorChange) => CodeMirror.signal(root, "beforeChange", root, y))
+        doc.on("cursorActivity",(x: Doc) => CodeMirror.signal(root, "cursorActivity", x))
         name -> doc
     }
   }
@@ -96,6 +95,8 @@ object Code {
 
     var client = ClientInterface[Char](editorInterface)
 
+    var hoverInfo = Option.empty[LineWidget]
+
     CobraJS.listenOn(id) {
       case AcknowledgeEdit(_) => client.serverAck()
       case RemoteEdit(_,op) => client.remoteEdit(op)
@@ -107,14 +108,40 @@ object Code {
         silently(doc.setValue(content))
       case RemoteAnnotations(_,aid,annotations) =>
         client.remoteAnnotations(aid,annotations)
+      case Information(_,from,to,body) =>
+        val root = doc
+        root.iterLinkedDocs((doc: Doc, bool: Boolean) => if (doc.getEditor() != js.undefined) {
+          val pos = root.posFromIndex(to)
+          if (doc.firstLine() <= pos.line && doc.lastLine() >= pos.line) {
+            val elem = net.flatmap.js.util.HTML(s"<div class='info'>$body</div>").head.asInstanceOf[HTMLElement]
+            hoverInfo.foreach(_.clear())
+            hoverInfo = Some(doc.getEditor().addLineWidget(pos.line, elem))
+          }
+        })
     }
 
-    val changeHandler: js.Function2[CodeMirror,org.scalajs.dom.Event,Unit] =
-      (cm: CodeMirror, e: org.scalajs.dom.Event) => if (!silent) {
-        client.localEdit(CodeMirrorOps.changeToOperation(doc,e.asInstanceOf[EditorChange]))
+    val changeHandler: js.Function2[Doc,EditorChange,Unit] =
+      (doc: Doc, e: EditorChange) => if (!silent) {
+        client.localEdit(CodeMirrorOps.changeToOperation(doc,e))
       }
 
+    val selectHandler: js.Function1[Doc,Unit] = {
+      val root = doc
+      (doc: Doc) => {
+        hoverInfo.foreach(_.clear())
+        hoverInfo = None
+        console.log("selection Change")
+        doc.listSelections().filter(r => r.head.line != r.anchor.line || r.head.ch != r.anchor.ch).foreach(range =>
+          if (range.anchor.line < range.head.line || range.anchor.line == range.head.line && range.anchor.ch < range.head.ch)
+            CobraJS.send(RequestInfo(id, root.indexFromPos(range.anchor), root.indexFromPos(range.head)))
+          else
+            CobraJS.send(RequestInfo(id, root.indexFromPos(range.head), root.indexFromPos(range.anchor)))
+        )
+      }
+    }
+
     doc.on("beforeChange",changeHandler)
+    doc.on("cursorActivity",selectHandler)
   }
 
   def initializeDocuments(root: NodeSeqQuery): Map[String,Doc] = {

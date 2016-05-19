@@ -52,11 +52,11 @@ class IsabelleService(env: Map[String,String]) extends Actor with ActorLogging w
     //context.system.scheduler.schedule(1 second, 1 second)(refreshAnnotations())
 
     {
-
       case AcknowledgeEdit(id2) if id == id2 => clientInterface.serverAck()
       case RemoteEdit(id2, op) if id == id2 => clientInterface.remoteEdit(op)
       case RemoteAnnotations(id2, aid, as) if id == id2 => clientInterface.remoteAnnotations(aid, as)
       case CombinedRemoteEdit(id2, op, rev) if id == id2 => clientInterface.combinedRemoteEdit(op, rev)
+      case RequestInfo(id2,from,to) if id == id2 => getInfo(id,from,to).foreach(server ! _)
     }
   }
 }

@@ -42,7 +42,6 @@ class SnippetServer(env: Map[String,String]) extends Actor with ActorLogging {
     case Annotate(id,aid,as,rev) =>
       context.become(initialized(mode,server,listeners,annotations + (aid -> as)))
       (listeners - sender).foreach(_ ! RemoteAnnotations(id,aid,as))
-      log.info("annotated something")
     case Edit(id,op,rev) =>
       log.debug("applying edit")
       server.applyOperation(op,rev) match {
@@ -56,5 +55,9 @@ class SnippetServer(env: Map[String,String]) extends Actor with ActorLogging {
           log.error(e,"could not apply operation")
           sender ! ResetSnippet(id,server.text.mkString,server.revision)
       }
+    case msg: RequestInfo =>
+      (listeners - sender).foreach(_ ! msg)
+    case msg: Information =>
+      (listeners - sender).foreach(_ ! msg)
   }
 }
