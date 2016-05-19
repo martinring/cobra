@@ -57,33 +57,32 @@ object CodeMirrorOps {
         }
         val buf = mutable.Buffer.empty[Clearable]
         c.messages.foreach { message =>
-          doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
-            Option(doc.getEditor()).foreach { editor => if (editor != js.undefined && doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
-              message match {
-                case ErrorMessage(txt) =>
-                  val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                  buf += editor.addLineWidget(to.line, elem)
-                case WarningMessage(txt) =>
-                  val elem = net.flatmap.js.util.HTML(s"<div class='warning ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                  buf += editor.addLineWidget(to.line, elem)
-                case InfoMessage(txt) =>
-                  val elem = net.flatmap.js.util.HTML(s"<div class='info ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                  buf += editor.addLineWidget(to.line, elem)
-                case OutputMessage(txt) =>
-                  val elem = net.flatmap.js.util.HTML(s"<div class='info ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                  buf += editor.addLineWidget(to.line, elem)
-                case StateMessage(txt) =>
-                  val elem = if (editor.getOption("state-fragments") == "all")
-                    net.flatmap.js.util.HTML(s"<div class='output all fragment ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                  else if (editor.getOption("state-fragments") == "single")
-                    net.flatmap.js.util.HTML(s"<div class='output fragment ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                  else
-                    net.flatmap.js.util.HTML(s"<div class='output ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                  buf += editor.addLineWidget(to.line, elem)
-
-              }
-            } }
-          }
+          def widget(doc: Doc) = Option(doc.getEditor()).foreach { editor => if (editor != js.undefined && doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
+            message match {
+              case ErrorMessage(txt) =>
+                val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                buf += editor.addLineWidget(to.line, elem)
+              case WarningMessage(txt) =>
+                val elem = net.flatmap.js.util.HTML(s"<div class='warning ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                buf += editor.addLineWidget(to.line, elem)
+              case InfoMessage(txt) =>
+                val elem = net.flatmap.js.util.HTML(s"<div class='info ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                buf += editor.addLineWidget(to.line, elem)
+              case OutputMessage(txt) =>
+                val elem = net.flatmap.js.util.HTML(s"<div class='info ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                buf += editor.addLineWidget(to.line, elem)
+              case StateMessage(txt) =>
+                val elem = if (editor.getOption("state-fragments") == "all")
+                  net.flatmap.js.util.HTML(s"<div class='output all fragment ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                else if (editor.getOption("state-fragments") == "single")
+                  net.flatmap.js.util.HTML(s"<div class='output fragment ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                else
+                  net.flatmap.js.util.HTML(s"<div class='output ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
+                buf += editor.addLineWidget(to.line, elem)
+            }
+          } }
+          widget(doc)
+          doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) => widget(doc) }
         }
         (offset + l, markers ++ buf :+ marker)
     }

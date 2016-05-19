@@ -110,14 +110,16 @@ object Code {
         client.remoteAnnotations(aid,annotations)
       case Information(_,from,to,body) =>
         val root = doc
-        root.iterLinkedDocs((doc: Doc, bool: Boolean) => if (doc.getEditor() != js.undefined) {
+        def widget(doc: Doc) = if (doc.getEditor() != js.undefined) {
           val pos = root.posFromIndex(to)
           if (doc.firstLine() <= pos.line && doc.lastLine() >= pos.line) {
             val elem = net.flatmap.js.util.HTML(s"<div class='info'>$body</div>").head.asInstanceOf[HTMLElement]
             hoverInfo.foreach(_.clear())
             hoverInfo = Some(doc.getEditor().addLineWidget(pos.line, elem))
           }
-        })
+        }
+        widget(root)
+        root.iterLinkedDocs((doc: Doc, bool: Boolean) => widget(doc))
     }
 
     val changeHandler: js.Function2[Doc,EditorChange,Unit] =
