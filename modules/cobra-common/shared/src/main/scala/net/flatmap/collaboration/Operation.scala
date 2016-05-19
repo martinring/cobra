@@ -140,6 +140,7 @@ object Operation {
           if (i.length < d)       loop(as,Delete(d-i.length)::bs,xs)
           else if (i.length == d) loop(as,bs,xs)
           else                    loop(Insert(i.drop(d))::as,bs,xs)
+        case other => Failure(new Exception("invalid state"))
       }
       case _ => Failure(new Exception(s"the operations cannot be composed: output-length of a ($a) must match input-length of b ($b)"))
     }
