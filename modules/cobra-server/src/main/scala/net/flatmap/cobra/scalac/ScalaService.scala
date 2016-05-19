@@ -1,34 +1,31 @@
-package net.flatmap.cobra.isabelle
+package net.flatmap.cobra.scalac
 
-import isabelle.Session
-import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
-import net.flatmap.cobra.{CombinedRemoteEdit, RemoteEdit, _}
+import akka.actor.{Actor, ActorRef, Props}
+import net.flatmap.cobra._
 import net.flatmap.collaboration._
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-import language.postfixOps
-
-object IsabelleService extends LanguageService {
-  def props(env: Map[String,String]) = Props(classOf[IsabelleService],env)
+object ScalaService extends LanguageService  {
+  def props(env: Map[String,String]) = Props(classOf[ScalaService],env)
 }
 
-class IsabelleService(env: Map[String,String]) extends Actor with ActorLogging with IsabelleConversions with IsabelleSession {
-  implicit val dispatcher = context.dispatcher
-
-  override def preStart: Unit = Await.ready(start(env), 20 seconds)
+class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler {
+  override def preStart() = println("hello from scala")
 
   def receive = {
     case ResetSnippet(id, content, rev) =>
       context.become(initialized(id,content,rev,sender()))
   }
 
+  val files = collection.mutable.Map.empty[String,(String,ClientInterface[Char])]
+
   def initialized(id: String, content: String, rev: Long, server: ActorRef): Receive = {
     lazy val editorInterface: EditorInterface[Char] = new EditorInterface[Char] {
       def applyOperation(operation: Operation[Char]) = {
-        files.get(fileToNodeName(id)).foreach { case (a,b) =>
-          val f = OpenedFile(id,clientInterface,Document(b.state).apply(operation).get.content.mkString)
-          updateFile(fileToNodeName(id),f,opToDocumentEdits(id,f.state,operation))
+        files.get(id).foreach { case (b,c) =>
+          val nc = Document(b).apply(operation).get.content.mkString
+          files(id) = (nc,c)
+          reset()
+          compile(id,nc)
         }
       }
 
@@ -47,9 +44,9 @@ class IsabelleService(env: Map[String,String]) extends Actor with ActorLogging w
 
     lazy val clientInterface = ClientInterface[Char](editorInterface)
 
-    Await.ready(updateFile(fileToNodeName(id),OpenedFile(id,clientInterface,content),initEdits(id,content)), 5 seconds)
-
-    //context.system.scheduler.schedule(1 second, 1 second)(refreshAnnotations())
+    files += id -> (content,clientInterface)
+    reset()
+    compile(id,content)
 
     {
       case AcknowledgeEdit(id2) if id == id2 => clientInterface.serverAck()

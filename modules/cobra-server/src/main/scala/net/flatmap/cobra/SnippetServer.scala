@@ -2,12 +2,18 @@ package net.flatmap.cobra
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import net.flatmap.cobra.isabelle.IsabelleService
+import net.flatmap.cobra.scalac.ScalaService
 import net.flatmap.collaboration.{Annotations, Document, Server}
 
 import scala.util.{Failure, Success}
 
 object SnippetServer {
   def props(env: Map[String,String]) = Props(classOf[SnippetServer],env)
+
+  val services: Map[Mode,LanguageService] = Map(
+    Isabelle -> IsabelleService,
+    Scala -> ScalaService
+  )
 }
 
 /**
@@ -16,11 +22,11 @@ object SnippetServer {
 class SnippetServer(env: Map[String,String]) extends Actor with ActorLogging {
   def receive = {
     case InitDoc(id,content,mode) =>
-      val service = if (mode == Isabelle) {
-        val isa = context.actorOf(IsabelleService.props(env),"isabelle")
-        isa ! ResetSnippet(id,content,0)
-        Some(isa)
-      } else None
+      val service = SnippetServer.services.get(mode).map { ls =>
+        val src = context.actorOf(ls.props(env),mode.name)
+        src ! ResetSnippet(id,content,0)
+        src
+      }
       context.become(initialized(mode, new Server(Document(content)), Set(sender) ++ service,Map.empty))
       context.watch(sender)
   }
