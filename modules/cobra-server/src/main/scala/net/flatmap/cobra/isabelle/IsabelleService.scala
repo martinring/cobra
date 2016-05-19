@@ -7,6 +7,7 @@ import net.flatmap.collaboration._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import language.postfixOps
 
 object IsabelleService {
   def props(env: Map[String,String]) = Props(classOf[IsabelleService],env)

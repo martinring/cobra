@@ -32,7 +32,7 @@ object IsabelleMarkup {
       Markup.KEYWORD1 -> "command",
       Markup.KEYWORD2 -> "keyword",
       Markup.STRING -> "string",
-      Markup.ALTSTRING -> "string",
+      Markup.ALT_STRING -> "string",
       Markup.VERBATIM -> "verbatim",
       Markup.LITERAL -> "keyword",
       Markup.DELIMITER -> "delimiter",
@@ -64,13 +64,13 @@ object IsabelleMarkup {
     Markup.ERROR -> error_pri, Markup.ERROR_MESSAGE -> error_pri)
 
   def highlighting(snapshot: Document.Snapshot): Annotations = {
-    val cs: List[Text.Info[Option[String]]] = snapshot.cumulate(Text.Range(0,Int.MaxValue), Option.empty[String], classesElements, _ =>
+    val cs: List[Text.Info[Option[(String,String)]]] = snapshot.cumulate(Text.Range(0,Int.MaxValue), Option.empty[(String,String)], classesElements, _ =>
       {
-        case (_, Text.Info(_,elem)) => Some(classes.get(elem.name))
+        case (_, Text.Info(_,elem)) => Some(classes.get(elem.name).map((_,elem.body.mkString)))
       })
     cs.foldLeft(new Annotations) {
       case (as, Text.Info(range,None))    => as.plain(range.length)
-      case (as, Text.Info(range,Some(c))) => as.annotate(range.length, AnnotationOptions(classes = Set(c)))
+      case (as, Text.Info(range,Some((c,t)))) => as.annotate(range.length, AnnotationOptions(classes = Set(c),tooltip = Some(t)))
     }
   }
 
@@ -107,6 +107,10 @@ object IsabelleMarkup {
           .collect{
             case XML.Elem(markup,body) if markup.name == Markup.WRITELN_MESSAGE =>
               OutputMessage(body.mkString)
+            case XML.Elem(markup,body) if markup.name == Markup.INFORMATION_MESSAGE =>
+              InfoMessage(body.mkString)
+            case XML.Elem(markup,body) if markup.name == Markup.STATE_MESSAGE =>
+              StateMessage(body.mkString)
             case XML.Elem(markup,body) if markup.name == Markup.ERROR_MESSAGE =>
               ErrorMessage(body.mkString) //isabelle.Pretty.formatted(body, 120.0, isabelle.Pretty.Metric_Default).mkString("\n")
             case XML.Elem(markup,body) if markup.name == Markup.WARNING_MESSAGE =>
