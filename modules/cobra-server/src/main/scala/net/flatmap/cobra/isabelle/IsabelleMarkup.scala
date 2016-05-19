@@ -140,7 +140,7 @@ object IsabelleMarkup {
       Markup.TVAR -> "schematic type variable")
 
   private val tooltip_elements =
-    Markup.Elements(Markup.LANGUAGE, Markup.TIMING, Markup.ENTITY, Markup.SORTING,
+    Markup.Elements(Markup.TIMING, Markup.ENTITY, Markup.SORTING,
       Markup.TYPING, Markup.ML_TYPING, Markup.ML_BREAKPOINT, /*Markup.PATH, */Markup.DOC,
       Markup.URL, Markup.MARKDOWN_PARAGRAPH, Markup.Markdown_List.name) ++
       Markup.Elements(tooltip_descriptions.keySet)
@@ -205,8 +205,8 @@ object IsabelleMarkup {
               if (Debugger.breakpoint_state(breakpoint)) "breakpoint (enabled)"
               else "breakpoint (disabled)"
             Some(add(prev, r, (true, XML.Text(text))))
-          case (prev, Text.Info(r, XML.Elem(Markup.Language(language, _, _, _), _))) =>
-            Some(add(prev, r, (true, XML.Text("language: " + language))))
+          /*case (prev, Text.Info(r, XML.Elem(Markup.Language(language, _, _, _), _))) =>
+            Some(add(prev, r, (true, XML.Text("language: " + language))))*/
 
           case (prev, Text.Info(r, XML.Elem(Markup(Markup.MARKDOWN_PARAGRAPH, _), _))) =>
             Some(add(prev, r, (true, XML.Text("Markdown: paragraph"))))

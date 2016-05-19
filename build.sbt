@@ -32,7 +32,9 @@ lazy val server = (project in file("modules/cobra-server"))
     libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.5",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.5",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7",
-    libraryDependencies += "org.webjars" % "webjars-locator" % "0.31"
+    libraryDependencies += "org.webjars" % "webjars-locator" % "0.31",
+    libraryDependencies += "org.scala-lang" % "scala-compiler" % "2.11.8",
+    libraryDependencies += "org.scala-refactoring" %% "org.scala-refactoring.library" % "0.6.2"
   ).dependsOn(commonJVM, clientAssets)
 
 lazy val clientAssets  = (project in file("modules/cobra-client"))
