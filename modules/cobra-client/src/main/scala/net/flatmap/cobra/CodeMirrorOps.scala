@@ -58,7 +58,7 @@ object CodeMirrorOps {
         val buf = mutable.Buffer.empty[Clearable]
         c.messages.foreach { message =>
           doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) =>
-            Option(doc.getEditor()).foreach { editor => if (doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
+            Option(doc.getEditor()).foreach { editor => if (editor != js.undefined && doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
               message match {
                 case ErrorMessage(txt) =>
                   val elem = net.flatmap.js.util.HTML(s"<div class='error ${c.classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
