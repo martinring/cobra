@@ -18,6 +18,7 @@ case class Client[T](val rev: Long, pending: Option[Operation[T]] = None, buffer
       val Success((a1,b1)) = Operation.transform(p,operation)
       val Success((a2,b2)) = Operation.transform(b,b1)
       (b2,Client(rev + 1, Some(a1), Some(a2)))
+    case _ => sys.error("invalid state")
   }
 
   def ack: (Option[Operation[T]], Client[T]) =
@@ -40,6 +41,7 @@ trait ClientInterface[T] {
   def localEdit(operation: Operation[T])
   def localAnnotations(aid: String, annotations: Annotations)
   def reset(revision: Long)
+  def combinedRemoteEdit(operation: Operation[T], revisions: Long)
 }
 
 object ClientInterface {

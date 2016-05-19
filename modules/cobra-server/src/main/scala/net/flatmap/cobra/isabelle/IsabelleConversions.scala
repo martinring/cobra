@@ -15,7 +15,7 @@ trait IsabelleConversions { self: IsabelleSession =>
 
   def fileToNodeHeader(id: String, content: String): Document.Node.Header =
     Exn.capture {
-      session.resources.check_thy_reader("", fileToNodeName(id), new scala.util.parsing.input.CharSequenceReader(content))
+      session.resources.check_thy_reader("", fileToNodeName(id), new scala.util.parsing.input.CharSequenceReader(content), Token.Pos.start)
     } match {
       case Exn.Res(header: Document.Node.Header) => header
       case Exn.Exn(exn) => Document.Node.bad_header(Exn.message(exn))
