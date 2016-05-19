@@ -111,6 +111,9 @@ class CobraServer(val directory: File) {
     case msg@Edit(id,op,rev) =>
       documents.get(id).foreach(doc => doc.tell(msg,client))
       Source.empty
+    case msg@RequestInfo(id,from,to) =>
+      documents.get(id).foreach(doc => doc.tell(msg,client))
+      Source.empty
     case other =>
       log.error(s"could not handle message $other")
       Source.empty

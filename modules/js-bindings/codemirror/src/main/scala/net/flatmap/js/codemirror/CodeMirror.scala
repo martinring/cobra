@@ -8,7 +8,7 @@ import scala.scalajs.js.{RegExp, UndefOr, |}
 
 @JSName("CodeMirror")
 @js.native
-object CodeMirror extends js.Object with WithEvents {
+object CodeMirror extends js.Object {
   def apply(place: Element): CodeMirror = js.native  
   def version: String = js.native
   def fromTextArea(host: HTMLTextAreaElement, options: CodeMirrorConfiguration = js.native): CodeMirror with FromTextArea = js.native
@@ -44,7 +44,11 @@ trait FromTextArea extends js.Object {
 
 @JSName("CodeMirror")
 @js.native
-class CodeMirror protected () extends WithEvents {
+class CodeMirror protected () extends js.Object {
+  def on(eventName: String, handler: js.Function1[CodeMirror, Unit]): Unit = js.native
+  def off(eventName: String, handler: js.Function1[CodeMirror, Unit]): Unit = js.native
+  def on[T](eventName: String, handler: js.Function2[CodeMirror, T, Unit]): Unit = js.native
+  def off[T](eventName: String, handler: js.Function2[CodeMirror, T, Unit]): Unit = js.native
   def this(place: Element, options: CodeMirrorConfiguration) = this()
   def this(place: Element) = this()
   def this(place: js.Function1[Element, Unit], options: CodeMirrorConfiguration = js.native) = this()
@@ -294,12 +298,6 @@ trait SelectionOptions extends js.Object {
   var bias: Int = js.native  
 }
 
-@js.native
-trait WithEvents extends js.Object {
-  def on(eventName: String, handler: js.Function2[CodeMirror,Event, Unit]): Unit = js.native
-  def off(eventName: String, handler: js.Function2[CodeMirror,Event, Unit]): Unit = js.native
-}
-
 @ScalaJSDefined
 class LinkedDocOptions(
   val sharedHist: UndefOr[Boolean] = js.undefined,
@@ -308,7 +306,11 @@ class LinkedDocOptions(
   val mode: UndefOr[String | js.Object] = js.undefined) extends js.Object
 
 @js.native
-trait Doc extends DocEditorCommon with WithEvents {
+trait Doc extends DocEditorCommon {
+  def on(eventName: String, handler: js.Function1[Doc, Unit]): Unit = js.native
+  def off(eventName: String, handler: js.Function1[Doc, Unit]): Unit = js.native
+  def on[T](eventName: String, handler: js.Function2[Doc, T, Unit]): Unit = js.native
+  def off[T](eventName: String, handler: js.Function2[Doc, T, Unit]): Unit = js.native
   def getEditor(): CodeMirror = js.native
   def copy(copyHistory: Boolean = js.native): Doc = js.native
   def linkedDoc(options: LinkedDocOptions): Doc = js.native
@@ -331,12 +333,12 @@ trait Coordinates extends js.Object {
 }
 
 @js.native
-trait LineHandle extends WithEvents {
+trait LineHandle extends js.Object {
   def text: String = js.native
 }
 
 @js.native
-trait TextMarker extends WithEvents with Clearable{
+trait TextMarker extends Clearable{
   def find(): FromTo = js.native
   def getOptions(copyWidget: Boolean): TextMarkerOptions = js.native
 }
@@ -347,7 +349,7 @@ trait Clearable extends js.Object {
 }
 
 @js.native
-trait LineWidget extends WithEvents with Clearable {
+trait LineWidget extends Clearable {
   def changed(): Unit = js.native
 }
 

@@ -26,13 +26,13 @@ package net.flatmap.cobra.isabelle
 
 import akka.actor.{ActorLogging, PoisonPill}
 import isabelle._
-
 import isabelle.Session
 import isabelle.Build
 import isabelle.Path
 import isabelle.Document
 import isabelle.XML
 import isabelle.Isabelle_System
+import net.flatmap.cobra.Information
 import net.flatmap.collaboration.ClientInterface
 
 import scala.concurrent.Promise
@@ -59,6 +59,13 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
     version.map(p.success)
     files(name) = (p.future, file)
     p.future.map(_ => ())
+  }
+
+  def getInfo(id: String, from: Int, to: Int): Option[Information] = {
+    val snapshot = session.snapshot(fileToNodeName(id))
+    IsabelleMarkup.tooltip(snapshot, Text.Range.apply(from,to)).map { x =>
+      Information(id,x.range.start,x.range.stop,x.info.mkString)
+    }
   }
 
   def refreshAnnotations() = {
@@ -90,7 +97,7 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
         log.info("thy_load.append({}, {})", dir, source_path)
         val path = source_path.expand
         if (dir == "" || path.is_absolute)           
-          Isabelle_System.platform_path(path)
+          File.platform_path(path)
         else {
           (Path.explode(dir) + source_path).expand.implode
         }
@@ -117,7 +124,6 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
       log.info(XML.content(msg.body))
     }
     session.commands_changed += Session.Consumer("clide"){ msg =>
-      log.info("commands_changed: " + msg)
       outdated ++= msg.nodes
       refreshAnnotations()
     }

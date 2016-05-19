@@ -88,5 +88,7 @@ object ClientInterface {
     def reset(revision: Long) = {
       client = new Client[T](revision)
     }
+
+
   }
 }
