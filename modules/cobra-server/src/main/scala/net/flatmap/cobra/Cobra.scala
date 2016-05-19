@@ -58,7 +58,7 @@ object Cobra extends App {
     val conf = scala.io.Source.fromURL(getClass.getResource("/template-cobra.conf")).mkString
       .replaceAll("\\{\\s*title\\s*\\}", s""""$name"""")
       .replaceAll("\\{\\s*lang\\s*\\}", '"' + System.getProperty("user.language") + '"')
-      .replaceAll("\\{\\s*isa_home\\s*\\}", s""""isa_home"""")
+      .replaceAll("\\{\\s*isa_home\\s*\\}", s""""$isa_home"""")
 
     val slides = scala.io.Source.fromURL(getClass.getResource("/template-slides.html")).mkString
       .replaceAll("\\{\\s*title\\s*\\}", name)
