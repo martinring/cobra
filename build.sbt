@@ -4,18 +4,20 @@ cancelable in Global := true
 
 val commonSettings = Seq(
   scalaVersion := "2.11.8",
-  version := "0.1",
+  version := "0.9",
   organization := "net.flatmap",
   scalacOptions ++= Seq("-deprecation","-feature")
 )
+
+scalaVersion := "2.11.8"
 
 lazy val server = (project in file("modules/cobra-server"))
   .enablePlugins(UniversalPlugin,LinuxPlugin)
   .settings(commonSettings :_*)
   .settings(
     name := "cobra.server",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.4",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.5",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.5",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7",
     libraryDependencies += "org.webjars" % "webjars-locator" % "0.31"
   ).dependsOn(commonJVM, clientAssets)

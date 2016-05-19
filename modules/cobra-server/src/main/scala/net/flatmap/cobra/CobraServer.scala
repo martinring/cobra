@@ -79,7 +79,7 @@ class CobraServer(val directory: File) {
       complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),  index))
     } ~
     path("socket")(handleWebSocketMessagesForProtocol(socket,"cobra")) ~
-    path("lib" / PathMatchers.Segment / PathMatchers.Rest) {
+    path("lib" / PathMatchers.Segment / PathMatchers.Remaining) {
       (segment,path) =>
         val res = Try(locator.getFullPath(segment,path))
         res.toOption.fold[Route](reject)(getFromResource)
@@ -110,6 +110,9 @@ class CobraServer(val directory: File) {
       Source.empty
     case msg@Edit(id,op,rev) =>
       documents.get(id).foreach(doc => doc.tell(msg,client))
+      Source.empty
+    case other =>
+      log.error(s"could not handle message $other")
       Source.empty
   }
 

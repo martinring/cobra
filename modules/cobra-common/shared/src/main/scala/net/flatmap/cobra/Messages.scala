@@ -50,6 +50,7 @@ trait Picklers {
       .addConcreteType[WarningMessage]
       .addConcreteType[InfoMessage]
       .addConcreteType[OutputMessage]
+      .addConcreteType[StateMessage]
 }
 
 object ClientMessage extends Picklers {

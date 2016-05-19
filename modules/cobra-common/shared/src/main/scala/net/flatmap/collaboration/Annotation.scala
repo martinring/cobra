@@ -44,6 +44,8 @@ case class ErrorMessage(content: String) extends AnnotationMessage
 case class WarningMessage(content: String) extends AnnotationMessage
 case class InfoMessage(content: String) extends AnnotationMessage
 case class OutputMessage(content: String) extends AnnotationMessage
+case class StateMessage(content: String) extends AnnotationMessage
+
 
 case class AnnotationOptions(
   val classes: Set[String] = Set.empty,

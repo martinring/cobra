@@ -12,20 +12,9 @@ import scala.util.{Success, Failure}
   * Created by martin on 03.02.16.
   */
 object Cobra extends App {
-  if (args.nonEmpty && args.head == "new") {
-    printLogo()
-    val name = if (args.length > 1) args(1) else {
-      scala.io.StdIn.readLine("please enter a name for the new presentation: ")
-    }
-    println(s"creating new cobra presentation '$name'...")
-    sys.exit()
-  }
-
-  val directory = if (args.isEmpty) new File(".").getCanonicalFile else new File(args.head)
-
   private def assume(cond: Boolean, msg: String) = if (!cond) {
     println("failed to start cobra: " + msg)
-    sys.exit(-1)
+    sys.exit()
   }
 
   private def printLogo() = {
@@ -38,6 +27,21 @@ object Cobra extends App {
     println("""| version 0.1 - 2016 Martin Ring |""")
     println("")
   }
+
+  if (args.nonEmpty && args.head == "new") {
+    printLogo()
+    val name = if (args.length > 1) args(1) else {
+      scala.io.StdIn.readLine("please enter a name for the new presentation: ")
+    }
+    println(s"creating new cobra presentation '$name'...")
+    val dir = new File(name)
+    assume(!dir.exists() || !dir.isDirectory, s"directory '$name' exists already")
+    assume(dir.mkdir(), "could not create directory")
+
+    sys.exit()
+  }
+
+  val directory = if (args.isEmpty) new File(".").getCanonicalFile else new File(args.head)
 
   { // initialize
     printLogo()

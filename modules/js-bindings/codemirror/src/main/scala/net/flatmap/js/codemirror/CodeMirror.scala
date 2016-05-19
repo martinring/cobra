@@ -22,7 +22,7 @@ object CodeMirror extends js.Object with WithEvents {
   def Pos(line: Int, ch: Int = js.native): Position = js.native
   def changeEnd(change: js.Any): Position = js.native
   def copyState[S](mode: Mode[S], state: S): S = js.native
-  def signal(target: js.Any, name: String, args: js.Any*) = js.native
+  def signal(target: js.Any, name: String, args: js.Any*): Unit = js.native
 
   def Pass: Nothing = js.native
   def defineMode[S](name: String, constructor: js.Function2[CodeMirrorConfiguration, js.Any, Mode[S]]): Unit = js.native
