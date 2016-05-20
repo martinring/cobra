@@ -123,6 +123,7 @@ lazy val codemirror = (project in file("modules/js-bindings/codemirror"))
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
     jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "addon/runmode/runmode.js" dependsOn "codemirror.js",
     jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/haskell/haskell.js" dependsOn "codemirror.js",
     jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/clike/clike.js" dependsOn "codemirror.js",
     jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/htmlmixed/htmlmixed.js" dependsOn "codemirror.js",
