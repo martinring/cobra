@@ -1,6 +1,7 @@
 package net.flatmap.cobra
 
 import java.io.{BufferedWriter, File, FileWriter}
+import java.nio.file.Paths
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -87,7 +88,7 @@ object Cobra extends App {
     assume(new File(directory.getPath + File.separator + "slides.html").exists(), "no slides.html found")
     assume(new File(directory.getPath + File.separator + "cobra.conf").exists(), "no cobra.conf found")
 
-    val server = new CobraServer(directory)
+    val server = new CobraServer(Paths.get(directory.getCanonicalFile.toURI))
     server.start()
     while (scala.io.StdIn.readLine != "exit") ()
     server.stop()
