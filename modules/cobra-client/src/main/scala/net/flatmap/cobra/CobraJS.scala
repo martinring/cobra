@@ -4,14 +4,14 @@ import net.flatmap.cobra.isabelle.{IsabelleMode, IsabelleModeConfig, IsabelleMod
 import net.flatmap.js.codemirror.{CodeMirror, CodeMirrorConfiguration}
 import net.flatmap.js.reveal._
 import net.flatmap.js.util._
-import org.scalajs.dom.raw.HTMLLinkElement
+import org.scalajs.dom.raw.{HTMLElement, HTMLLinkElement}
 
 import scala.collection.mutable
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js._
 import scala.util.control.NonFatal
-import org.scalajs.dom.console
+import org.scalajs.dom._
 
 /**
   * Created by martin on 04.02.16.
@@ -26,6 +26,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
     handlers(id) += f
   }
 
+  var cmTheme = RVar("default")
+
   def receive = {
     case msg: SnippetMessage => handlers(msg.id).foreach(_(msg))
     case RevealOptionsUpdate(options) =>
@@ -36,6 +38,16 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       }
       Reveal.configure(old.asInstanceOf[RevealOptions])
       Reveal.sync()
+    case TitleUpdate(title) =>
+      query("title").text = title
+    case LanguageUpdate(lang) =>
+      query("html").elements.head.asInstanceOf[HTMLElement].lang = lang
+    case ThemeUpdate(code,slides) =>
+      val slideTheme = document.getElementById("slideTheme").asInstanceOf[HTMLLinkElement]
+      val codeTheme = document.getElementById("codeTheme").asInstanceOf[HTMLLinkElement]
+      codeTheme.href = codeTheme.href.replaceAll("\\w*\\.css",code + ".css")
+      slideTheme.href = slideTheme.href.replaceAll("\\w*\\.css",slides + ".css")
+      cmTheme := code
   }
 
   var heartBeatAcknowledged: Boolean = true

@@ -1,7 +1,9 @@
 package net.flatmap.cobra
 
-import java.nio.file.Path
+import java.nio.file.{Path, StandardWatchEventKinds, WatchEvent}
 
+import better.files._
+import FileWatcher._
 import akka.{Done, NotUsed}
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message}
 import akka.stream.scaladsl._
@@ -11,7 +13,7 @@ import scala.io
 import akka.actor._
 import akka.event.{LogSource, Logging}
 import akka.http.scaladsl.model.{HttpHeader, HttpMethods, HttpProtocols}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
+import akka.stream.{ActorMaterializer, OverflowStrategy, scaladsl}
 import com.typesafe.config._
 import org.webjars.WebJarAssetLocator
 
@@ -21,12 +23,11 @@ import scala.util.{Failure, Success, Try}
 import scala.collection.JavaConversions._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.CacheDirectives
-import net.flatmap.cobra.util.FileWatcherActor
-import net.flatmap.cobra.util.FileWatcher._
+import akka.http.scaladsl.server.Directives._
 
 object CobraServer {
   implicit val logSource: LogSource[CobraServer] = new LogSource[CobraServer] {
-    def genString(o: CobraServer): String = o.directory.toFile.getName
+    def genString(o: CobraServer): String = o.directory.name
     override def getClazz(o: CobraServer): Class[_] = o.getClass
   }
 }
@@ -34,28 +35,28 @@ object CobraServer {
 /**
   * Created by martin on 03.02.16.
   */
-class CobraServer(val directory: Path) {
+class CobraServer(val directory: File) {
   lazy val log = Logging(system, this)
 
-  val configPath = directory.resolve("cobra.conf")
+  val configPath = directory / "cobra.conf"
 
-  val config = ConfigFactory.parseURL(
-    configPath.toUri.toURL
+  def config = ConfigFactory.parseFile(
+    configPath.toJava
   ).withFallback(ConfigFactory.load().getConfig("cobra"))
 
-  val title = config.getString("title")
-  val slidesTheme = config.getString("theme.slides")
-  val codeTheme = config.getString("theme.code")
-  val lang = config.getString("language")
+  def title = config.getString("title")
+  def slidesTheme = config.getString("theme.slides")
+  def codeTheme = config.getString("theme.code")
+  def lang = config.getString("language")
 
-  val interface = config.getString("binding.interface")
-  val port = config.getInt("binding.port")
+  def interface = config.getString("binding.interface")
+  def port = config.getInt("binding.port")
 
-  val reveal = config.getConfig("reveal").entrySet().toIterable.map { kv =>
+  def reveal = config.getConfig("reveal").entrySet().toIterable.map { kv =>
     kv.getKey -> kv.getValue.render(ConfigRenderOptions.concise())
   }.toMap
 
-  val env = config.getConfig("env").entrySet().toIterable.map { kv =>
+  def env = config.getConfig("env").entrySet().toIterable.map { kv =>
     kv.getKey.toUpperCase() -> kv.getValue.unwrapped().toString
   }.toMap
 
@@ -65,35 +66,55 @@ class CobraServer(val directory: Path) {
   import akka.http.scaladsl.model.ContentType
   import akka.http.scaladsl.model.{HttpEntity, HttpCharsets, MediaTypes}
 
-  implicit val system = ActorSystem(directory.toFile.getName)
+  implicit val system = ActorSystem(directory.name)
   implicit val materializer = ActorMaterializer()
   import system.dispatcher
 
-  val configWatcher = system.actorOf(Props[FileWatcherActor], "config-watcher")
+  val (ref,pub) =
+    Source.actorRef[Config](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
 
-  val (ref,pub) = Source.actorRef[SwatchEvent](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
-
-  val revealOptions = Source.single(RevealOptionsUpdate(reveal)) ++ Source.fromPublisher(pub).collect {
-    case Modify(p) if p == configPath =>
-      Try{
-        val conf = ConfigFactory.parseURL(configPath.toUri.toURL).withFallback(ConfigFactory.load.getConfig("cobra"))
-        conf.getConfig("reveal").entrySet().toIterable.map { kv =>
-          kv.getKey -> kv.getValue.render()
-        }.toMap
-      }
-  }.collect { case Success(c) => c }.scan((reveal,false)) {
-    case ((o,_),n) => (n,o == n)
-  }.collect {
-    case (n,true) => RevealOptionsUpdate(n)
+  val watcher = configPath.newWatcher(recursive = false)
+  watcher ! on(StandardWatchEventKinds.ENTRY_MODIFY) {
+    case file if file == configPath =>
+      Try(ConfigFactory.parseFile(configPath.toJava).withFallback(ConfigFactory.load.getConfig("cobra")))
+        .foreach(ref ! _)
   }
 
-  configWatcher ! Watch(directory, Seq(Modify,Create,Delete), recurse = true, listener = Some(ref))
+  val configs = Source.fromPublisher(pub)
+
+  val revealOptions = configs.map { conf =>
+    conf.getConfig("reveal").entrySet().toIterable.map { kv =>
+      kv.getKey -> kv.getValue.render()
+    }.toMap
+  }.scan((reveal,true)) {
+      case ((o,_),n) => (n,o != n)
+    }.collect {
+      case (n,true) => RevealOptionsUpdate(n)
+    }
+
+  val titles = configs.map(_.getString("title")).scan((title,false)) {
+    case ((o,_),n) => (n,o != n)
+  }.collect {
+    case (n,true) => TitleUpdate(n)
+  }
+
+  val languages = configs.map(_.getString("language")).scan((lang,false)) {
+    case ((o,_),n) => (n,o != n)
+  }.collect {
+    case (n,true) => LanguageUpdate(n)
+  }
+
+  val themes = configs.map(x => (x.getString("theme.slides"),x.getString("theme.code"))).scan(((slidesTheme,codeTheme),false)) {
+    case ((o,_),n) => (n,o != n)
+  }.collect {
+    case ((slides,code),true) => ThemeUpdate(code,slides)
+  }
 
   val locator = new WebJarAssetLocator()
 
   val documents = mutable.Map.empty[String,ActorRef]
 
-  val index = io.Source.fromInputStream(
+  def index = io.Source.fromInputStream(
     getClass.getClassLoader.getResourceAsStream(locator.getFullPath("cobra-client","index.html"))
   ).mkString
     .replaceAll("""\{ *language *\}""",lang)
@@ -111,7 +132,7 @@ class CobraServer(val directory: Path) {
         val res = Try(locator.getFullPath(segment,path))
         res.toOption.fold[Route](reject)(getFromResource)
     } ~
-    path("lib" / "codemirror" / "theme" / "default.css") {
+    path(_segmentStringToPathMatcher("lib") / "codemirror" / "theme" / "default.css") {
       complete(HttpEntity(ContentType(MediaTypes.`text/css`, HttpCharsets.`UTF-8`), "/* default cm theme */"))
     }
   } ~ getFromDirectory(directory.toString) }
@@ -150,7 +171,7 @@ class CobraServer(val directory: Path) {
     val (ref,pub) = Source.actorRef[ServerMessage](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
     val source = Source.fromPublisher(pub)
     Flow[Message].flatMapConcat(deserialize)
-      .flatMapMerge(300, handleRequest(ref)).merge(source).merge(revealOptions)
+      .flatMapMerge(300, handleRequest(ref)).merge(source).merge(revealOptions).merge(titles).merge(languages).merge(themes)
       .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
       .watchTermination(){ (n: NotUsed, f: Future[Done]) => f.foreach(_ => ref ! PoisonPill); NotUsed }
   }

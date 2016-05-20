@@ -116,11 +116,11 @@ object Code {
           if (doc.firstLine() <= pos.line && doc.lastLine() >= pos.line) {
             import net.flatmap.js.codemirror.plugins.Runmode._
             val elem = net.flatmap.js.util.HTML(s"<div class='info'></div>").head.asInstanceOf[HTMLElement]
-            if (mode == Haskell) {
+            if (mode == Isabelle) {
+              elem.innerHTML = body
+            } else {
               CodeMirror.runMode(body,mode.mime,elem)
               elem.classes += "pre"
-            } else {
-              elem.innerHTML = body
             }
             hoverInfo.foreach(_.clear())
             hoverInfo.clear()
@@ -200,6 +200,7 @@ object Code {
           (if (code.classes.contains("current-only")) "single" else "all") else null)
         editor.setOption("addModeClass",true)
         editor.setOption("scrollbarStyle","null")
+        CobraJS.cmTheme.react(editor.setOption("theme",_))
         if (CobraJS.printing) editor.setOption("readOnly","nocursor")
         val handler: js.Function2[CodeMirror,raw.Event,Unit] = (instance: CodeMirror, event: raw.Event) => {
           val changes = event.asInstanceOf[js.Array[js.Dynamic]]
