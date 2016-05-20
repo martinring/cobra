@@ -78,10 +78,11 @@ abstract class SocketApp[I,O](
     this.socket = Some(socket)
     console.info("socket open")
     preStart()
-    schedule(heartbeatInterval) {
+    lazy val interval: Int = schedule(heartbeatInterval) {
       if (!heartbeatAcknowledged) {
         console.error(s"server did not respond to heartbeat message for ${heartbeatInterval}ms")
         socket.close()
+        window.clearInterval(interval)
       } else {
         heartbeatAcknowledged = false
         send(heartbeatMessage)

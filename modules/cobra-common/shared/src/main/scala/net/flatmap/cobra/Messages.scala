@@ -29,6 +29,9 @@ case class CombinedRemoteEdit(id: String, op: Operation[Char], revisions: Long) 
 case class ResetSnippet(id: String, content: String, revision: Long) extends ServerMessage with SnippetMessage
 
 case class RevealOptionsUpdate(values: Map[String,String]) extends ServerMessage
+case class TitleUpdate(newTitle: String) extends ServerMessage
+case class ThemeUpdate(code: String, slides: String) extends ServerMessage
+case class LanguageUpdate(newLang: String) extends ServerMessage
 
 trait Picklers {
   implicit val charActionPickler: Pickler[Action[Char]] =

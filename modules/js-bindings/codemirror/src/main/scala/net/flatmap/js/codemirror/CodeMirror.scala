@@ -9,6 +9,8 @@ import scala.scalajs.js.{RegExp, UndefOr, |}
 @JSName("CodeMirror")
 @js.native
 object CodeMirror extends js.Object {
+  def on[T](eventName: String, handler: js.Function1[T, Unit]): Unit = js.native
+  def off[T](eventName: String, handler: js.Function1[T, Unit]): Unit = js.native
   def apply(place: Element): CodeMirror = js.native  
   def version: String = js.native
   def fromTextArea(host: HTMLTextAreaElement, options: CodeMirrorConfiguration = js.native): CodeMirror with FromTextArea = js.native
