@@ -66,21 +66,25 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
 
     val proc1: Seq[String] = Seq("ghc-mod", "info", name, it)
     val output = proc1.lineStream.mkString("\n").replaceAll("-- Defined at (.+?):(\\d+):(\\d+)", "").replace('\0','\n').split("\n").mkString("<br>")
-    
+
     if (!output.startsWith("Cannot show info"))
       Some(Information(id,from,to,HaskellMarkup.prettify(output)))
     else {
       val proc: Seq[String] = Seq("ghc-mod", "type", name, line.toString, col.toString)
       val lines = proc.lineStream
 
-      lines.headOption.getOrElse("") match {
-        case Line(fl, fc, tl, tc, msg) =>
-          val lengths = state.split("\n").map(_.length + 1)
+      val lengths = state.split("\n").map(_.length + 1)
+      val offsets = lines.collect {
+        case Line(fl,fc,tl,tc,msg) =>
           val from = lengths.take(fl.toInt - 1).sum + fc.toInt - 1
           val to = lengths.take(tl.toInt - 1).sum + tc.toInt - 1
-          Some(Information(id, from, to, HaskellMarkup.prettify(msg)))
-        case _ =>
-          None
+          (from,to,msg)
+      }
+      offsets.sortBy {
+        case (f,t,_) => Math.abs(f - from) + Math.abs(t - to)
+      }.headOption.map {
+        case (from,to,msg) =>
+          Information(id, from, to, HaskellMarkup.prettify(msg))
       }
     }
   }

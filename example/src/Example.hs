@@ -1,9 +1,7 @@
 module Example where
 
 --- begin #person-def-hs
-data Person =
-  Person Integer String
+data Person = Person Integer String | Blub
 --- end #person-def-hs
 
-main :: IO ()
-main =
+f = 7 * 6
