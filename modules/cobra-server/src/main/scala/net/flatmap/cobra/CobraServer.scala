@@ -77,16 +77,13 @@ class CobraServer(val directory: File) {
     val (ref,pub) =
       Source.actorRef[Config](300,OverflowStrategy.dropTail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
 
-    val watcher = configPath.newWatcher(recursive = false)
-
-    watcher ! on(StandardWatchEventKinds.ENTRY_MODIFY) {
-      case file if file == configPath =>
+    val watcher = new ThreadBackedFileMonitor(directory) {
+      override def onModify(file: File) = if (file == configPath) {
         Try(config = readConfig()).foreach(_ => ref ! config)
+      }
     }
 
     Source.fromPublisher(pub)
-  }.recoverWith {
-    case _ => configs
   }
 
   val configs = getConfigs

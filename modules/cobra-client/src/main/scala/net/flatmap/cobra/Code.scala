@@ -139,18 +139,31 @@ object Code {
         client.localEdit(CodeMirrorOps.changeToOperation(doc,e))
       }
 
+
+
     val selectHandler: js.Function1[Doc,Unit] = {
+      var next = Option.empty[Option[RequestInfo]]
       val root = doc
       (doc: Doc) => {
         hoverInfo.foreach(_.clear())
         hoverInfo.clear()
         console.log("selection Change")
-        doc.listSelections().filter(r => r.head.line != r.anchor.line || r.head.ch != r.anchor.ch).foreach(range =>
-          if (range.anchor.line < range.head.line || range.anchor.line == range.head.line && range.anchor.ch < range.head.ch)
-            CobraJS.send(RequestInfo(id, root.indexFromPos(range.anchor), root.indexFromPos(range.head)))
+        doc.listSelections().filter(r => r.head.line != r.anchor.line || r.head.ch != r.anchor.ch).foreach { range =>
+          val req = if (range.anchor.line < range.head.line || range.anchor.line == range.head.line && range.anchor.ch < range.head.ch)
+            RequestInfo(id, root.indexFromPos(range.anchor), root.indexFromPos(range.head))
           else
-            CobraJS.send(RequestInfo(id, root.indexFromPos(range.head), root.indexFromPos(range.anchor)))
-        )
+            RequestInfo(id, root.indexFromPos(range.head), root.indexFromPos(range.anchor))
+          if (next.isEmpty) {
+            CobraJS.send(req)
+            next = Some(None)
+            scheduleOnce(500) {
+              next.foreach(_.foreach(CobraJS.send))
+              next = None
+            }
+          } else {
+            next = Some(Some(req))
+          }
+        }
       }
     }
 
