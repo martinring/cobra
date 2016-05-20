@@ -28,7 +28,7 @@ lazy val server = (project in file("modules/cobra-server"))
                             |mathematics as active documents. Cobra provides both an easy way
                             |to present proofs and a novel approach to auditorium interaction. The
                             |presentation is checked live by the theorem prover, and moreover
-                            |allows live changes both by the presenter as well as the audience.""".stripMargin,
+                            |allows live changes both by the presenter as well as the audience.""".stripMargin.split('\n').mkString(" "),
     libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.5",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.5",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7",
