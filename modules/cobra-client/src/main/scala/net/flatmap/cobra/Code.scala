@@ -95,7 +95,7 @@ object Code {
 
     var client = ClientInterface[Char](editorInterface)
 
-    var hoverInfo = Option.empty[LineWidget]
+    var hoverInfo = mutable.Buffer.empty[Clearable]
 
     CobraJS.listenOn(id) {
       case AcknowledgeEdit(_) => client.serverAck()
@@ -110,12 +110,17 @@ object Code {
         client.remoteAnnotations(aid,annotations)
       case Information(_,from,to,body) =>
         val root = doc
-        def widget(doc: Doc) = if (doc.getEditor() != js.undefined) {
+        def widget(doc: Doc): Unit = if (doc.getEditor() != js.undefined) {
+          val f = root.posFromIndex(from)
           val pos = root.posFromIndex(to)
           if (doc.firstLine() <= pos.line && doc.lastLine() >= pos.line) {
             val elem = net.flatmap.js.util.HTML(s"<div class='info'>$body</div>").head.asInstanceOf[HTMLElement]
             hoverInfo.foreach(_.clear())
-            hoverInfo = Some(doc.getEditor().addLineWidget(pos.line, elem))
+            hoverInfo.clear()
+            hoverInfo += doc.getEditor().addLineWidget(pos.line, elem)
+            val options = TextMarkerOptions()
+            options.className = "hoverInfo"
+            hoverInfo += doc.markText(f,pos,options)
           }
         }
         widget(root)
@@ -131,7 +136,7 @@ object Code {
       val root = doc
       (doc: Doc) => {
         hoverInfo.foreach(_.clear())
-        hoverInfo = None
+        hoverInfo.clear()
         console.log("selection Change")
         doc.listSelections().filter(r => r.head.line != r.anchor.line || r.head.ch != r.anchor.ch).foreach(range =>
           if (range.anchor.line < range.head.line || range.anchor.line == range.head.line && range.anchor.ch < range.head.ch)
