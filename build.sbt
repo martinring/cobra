@@ -20,7 +20,7 @@ lazy val server = (project in file("modules/cobra-server"))
     packageName in Universal := "cobra-" + version.value,
     name := "cobra",
     rpmVendor := "Martin Ring",
-    rpmLicense := Some("MIT"),
+    rpmLicense := Some("LGPL"),
     packageSummary := "Cobra proof and code presentation framework",
     packageDescription := """Cobra is a modern code and proof presentation
                             |framework, leveraging cutting-edge presentation technology together with
