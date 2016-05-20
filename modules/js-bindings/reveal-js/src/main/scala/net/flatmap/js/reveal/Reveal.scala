@@ -171,6 +171,8 @@ sealed trait RevealOptions extends js.Object {
   // Stop auto-sliding after user input
   var autoSlideStoppable: Boolean = js.native
 
+  var autoSlideMethod: js.Any = js.native
+
   // Enable slide navigation via mouse wheel
   var mouseWheel: Boolean = js.native
 

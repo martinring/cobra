@@ -28,6 +28,7 @@ case class RemoteAnnotations(id: String, aid: String, annotations: Annotations) 
 case class CombinedRemoteEdit(id: String, op: Operation[Char], revisions: Long) extends ServerMessage with SnippetMessage
 case class ResetSnippet(id: String, content: String, revision: Long) extends ServerMessage with SnippetMessage
 
+case class RevealOptionsUpdate(values: Map[String,String]) extends ServerMessage
 
 trait Picklers {
   implicit val charActionPickler: Pickler[Action[Char]] =

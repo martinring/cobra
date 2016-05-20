@@ -10,6 +10,8 @@ import scala.collection.mutable
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js._
+import scala.util.control.NonFatal
+import org.scalajs.dom.console
 
 /**
   * Created by martin on 04.02.16.
@@ -26,6 +28,14 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
 
   def receive = {
     case msg: SnippetMessage => handlers(msg.id).foreach(_(msg))
+    case RevealOptionsUpdate(options) =>
+      val old = (new js.Object).asInstanceOf[js.Dynamic]
+      options.foreach {
+        case ("autoSlideMethod",value) => try { old.autoSlideMethod = eval(value.tail.init) } catch { case NonFatal(e) => console.warn(s"could not apply config value: autoSlideMethod = $value") }
+        case (key,value) => try { old.updateDynamic(key)(eval(value)) } catch { case NonFatal(e) => console.warn(s"could not apply config value: $key = $value") }
+      }
+      Reveal.configure(old.asInstanceOf[RevealOptions])
+      Reveal.sync()
   }
 
   var heartBeatAcknowledged: Boolean = true
