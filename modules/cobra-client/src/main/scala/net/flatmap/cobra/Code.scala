@@ -114,7 +114,14 @@ object Code {
           val f = root.posFromIndex(from)
           val pos = root.posFromIndex(to)
           if (doc.firstLine() <= pos.line && doc.lastLine() >= pos.line) {
-            val elem = net.flatmap.js.util.HTML(s"<div class='info'>$body</div>").head.asInstanceOf[HTMLElement]
+            import net.flatmap.js.codemirror.plugins.Runmode._
+            val elem = net.flatmap.js.util.HTML(s"<div class='info'></div>").head.asInstanceOf[HTMLElement]
+            if (mode == Haskell) {
+              CodeMirror.runMode(body,mode.mime,elem)
+              elem.classes += "pre"
+            } else {
+              elem.innerHTML = body
+            }
             hoverInfo.foreach(_.clear())
             hoverInfo.clear()
             hoverInfo += doc.getEditor().addLineWidget(pos.line, elem)
