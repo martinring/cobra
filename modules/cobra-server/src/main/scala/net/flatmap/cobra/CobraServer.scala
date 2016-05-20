@@ -40,9 +40,11 @@ class CobraServer(val directory: File) {
 
   val configPath = directory / "cobra.conf"
 
-  def config = ConfigFactory.parseFile(
+  def readConfig() = ConfigFactory.parseFile(
     configPath.toJava
   ).withFallback(ConfigFactory.load().getConfig("cobra"))
+
+  var config = readConfig()
 
   def title = config.getString("title")
   def slidesTheme = config.getString("theme.slides")
@@ -70,17 +72,24 @@ class CobraServer(val directory: File) {
   implicit val materializer = ActorMaterializer()
   import system.dispatcher
 
-  val (ref,pub) =
-    Source.actorRef[Config](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
 
-  val watcher = configPath.newWatcher(recursive = false)
-  watcher ! on(StandardWatchEventKinds.ENTRY_MODIFY) {
-    case file if file == configPath =>
-      Try(ConfigFactory.parseFile(configPath.toJava).withFallback(ConfigFactory.load.getConfig("cobra")))
-        .foreach(ref ! _)
+  def getConfigs: Source[Config,NotUsed] = {
+    val (ref,pub) =
+      Source.actorRef[Config](300,OverflowStrategy.dropTail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
+
+    val watcher = configPath.newWatcher(recursive = false)
+
+    watcher ! on(StandardWatchEventKinds.ENTRY_MODIFY) {
+      case file if file == configPath =>
+        Try(config = readConfig()).foreach(_ => ref ! config)
+    }
+
+    Source.fromPublisher(pub)
+  }.recoverWith {
+    case _ => configs
   }
 
-  val configs = Source.fromPublisher(pub)
+  val configs = getConfigs
 
   val revealOptions = configs.map { conf =>
     conf.getConfig("reveal").entrySet().toIterable.map { kv =>
@@ -168,7 +177,7 @@ class CobraServer(val directory: File) {
   }
 
   def socket: Flow[Message, Message, NotUsed] = {
-    val (ref,pub) = Source.actorRef[ServerMessage](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
+    val (ref,pub) = Source.actorRef[ServerMessage](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = false))(Keep.both).run()
     val source = Source.fromPublisher(pub)
     Flow[Message].flatMapConcat(deserialize)
       .flatMapMerge(300, handleRequest(ref)).merge(source).merge(revealOptions).merge(titles).merge(languages).merge(themes)
