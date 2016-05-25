@@ -48,21 +48,6 @@ object IsabelleMarkup {
 
   val classesElements = Markup.Elements(classes.keySet)
 
-    /* message priorities */
-
-  private val writeln_pri = 1
-  private val information_pri = 2
-  private val tracing_pri = 3
-  private val warning_pri = 4
-  private val legacy_pri = 5
-  private val error_pri = 6
-
-  private val message_pri = Map(
-    Markup.WRITELN -> writeln_pri, Markup.WRITELN_MESSAGE -> writeln_pri,
-    Markup.TRACING -> tracing_pri, Markup.TRACING_MESSAGE -> tracing_pri,
-    Markup.WARNING -> warning_pri, Markup.WARNING_MESSAGE -> warning_pri,
-    Markup.ERROR -> error_pri, Markup.ERROR_MESSAGE -> error_pri)
-
   def highlighting(snapshot: Document.Snapshot): Annotations = {
     val cs: List[Text.Info[Option[(String,String)]]] = snapshot.cumulate(Text.Range(0,Int.MaxValue), Option.empty[(String,String)], classesElements, _ =>
       {
@@ -102,20 +87,26 @@ object IsabelleMarkup {
     snapshot.node.commands.foldLeft (new Annotations) {
       case (as,cmd) => if (!cmd.is_ignored) {
         val state = snapshot.state.command_states(snapshot.version, cmd)        
-        val outputs = state.flatMap(_.results.iterator.map(_._2)
-          .filterNot(Protocol.is_result(_))
-          .collect{
-            case XML.Elem(markup,body) if markup.name == Markup.WRITELN_MESSAGE =>
-              OutputMessage(body.mkString)
-            case XML.Elem(markup,body) if markup.name == Markup.INFORMATION_MESSAGE =>
-              InfoMessage(body.mkString)
-            case XML.Elem(markup,body) if markup.name == Markup.STATE_MESSAGE =>
-              StateMessage(body.mkString)
-            case XML.Elem(markup,body) if markup.name == Markup.ERROR_MESSAGE =>
-              ErrorMessage(body.mkString)
-            case XML.Elem(markup,body) if markup.name == Markup.WARNING_MESSAGE =>
-              WarningMessage(body.mkString)
-          })
+        val (states,other) = state.flatMap(_.results.iterator.map(_._2))
+          .filterNot(Protocol.is_result).toList
+          .partition(Protocol.is_state)
+
+        val outputs = (states ::: other).collect {
+          case XML.Elem(markup,body) if markup.name == Markup.WRITELN_MESSAGE =>
+            OutputMessage(body.mkString)
+          case XML.Elem(markup,body) if markup.name == Markup.INFORMATION_MESSAGE =>
+            InfoMessage(body.mkString)
+          case XML.Elem(markup,body) if markup.name == Markup.LEGACY_MESSAGE =>
+            StateMessage(body.mkString)
+          case XML.Elem(markup,body) if markup.name == Markup.STATE_MESSAGE =>
+            StateMessage(body.mkString)
+          case XML.Elem(markup,body) if markup.name == Markup.ERROR_MESSAGE =>
+            ErrorMessage(body.mkString)
+          case XML.Elem(markup,body) if markup.name == Markup.WARNING_MESSAGE =>
+            WarningMessage(body.mkString)
+          case XML.Elem(markup,body) =>
+            WarningMessage(body.mkString)
+        }
         as.annotate(cmd.length, AnnotationOptions(messages = outputs))
       } else {
         as.plain(cmd.length)

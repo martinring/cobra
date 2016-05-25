@@ -192,6 +192,8 @@ class CobraServer(val directory: File) {
       bytes.reduce(_ ++ _).map(bytes => ClientMessage.read(bytes.asByteBuffer)).mapMaterializedValue(_ => NotUsed)
   }
 
+  val fileWatchers = mutable.Map.empty[File,Source[FileUpdate,NotUsed]]
+
   def handleRequest(client: ActorRef): ClientMessage => Source[ServerMessage,NotUsed] = {
     case HeartBeat => Source.single(HeartBeat)
     case msg@InitDoc(id,content,mode) =>
@@ -204,6 +206,20 @@ class CobraServer(val directory: File) {
         doc.tell(msg,client)
       }
       Source.empty
+    case WatchFile(path) =>
+      val file = directory / path
+      fileWatchers.getOrElseUpdate(file,{
+        val (ref,pub) = Source.actorRef[FileUpdate](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
+        val source = Source.fromPublisher(pub)
+        file.newWatcher(false) ! when(
+          StandardWatchEventKinds.ENTRY_CREATE,
+          StandardWatchEventKinds.ENTRY_DELETE,
+          StandardWatchEventKinds.ENTRY_MODIFY) {
+          case (StandardWatchEventKinds.ENTRY_MODIFY, file) =>
+            ref ! FileUpdate(directory.relativize(file).toString)
+        }
+        Source.fromPublisher(pub)
+      })
     case msg: SnippetMessage =>
       documents.get(msg.id).foreach(doc => doc.tell(msg,client))
       Source.empty

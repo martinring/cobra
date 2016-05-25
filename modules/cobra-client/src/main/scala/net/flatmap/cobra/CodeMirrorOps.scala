@@ -70,7 +70,7 @@ object CodeMirrorOps {
                 val classes = c.classes + "info" + mode.name
                 net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case OutputMessage(txt) =>
-                val classes = c.classes + "info" + mode.name
+                val classes = c.classes + "output" + mode.name
                 net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case StateMessage(txt) =>
                 val classes = c.classes + "output" + mode.name
