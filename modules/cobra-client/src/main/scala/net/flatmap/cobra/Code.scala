@@ -89,7 +89,7 @@ object Code {
         CobraJS.send(Annotate(id,aid,annotations,revision))
       def applyAnnotations(aid: String, annotations: Annotations) = {
         removeAnnotations(aid)()
-        removeAnnotations(aid) = CodeMirrorOps.applyAnnotations(doc, annotations,mode)
+        removeAnnotations(aid) = CodeMirrorOps.applyAnnotations(doc, annotations,id,mode)
       }
     }
 
@@ -134,6 +134,7 @@ object Code {
         }
         widget(root)
         root.iterLinkedDocs((doc: Doc, bool: Boolean) => widget(doc))
+      case other => console.warn(s"unhandled snippet message $other")
     }
 
     val changeHandler: js.Function2[Doc,EditorChange,Unit] =

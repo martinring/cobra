@@ -63,6 +63,8 @@ class SnippetServer(env: Map[String,String]) extends Actor with ActorLogging {
           log.error(e,"could not apply operation")
           sender ! ResetSnippet(id,server.text.mkString,server.revision)
       }
+    case msg: SnippetMessage =>
+      (listeners - sender).foreach(_ ! msg)
     case msg: RequestInfo =>
       (listeners - sender).foreach(_ ! msg)
     case msg: Information =>

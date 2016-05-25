@@ -19,6 +19,8 @@ case class InitDoc(id: String, content: String, mode: Mode) extends ClientMessag
 case class Edit(id: String, operation: Operation[Char], revision: Long) extends ClientMessage with SnippetMessage
 case class Annotate(id: String, aid: String, annotations: Annotations, revision: Long) extends ClientMessage with SnippetMessage
 
+case class Sendback(id: String, props: Map[String,String], s: String) extends ClientMessage with ServerMessage with SnippetMessage
+
 case class RequestInfo(id: String, from: Int, to: Int) extends ClientMessage with ServerMessage with SnippetMessage
 case class Information(id: String, from: Int, to: Int, body: String) extends ClientMessage with ServerMessage with SnippetMessage
 

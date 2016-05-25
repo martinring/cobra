@@ -4,7 +4,9 @@ import java.util.regex.Pattern
 
 import org.scalajs.dom._
 
-import scala.concurrent.{Promise, Future}
+import scala.collection.mutable
+import scala.concurrent.{Future, Promise}
+import scala.scalajs.js
 import scala.util.matching.Regex
 
 /**
@@ -73,6 +75,34 @@ package object util {
 
   implicit class OptionExt(val underlying: Option.type) extends AnyVal {
     def when[T](b: Boolean)(f: => Option[T]) = if (b) Some(f) else None
+  }
+
+  implicit class AttributeMap(val underlying: NamedNodeMap) extends mutable.Map[String,String] {
+    def -=(key: String) = {
+      underlying.removeNamedItem(key)
+      this
+    }
+    def +=(kv: (String, String)) = {
+      val (key,value) = kv
+      val attr = document.createAttribute(key)
+      attr.value = value
+      underlying.setNamedItem(attr)
+      this
+    }
+    def get(key: String): Option[String] = {
+      Option(underlying.getNamedItem(key)).filter(_ != js.undefined).map { attr =>
+        attr.value
+      }
+    }
+    def iterator: Iterator[(String,String)] = new Iterator[(String,String)] {
+      private var index = 0
+      def next(): (String,String) = {
+        val it = underlying.item(index)
+        index += 1
+        (it.name,it.value)
+      }
+      def hasNext: Boolean = underlying.length > index
+    }
   }
 
   def whenReady(init: => Unit) = {

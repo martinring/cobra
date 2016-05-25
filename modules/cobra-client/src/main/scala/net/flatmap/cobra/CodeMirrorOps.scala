@@ -7,6 +7,7 @@ import org.scalajs.dom.raw.HTMLElement
 
 import scala.collection.mutable
 import scala.scalajs.js
+import net.flatmap.js.util._
 
 object CodeMirrorOps {
   def changeToOperation(doc: Doc, change: EditorChange): Operation[Char] = {
@@ -35,7 +36,7 @@ object CodeMirrorOps {
     assert(opLen == doc.getValue().length)
   }
 
-  def applyAnnotations(doc: Doc, annotations: Annotations, mode: Mode): () => Unit = {
+  def applyAnnotations(doc: Doc, annotations: Annotations, id: String, mode: Mode): () => Unit = {
     val (_,markers) = annotations.annotations.foldLeft((0,Seq.empty[Clearable])) {
       case ((offset,markers),Empty(n)) => (offset + n, markers)
       case ((offset,markers),Annotated(l,c)) =>
@@ -58,33 +59,35 @@ object CodeMirrorOps {
         val buf = mutable.Buffer.empty[Clearable]
         c.messages.foreach { message =>
           def widget(doc: Doc) = Option(doc.getEditor()).foreach { editor => if (editor != js.undefined && doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
-            message match {
+            val elem = message match {
               case ErrorMessage(txt) =>
                 val classes = c.classes + "error" + mode.name
-                val elem = net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                buf += editor.addLineWidget(to.line, elem)
+                net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case WarningMessage(txt) =>
                 val classes = c.classes + "warning" + mode.name
-                val elem = net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                buf += editor.addLineWidget(to.line, elem)
+                net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case InfoMessage(txt) =>
                 val classes = c.classes + "info" + mode.name
-                val elem = net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                buf += editor.addLineWidget(to.line, elem)
+                net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case OutputMessage(txt) =>
                 val classes = c.classes + "info" + mode.name
-                val elem = net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                buf += editor.addLineWidget(to.line, elem)
+                net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case StateMessage(txt) =>
                 val classes = c.classes + "output" + mode.name
-                val elem = if (editor.getOption("state-fragments") == "all")
+                if (editor.getOption("state-fragments") == "all")
                   net.flatmap.js.util.HTML(s"<div class='all fragment ${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
                 else if (editor.getOption("state-fragments") == "single")
                   net.flatmap.js.util.HTML(s"<div class='fragment ${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
                 else
                   net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
-                buf += editor.addLineWidget(to.line, elem)
             }
+            elem.querySelectorAll("sendback").foreach { sb =>
+              sb.on(Event.Mouse.Click) { e =>
+                val attrs = sb.attributes.toMap
+                CobraJS.send(Sendback(id, attrs, sb.textContent))
+              }
+            }
+            buf += editor.addLineWidget(to.line, elem)
           } }
           widget(doc)
           doc.iterLinkedDocs { (doc: Doc, sharedHistory: Boolean) => widget(doc) }
