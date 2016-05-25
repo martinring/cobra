@@ -26,7 +26,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
     handlers(id) += f
   }
 
-  var cmTheme = RVar("default")
+  val cmTheme = RVar("default")
+  var revealOps: Option[RevealOptions] = None
 
   def receive = {
     case msg: SnippetMessage => handlers(msg.id).foreach(_(msg))
@@ -36,8 +37,13 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
         case ("autoSlideMethod",value) => try { old.autoSlideMethod = eval(value.tail.init) } catch { case NonFatal(e) => console.warn(s"could not apply config value: autoSlideMethod = $value") }
         case (key,value) => try { old.updateDynamic(key)(eval(value)) } catch { case NonFatal(e) => console.warn(s"could not apply config value: $key = $value") }
       }
-      Reveal.configure(old.asInstanceOf[RevealOptions])
-      Reveal.sync()
+      if (Reveal.isReady()) {
+        Reveal.configure(old.asInstanceOf[RevealOptions])
+        Reveal.sync()
+      }
+      else {
+        revealOps = Some(old.asInstanceOf[RevealOptions])
+      }
     case TitleUpdate(title) =>
       query("title").text = title
     case LanguageUpdate(lang) =>
@@ -45,9 +51,9 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
     case ThemeUpdate(code,slides) =>
       val slideTheme = document.getElementById("slideTheme").asInstanceOf[HTMLLinkElement]
       val codeTheme = document.getElementById("codeTheme").asInstanceOf[HTMLLinkElement]
-      codeTheme.href = codeTheme.href.replaceAll("\\w*\\.css",code + ".css")
-      slideTheme.href = slideTheme.href.replaceAll("\\w*\\.css",slides + ".css")
-      cmTheme := code
+      slideTheme.href = slides
+      codeTheme.href = code
+      cmTheme := code.split("/").last.dropRight(4)
   }
 
   var heartBeatAcknowledged: Boolean = true
@@ -76,10 +82,7 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       document.getElementsByTagName("head")(0).appendChild(link)
       val documents = Code.initializeDocuments(slides)
       val editors = Code.initializeEditors(slides, documents)
-      val settings = RevealOptions()
-      settings.history = true
-      settings.minScale = 1
-      settings.maxScale = 1
+      val settings = revealOps getOrElse(RevealOptions())
       val mathOptions = RevealMathOptions()
       mathOptions.mathjax = "/lib/MathJax/2.6.1/MathJax.js"
       mathOptions.config = "TeX-AMS_HTML-full"
