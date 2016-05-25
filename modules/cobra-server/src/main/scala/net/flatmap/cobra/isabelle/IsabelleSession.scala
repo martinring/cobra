@@ -33,7 +33,7 @@ import isabelle.Document
 import isabelle.XML
 import isabelle.Isabelle_System
 import net.flatmap.cobra.Information
-import net.flatmap.collaboration.ClientInterface
+import net.flatmap.collaboration.{Document => _, _}
 
 import scala.concurrent.Promise
 import scala.language.postfixOps
@@ -46,6 +46,33 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
   case class OpenedFile(id: String, clientInterface: ClientInterface[Char], state: String)
 
   var files = scala.collection.mutable.Map.empty[Document.Node.Name,(scala.concurrent.Future[Document.Version],OpenedFile)]
+
+  def edit_command(
+    buffer: String,
+    cid: String,
+    padding: Boolean,
+    s: String): Option[Operation[Char]] =
+  {
+    val snap = session.snapshot(fileToNodeName(buffer))
+    val content = files(fileToNodeName(buffer))._2.state
+    if (!snap.is_outdated) {
+      Document_ID.unapply(cid).flatMap { id =>
+        snap.state.find_command(snap.version, id).flatMap { case (node, command) =>
+          node.command_start(command).map { start =>
+            val range = command.proper_range + start
+            val length = content.length
+            val after = length - range.stop
+            val ops = if (padding) {
+              Retain(start + range.length) :: Insert("\n" + s) :: Retain(after) :: Nil
+            } else {
+              Retain(start) :: Insert(s) :: Delete(range.length) :: Retain(after) :: Nil
+            }
+            Operation(ops)
+          }
+        }
+      }
+    } else None
+  }
 
   def updateFile(name: Document.Node.Name, file: OpenedFile, update: List[(Document.Node.Name,Document.Node.Edit[Text.Edit,Text.Perspective])]): scala.concurrent.Future[Unit] = {
     session.update(Document.Blobs.empty, update)

@@ -1,6 +1,6 @@
 package net.flatmap.cobra.scalac
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import net.flatmap.cobra._
 import net.flatmap.collaboration._
 
@@ -8,7 +8,7 @@ object ScalaService extends LanguageService  {
   def props(env: Map[String,String]) = Props(classOf[ScalaService],env)
 }
 
-class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler {
+class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler with ActorLogging {
   override def preStart() = println("hello from scala")
 
   def receive = {
@@ -54,6 +54,7 @@ class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler {
       case RemoteAnnotations(id2, aid, as) if id == id2 => clientInterface.remoteAnnotations(aid, as)
       case CombinedRemoteEdit(id2, op, rev) if id == id2 => clientInterface.combinedRemoteEdit(op, rev)
       case RequestInfo(id2,from,to) if id == id2 => getInfo(id,from,to).foreach(server ! _)
+      case other => log.warning("unhandled message: " + other)
     }
   }
 }
