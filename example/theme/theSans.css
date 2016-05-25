@@ -1,0 +1,21 @@
+@font-face {
+    font-family: 'TheSans';
+    src: url('fonts/TheSansB_TT5_.eot');
+    src: url('fonts/TheSansB_TT5_.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'TheSans';
+    src: url('fonts/TheSansB_TT7_.eot');
+    src: url('fonts/TheSansB_TT7_.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'TheSans';
+    src: url('fonts/TheSansB_TT5i.eot');
+    src: url('fonts/TheSansB_TT5i.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
