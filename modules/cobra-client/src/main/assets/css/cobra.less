@@ -3,16 +3,19 @@
 
 .CodeMirror {
   height: auto;
-  font-family: "Fira Code" !important;
+  width: 100%;
+  font-family: "Fira Code";
   pre {
-    font-size: 80% !important;
     font-feature-settings: "calt" 1;
     font-variant-ligatures: contextual !important;
     text-rendering: optimizeLegibility;
   }
   .CodeMirror-scroll {
     margin: 0 -30px -30px 0 !important;
-    padding: 0 30px 30px 0 !important;
+    padding: 0 0 30px 0 !important;
+  }
+  .CodeMirror-lines {
+    padding: 4px 0 !important;
   }
   .CodeMirror-line {
     box-shadow: none !important;
@@ -24,14 +27,14 @@
     width: 0 !important;
   }
   .hoverInfo {
-    border-bottom: 5px solid dodgerblue !important;
+    border-bottom: 5px solid rgb(0,104,163);
   }
 }
 
 code {
-  display: inline-flex;
-  &.block {
-    display: block;
+  display: block;
+  &.inline {
+    display: inline-flex;
   }
   &.condense .CodeMirror pre {
     font-size: 66.7% !important;

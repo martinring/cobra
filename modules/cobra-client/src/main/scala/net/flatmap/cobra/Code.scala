@@ -89,7 +89,7 @@ object Code {
         CobraJS.send(Annotate(id,aid,annotations,revision))
       def applyAnnotations(aid: String, annotations: Annotations) = {
         removeAnnotations(aid)()
-        removeAnnotations(aid) = CodeMirrorOps.applyAnnotations(doc, annotations)
+        removeAnnotations(aid) = CodeMirrorOps.applyAnnotations(doc, annotations,mode)
       }
     }
 
@@ -115,7 +115,9 @@ object Code {
           val pos = root.posFromIndex(to)
           if (doc.firstLine() <= pos.line && doc.lastLine() >= pos.line) {
             import net.flatmap.js.codemirror.plugins.Runmode._
-            val elem = net.flatmap.js.util.HTML(s"<div class='info'></div>").head.asInstanceOf[HTMLElement]
+            val elem = org.scalajs.dom.document.createElement("div").asInstanceOf[HTMLElement]
+            elem.classes += "info"
+            elem.classes += mode.name
             if (mode == Isabelle) {
               elem.innerHTML = body
             } else {
@@ -212,7 +214,8 @@ object Code {
         editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
           (if (code.classes.contains("current-only")) "single" else "all") else null)
         editor.setOption("addModeClass",true)
-        editor.setOption("scrollbarStyle","null")
+        //editor.setOption("scrollbarStyle","null")
+        editor.setOption("viewportMargin",js.eval("Infinity"))
         CobraJS.cmTheme.react(editor.setOption("theme",_))
         if (CobraJS.printing) editor.setOption("readOnly","nocursor")
         val handler: js.Function2[CodeMirror,raw.Event,Unit] = (instance: CodeMirror, event: raw.Event) => {
