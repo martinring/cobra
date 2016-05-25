@@ -27,7 +27,11 @@
     }
 
     position {
-      display: none;
+      color: rgb(0,104,163);
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
     }
 
     delimiter {
@@ -138,6 +142,10 @@
   }
   span.cm-m-isabelle {
       font-family: MathJax_Math;
+  }
+
+  CodeMirror-widget span.cm-m-isabelle.symbol {
+    pointer-events: none;
   }
 
   span.cm-m-isabelle.cm-identifier, span.cm-m-isabelle.cm-ident {
