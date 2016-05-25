@@ -15,7 +15,10 @@ sealed trait SnippetMessage { val id: String }
 
 case object HeartBeat extends ClientMessage with ServerMessage
 
-case class InitDoc(id: String, content: String, mode: Mode) extends ClientMessage with SnippetMessage
+case class WatchFile(path: String) extends ClientMessage
+case class FileUpdate(path: String) extends ServerMessage
+
+case class InitDoc(id: String, file: String, mode: Mode) extends ClientMessage with SnippetMessage
 case class Edit(id: String, operation: Operation[Char], revision: Long) extends ClientMessage with SnippetMessage
 case class Annotate(id: String, aid: String, annotations: Annotations, revision: Long) extends ClientMessage with SnippetMessage
 
@@ -34,6 +37,7 @@ case class RevealOptionsUpdate(values: Map[String,String]) extends ServerMessage
 case class TitleUpdate(newTitle: String) extends ServerMessage
 case class ThemeUpdate(code: String, slides: String) extends ServerMessage
 case class LanguageUpdate(newLang: String) extends ServerMessage
+case class SnippetChanged(src: String) extends ServerMessage
 
 trait Picklers {
   implicit val charActionPickler: Pickler[Action[Char]] =

@@ -84,6 +84,8 @@ trait NodeSeqQuery extends EventSource[Node] { self =>
   def focus() = foreachElement(_.asInstanceOf[Dynamic].focus())
   def blur() = foreachElement(_.asInstanceOf[Dynamic].blur())
 
+  def clear() = html = ""
+
   def query(selector: String) = new NodeSeqQuery {
     override def underlying: Seq[Node] = self.elements.flatMap(e => e.querySelectorAll(selector))
   }
