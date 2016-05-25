@@ -60,11 +60,10 @@
     }
 
     literal {
-      color: dodgerblue;
+      color: rgb(0,104,163);
     }
 
     .error {
-      font-family: "MathJax_Main";
       font-size: 66%;
       text-align: left;
       border-left: 5px solid crimson;
@@ -73,11 +72,14 @@
       margin: 4px 5px 8px 0;
     }
 
-    .info {
+    .isabelle.info, .isabelle.output, .isabelle.error, .isabelle.warning {
       font-family: "MathJax_Main";
+    }
+
+    .info {
       font-size: 66%;
       text-align: left;
-      border-left: 5px solid dodgerblue;
+      border-left: 5px solid rgb(0,104,163);
       padding-left: 10px;
       background-color: #eee;
       margin: 4px 5px 8px 0;
@@ -87,7 +89,6 @@
     }
 
     .warning {
-      font-family: "MathJax_Main";
       font-size: 66%;
       text-align: left;
       border-left: 5px solid darkorange;
@@ -97,7 +98,6 @@
     }
 
     .output {
-      font-family: "MathJax_Main";
       font-size: 66%;
       text-align: left;
       border-left: 5px solid gray;
@@ -377,6 +377,6 @@
   }
 
   span.info, span.writeln {
-    background-color: fade(dodgerblue,20%);
+    background-color: fade(rgb(0,104,163),20%);
   }
 }

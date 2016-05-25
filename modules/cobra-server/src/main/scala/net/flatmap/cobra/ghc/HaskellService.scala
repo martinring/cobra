@@ -71,7 +71,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
       .split("\0").mkString("\n")
 
     if (!output.startsWith("Cannot show info"))
-      Some(Information(id,from,to,HaskellMarkup.prettify(output)))
+      Some(Information(id,from,to,output))
     else {
       val proc: Seq[String] = Seq("ghc-mod", "type", name, line.toString, col.toString)
       val lines = proc.lineStream
@@ -99,7 +99,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
           val nc = Document(b).apply(operation).get.content.mkString
           files(id) = (nc,c)
           compile(id,nc,clientInterface)
-          clientInterface.localAnnotations("substitutions", HaskellMarkup.substitutions(nc))
+          //clientInterface.localAnnotations("substitutions", HaskellMarkup.substitutions(nc))
         }
       }
 
@@ -120,7 +120,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
 
     files += id -> (content,clientInterface)
     compile(id,content,clientInterface)
-    clientInterface.localAnnotations("substitutions", HaskellMarkup.substitutions(content))
+    //clientInterface.localAnnotations("substitutions", HaskellMarkup.substitutions(content))
 
     {
       case AcknowledgeEdit(id2) if id == id2 => clientInterface.serverAck()
