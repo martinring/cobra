@@ -24,6 +24,9 @@ import scala.collection.JavaConversions._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.CacheDirectives
 import akka.http.scaladsl.server.Directives._
+import org.reactivestreams.{Publisher, Subscriber, Subscription}
+
+import scala.util.control.NonFatal
 
 object CobraServer {
   implicit val logSource: LogSource[CobraServer] = new LogSource[CobraServer] {
@@ -47,8 +50,18 @@ class CobraServer(val directory: File) {
   var config = readConfig()
 
   def title = config.getString("title")
-  def slidesTheme = config.getString("theme.slides")
-  def codeTheme = config.getString("theme.code")
+  def slidesTheme(config: Config) = {
+    val th = config.getString("theme.slides")
+    val thc = if (th.endsWith(".css")) th else th + ".css"
+    if (thc.startsWith("/")) thc
+    else s"lib/reveal.js/css/theme/$thc"
+  }
+  def codeTheme(config: Config) = {
+    val th = config.getString("theme.code")
+    val thc = if (th.endsWith(".css")) th else th + ".css"
+    if (thc.startsWith("/")) thc
+    else s"lib/codemirror/theme/$thc"
+  }
   def lang = config.getString("language")
 
   def interface = config.getString("binding.interface")
@@ -73,22 +86,47 @@ class CobraServer(val directory: File) {
   import system.dispatcher
 
 
-  def getConfigs: Source[Config,NotUsed] = {
-    val (ref,pub) =
-      Source.actorRef[Config](300,OverflowStrategy.dropTail).toMat(Sink.asPublisher(fanout = true))(Keep.both).run()
+  val configsPublisher: Publisher[Config] = new Publisher[Config] {
+    val listeners: mutable.Map[Subscriber[_ >: Config],Long] = mutable.Map.empty
 
-    val watcher = new ThreadBackedFileMonitor(directory) {
-      override def onModify(file: File) = if (file == configPath) {
-        Try(config = readConfig()).foreach(_ => ref ! config)
+    private def send(listener: Subscriber[_ >: Config]) = {
+      try {
+        listener.onNext(config)
+        listeners(listener) -= 1
+      } catch {
+        case NonFatal(e) => log.error("could not update config")
       }
     }
 
-    Source.fromPublisher(pub)
+    private def publish() = {
+      listeners.filter(_._2 > 0).foreach(x => send(x._1))
+    }
+
+    configPath.newWatcher(false) ! on(StandardWatchEventKinds.ENTRY_MODIFY) {
+      case _ => try {
+        config = readConfig()
+        publish()
+      } catch {
+        case NonFatal(e) => log.error("could not read config: " + e.getMessage)
+      }
+    }
+
+    override def subscribe(s: Subscriber[_ >: Config]): Unit = {
+      listeners += s -> 0
+      val sub = new Subscription {
+        override def cancel(): Unit = listeners -= s
+        override def request(n: Long): Unit = if (n > 0) {
+          listeners(s) = n
+          send(s)
+        }
+      }
+      s.onSubscribe(sub)
+    }
   }
 
-  val configs = getConfigs
+  val configs = Source.fromPublisher(configsPublisher)
 
-  val revealOptions = configs.map { conf =>
+  def revealOptions = configs.map { conf =>
     conf.getConfig("reveal").entrySet().toIterable.map { kv =>
       kv.getKey -> kv.getValue.render()
     }.toMap
@@ -98,19 +136,19 @@ class CobraServer(val directory: File) {
       case (n,true) => RevealOptionsUpdate(n)
     }
 
-  val titles = configs.map(_.getString("title")).scan((title,false)) {
+  def titles = configs.map(_.getString("title")).scan((title,true)) {
     case ((o,_),n) => (n,o != n)
   }.collect {
     case (n,true) => TitleUpdate(n)
   }
 
-  val languages = configs.map(_.getString("language")).scan((lang,false)) {
+  def languages = configs.map(_.getString("language")).scan((lang,true)) {
     case ((o,_),n) => (n,o != n)
   }.collect {
     case (n,true) => LanguageUpdate(n)
   }
 
-  val themes = configs.map(x => (x.getString("theme.slides"),x.getString("theme.code"))).scan(((slidesTheme,codeTheme),false)) {
+  def themes = configs.map(x => (slidesTheme(x),codeTheme(x))).scan(((slidesTheme(config),codeTheme(config)),false)) {
     case ((o,_),n) => (n,o != n)
   }.collect {
     case ((slides,code),true) => ThemeUpdate(code,slides)
@@ -120,13 +158,17 @@ class CobraServer(val directory: File) {
 
   val documents = mutable.Map.empty[String,ActorRef]
 
-  def index = io.Source.fromInputStream(
+  val indexRaw = io.Source.fromInputStream(
     getClass.getClassLoader.getResourceAsStream(locator.getFullPath("cobra-client","index.html"))
   ).mkString
+
+  def index = indexRaw
     .replaceAll("""\{ *language *\}""",lang)
     .replaceAll("""\{ *title *\}""",title)
-    .replaceAll("""\{ *theme\.slides *\}""",slidesTheme)
-    .replaceAll("""\{ *theme\.code *\}""",codeTheme)
+    .replaceAll("""\{ *theme\.slides *\}""",slidesTheme(config))
+    .replaceAll("""\{ *theme\.code *\}""",codeTheme(config))
+    .replaceAll("""\{ *theme\.code\.name *\}""",codeTheme(config).split("/").last.dropRight(4))
+
 
   def routes = respondWithHeader(headers.`Cache-Control`(CacheDirectives.`no-cache`)) { get {
     pathSingleSlash {
@@ -173,11 +215,17 @@ class CobraServer(val directory: File) {
       Source.empty
   }
 
+  def configStream: Source[ServerMessage,NotUsed] =
+    revealOptions
+    .merge(titles)
+    .merge(themes)
+    .merge(languages)
+
   def socket: Flow[Message, Message, NotUsed] = {
     val (ref,pub) = Source.actorRef[ServerMessage](300,OverflowStrategy.fail).toMat(Sink.asPublisher(fanout = false))(Keep.both).run()
     val source = Source.fromPublisher(pub)
     Flow[Message].flatMapConcat(deserialize)
-      .flatMapMerge(300, handleRequest(ref)).merge(source).merge(revealOptions).merge(titles).merge(languages).merge(themes)
+      .flatMapMerge(300, handleRequest(ref)).merge(source).merge(configStream)
       .map(msg => BinaryMessage.Strict(ByteString(ServerMessage.write(msg))))
       .watchTermination(){ (n: NotUsed, f: Future[Done]) => f.foreach(_ => ref ! PoisonPill); NotUsed }
   }

@@ -88,6 +88,7 @@ abstract class SocketApp[I,O](
         send(heartbeatMessage)
       }
     }
+    interval
   }
 
   private def rawReceive(msg: ArrayBuffer) = {
