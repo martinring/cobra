@@ -1,13 +1,8 @@
 package net.flatmap.cobra
 
-import java.io.{BufferedWriter, File, FileWriter}
-import java.nio.file.Paths
-
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import com.typesafe.config.{ConfigException, ConfigFactory}
-
-import scala.util.{Failure, Success}
+import better.files.File.OpenOptions
+import net.flatmap.cobra.isabelle.IsabelleUtil
+import better.files._
 
 /**
   * Created by martin on 03.02.16.
@@ -35,26 +30,31 @@ object Cobra extends App {
       scala.io.StdIn.readLine("please enter a name for the new presentation: ")
     }
     println(s"creating new cobra presentation '$name'...")
-    val dir = new File(name)
+    val dir = File(name)
     assume(!dir.exists() || !dir.isDirectory, s"directory '$name' exists already")
-    assume(dir.mkdir(), "could not create directory")
-    val isa_home = (sys.env.get("ISABELLE_HOME") orElse {
-      val tryPaths = Set(
-        "/usr/local/Isabelle2016",
-        "~/Isabelle2016",
-        "~/bin/Isabelle2016",
-        "/opt/Isabelle2016")
-      tryPaths.find { prefix =>
-        val exists = new File(prefix + "/bin/isabelle").exists()
-        if (exists) println(s"found isabelle distribution at $prefix")
-        exists
+    assume(dir.createDirectories().exists, "could not create directory")
+    val isa_home = sys.env.get("ISABELLE_HOME").fold {
+      println()
+      IsabelleUtil.locateInstallation.fold {
+        IsabelleUtil.locateOldInstallation.fold {
+          println("WARN: No Isabelle installation was detected.")
+        } { old =>
+          println(s"WARN: An incompatible Isabelle installation was found ($old)")
+        }
+        println(" (i) if you want to use isabelle, please download at")
+        println("     -> http://isabelle.in.tum.de/website-Isabelle2016/")
+        println("     or configure env.isabelle_home in cobra.conf")
+        println()
+        "// configure if you want to use isabelle\n" +
+        "// ISABELLE_HOME = '...'"
+      } { case path =>
+        println(s"A compatible Isabelle distribution was found at $path")
+        s"// ISABELLE_HOME = '$path'"
       }
-    }).getOrElse {
-      println("could not automatically determine isabelle 2016 install location")
-      scala.io.StdIn.readLine("please enter isabelle install location: ")
+    } { isa_home =>
+      s"// isabelle_home = $isa_home"
     }
 
-    assume(new File(isa_home + "/bin/isabelle").exists(), s"no isabelle distribution at $isa_home")
 
     val conf = scala.io.Source.fromURL(getClass.getResource("/template-cobra.conf")).mkString
       .replaceAll("\\{\\s*title\\s*\\}", s""""$name"""")
@@ -64,13 +64,8 @@ object Cobra extends App {
     val slides = scala.io.Source.fromURL(getClass.getResource("/template-slides.html")).mkString
       .replaceAll("\\{\\s*title\\s*\\}", name)
 
-    val bw = new BufferedWriter(new FileWriter(new File(dir.getPath + "/cobra.conf")))
-    bw.write(conf)
-    bw.close()
-
-    val bw2 = new BufferedWriter(new FileWriter(new File(dir.getPath + "/slides.html")))
-    bw2.write(slides)
-    bw2.close()
+    (dir / "cobra.conf").createIfNotExists() < (conf)
+    (dir / "slides.html").createIfNotExists() < (slides)
 
     println("the presentation has been successfully initialized.")
     println(s"you may start presentation with 'cobra $name'")
@@ -78,17 +73,17 @@ object Cobra extends App {
     sys.exit()
   }
 
-  val directory = if (args.isEmpty) new File(".").getCanonicalFile else new File(args.head)
+  val directory = if (args.isEmpty) File(".") else File(args.head)
 
   { // initialize
     printLogo()
-    assume(directory.exists, "could not find " + directory.getAbsolutePath)
-    assume(directory.isDirectory, directory.getPath + " is not a directory")
-    assume(directory.canRead, "can not read " + directory.getPath)
-    assume(new File(directory.getPath + File.separator + "slides.html").exists(), "no slides.html found")
-    assume(new File(directory.getPath + File.separator + "cobra.conf").exists(), "no cobra.conf found")
+    assume(directory.exists, "could not find " + directory)
+    assume(directory.isDirectory, directory + " is not a directory")
+    assume(directory.isReadable, "can not read " + directory)
+    assume((directory / "slides.html").exists(), "no slides.html found")
+    assume((directory / "cobra.conf").exists(), "no cobra.conf found")
 
-    val server = new CobraServer(Paths.get(directory.getCanonicalFile.toURI))
+    val server = new CobraServer(directory)
     server.start()
     while (scala.io.StdIn.readLine != "exit") ()
     server.stop()
