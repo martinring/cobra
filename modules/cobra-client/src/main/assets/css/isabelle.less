@@ -84,7 +84,10 @@
       margin: 4px 5px 8px 0;
     }
 
-    .isabelle.info, .isabelle.output, .isabelle.error, .isabelle.warning {
+    .cm-m-isabelle.info,
+    .cm-m-isabelle.output,
+    .cm-m-isabelle.error,
+    .cm-m-isabelle.warning {
       font-family: "MathJax_Main";
     }
 
@@ -130,11 +133,11 @@
     }
   }
 
-  span.cm-m-isabelle.delimiter:first-child + span.cm-m-isabelle {
+  span.cm-m-isabelle.cm-operator:first-child + span.cm-m-isabelle {
     font-family: "Fira Code";
   }
 
-  span.cm-m-isabelle.delimiter:first-child {
+  span.cm-m-isabelle.cm-operator:first-child {
       font-family: "Fira Code";
   }
   span.cm-m-isabelle:first-child {
@@ -169,52 +172,23 @@
     font-family: "MathJax_Main" !important;
   }
 
-  span.sup {
+  span.cm-sup {
     font-size: 66%;
     line-height: 0;
     vertical-align: super;
   }
-  span.sub {
+  span.cm-sub {
     font-size: 66%;
     line-height: 0;
     vertical-align: sub;
   }
-  span.bold {
+  span.cm-bold {
     font-weight: bold;
-  }
-  .symbol {
-    /*font-family: 'AMS', 'Math';*/
-  }
-  span.cm-operator {
-
-  }
-  span.cm-command, span.cm-command {
-    color: blue;
-    font-weight: bold;
-  }
-  span.cm-altstring {
-    background: rgba(0,0,0,0.05);
-  }
-  span.cm-verbatim {
-    /*background: rgba(0,0,0,0.05);*/
-    color: fuchsia;
-  }
-  span.comment {
-    color: fuchsia;
   }
   span.cm-malformed {
     text-decoration: line-through;
   }
 
-  span.command_span {
-
-  }
-  span.ignored_span {
-
-  }
-  span.malformed_span {
-
-  }
   /* inner syntax */
   span.cm-tfree {
     font-style: italic;
@@ -240,101 +214,11 @@
   span.var {
     color: darkorange;
   }
-  span.numeral {
-
-  }
-  span.literal {
-
-  }
   span.delimiter, span.control {
     color: gray;
   }
-  span.inner_string {
 
-  }
-  span.inner_comment {
-
-  }
-  span.token_range {
-
-  }
-  span.sort {
-
-  }
-  span.typ {
-
-  }
-  span.term {
-
-  }
-  span.prop {
-
-  }
-
-  span.typing {
-
-  }
-
-  span.attribute {
-
-  }
-
-  span.method {
-
-  }
-
-
-  /* embedded source text */
-  span.ML_source {
-
-  }
-  span.doc_source {
-
-  }
-  span.antiq {
-
-  }
-
-    /* ML syntax */
-
-  span.ML_keyword {
-    color: blue
-  }
-  span.ML_delimiter {
-
-  }
-  span.ML_tvar {
-
-  }
-  span.ML_numeral {
-    color: red
-  }
-  span.ML_char {
-    color: crimson
-  }
-  span.ML_string {
-    color: crimson
-  }
-  span.ML_comment {
-    color: #8b0000
-  }
-  span.ML_malform {
-    color: #ff6a6a
-  }
-  span.ML_def {
-
-  }
-  span.ML_open {
-
-  }
-  span.ML_struct {
-
-  }
-  span.ML_typing {
-
-  }
-
-  span.error, span.bad {
+  span.cm-error {
     position: relative;
     &:after {
       border: .2em solid #f44336;
@@ -359,23 +243,9 @@
       transform: rotate(-10deg);
       width: 2em;
     }
-    /*
-    &:after {
-      content: "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
-      font-family: "Fira Code";
-      color: #f44336;
-      position: absolute;
-      letter-spacing: -0.23em;
-      left: 0px;
-      top: 0.3em;
-      right: 0;
-      height: 1em;
-      overflow: hidden;
-      padding-left: 0.2em;
-    }*/
   }
 
-  span.warning {
+  span.cm-warning {
     position: relative;
     &:after {
       content: "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
@@ -392,7 +262,7 @@
     }
   }
 
-  span.info, span.writeln {
+  span.cm-info, span.cm-writeln {
     background-color: fade(rgb(0,104,163),20%);
   }
 }

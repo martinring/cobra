@@ -117,7 +117,7 @@ object Code {
             import net.flatmap.js.codemirror.plugins.Runmode._
             val elem = org.scalajs.dom.document.createElement("div").asInstanceOf[HTMLElement]
             elem.classes += "info"
-            elem.classes += mode.name
+            elem.classes += "cm-m-"+mode.name
             if (mode == Isabelle) {
               elem.innerHTML = body
             } else {
