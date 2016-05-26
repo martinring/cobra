@@ -152,7 +152,8 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
     }
     session.commands_changed += Session.Consumer("clide"){ msg =>
       outdated ++= msg.nodes
-      refreshAnnotations()
+      self ! RequireRefresh
+      //refreshAnnotations()
     }
     session.start("clide", List("-S","HOL"))
     initialized.future

@@ -26,11 +26,11 @@ lemma reverse_conc: "reverse (conc xs ys) = conc (reverse ys) (reverse xs)"
   by (induct xs) (simp_all add: conc_empty conc_assoc)
 
 
+(** begin #lemma-reverse *)
 lemma reverse_reverse: "reverse (reverse xs) = xs"
   by (induct xs) (simp_all add: reverse_conc)
-
-(** begin #lemma-reverse *)
-lemma a: "A \<Longrightarrow> A \<or> B"
 (** end #lemma-reverse *)
+
+lemma a: "A \<Longrightarrow> A \<or> B"
 
 end

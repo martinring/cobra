@@ -91,7 +91,7 @@ body {
     background-image: url("DFKI_Logo.svg");
     background-position: 0 0.2em;
     width: 200px;
-    height: 200px;
+    height: 1em;
     display: inline-flex;
     float: right;
     background-size: contain;

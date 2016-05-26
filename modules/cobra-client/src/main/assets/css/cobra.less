@@ -27,7 +27,18 @@
     width: 0 !important;
   }
   .hoverInfo {
-    border-bottom: 5px solid rgb(0,104,163);
+    background: rgba(0,104,163,0.2);
+    position: relative;
+  }
+  .hoverInfo::after {
+    content: "▲";
+    position: absolute;
+    top: .6em;
+    left: ~"calc(50% - .3em)";
+    color: #0068a3;
+  }
+  .hoverInfo + .hoverInfo::after {
+    content: none;
   }
 }
 

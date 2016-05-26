@@ -29,13 +29,12 @@ import net.flatmap.collaboration.{Document => _, _}
 
 object IsabelleMarkup {
   val classes = Map(
-      Markup.KEYWORD1 -> "keyword",
-      Markup.KEYWORD2 -> "keyword-2",
-      Markup.STRING -> "string",
-      Markup.ALT_STRING -> "string-2",
+    Markup.KEYWORD3 -> "keyword-3",
+    Markup.QUASI_KEYWORD -> "keyword-4",
       Markup.VERBATIM -> "string-2",
-      Markup.LITERAL -> "builtin",
+      Markup.LITERAL -> "atom",
       Markup.DELIMITER -> "operator",
+      Markup.OPERATOR -> "builtin",
       Markup.TFREE -> "variable-3",
       Markup.TVAR -> "variable-2",
       Markup.FREE -> "variable",
@@ -44,7 +43,8 @@ object IsabelleMarkup {
       Markup.VAR -> "variable",
       Markup.INNER_STRING -> "string-2",
       Markup.INNER_COMMENT -> "comment",
-      Markup.DYNAMIC_FACT -> "def")
+      Markup.DYNAMIC_FACT -> "def",
+      Markup.ANTIQUOTE -> "meta")
 
   val classesElements = Markup.Elements(classes.keySet)
 

@@ -2,10 +2,11 @@ package net.flatmap.cobra.ghc
 
 import java.io.FileWriter
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
 import net.flatmap.cobra.{CombinedRemoteEdit, RemoteAnnotations, RemoteEdit, RequestInfo, _}
 import net.flatmap.collaboration._
 import sun.reflect.annotation.AnnotationType
+import scala.concurrent.duration._
 
 object HaskellService extends LanguageService  {
   def props(env: Map[String,String]) = Props(classOf[HaskellService],env)
@@ -13,6 +14,8 @@ object HaskellService extends LanguageService  {
 
 class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
   override def preStart() = println("hello from scala")
+
+  implicit val dispatcher = context.system.dispatcher
 
   def receive = {
     case ResetSnippet(id, content, rev) =>
@@ -98,8 +101,6 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
         files.get(id).foreach { case (b,c) =>
           val nc = Document(b).apply(operation).get.content.mkString
           files(id) = (nc,c)
-          compile(id,nc,clientInterface)
-          //clientInterface.localAnnotations("substitutions", HaskellMarkup.substitutions(nc))
         }
       }
 
@@ -120,11 +121,24 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
 
     files += id -> (content,clientInterface)
     compile(id,content,clientInterface)
-    //clientInterface.localAnnotations("substitutions", HaskellMarkup.substitutions(content))
+
+    case object Refresh
+    case object DelayRefresh
+    var refreshDelay: Option[Cancellable] = None
 
     {
+      case DelayRefresh =>
+        refreshDelay.foreach(_.cancel())
+        refreshDelay = Some(context.system.scheduler.scheduleOnce(.75 second, self, Refresh))
+      case Refresh =>
+        files.get(id).foreach { case (b,c) =>
+          compile(id,b,clientInterface)
+        }
+        refreshDelay = None
       case AcknowledgeEdit(id2) if id == id2 => clientInterface.serverAck()
-      case RemoteEdit(id2, op) if id == id2 => clientInterface.remoteEdit(op)
+      case RemoteEdit(id2, op) if id == id2 =>
+        clientInterface.remoteEdit(op)
+        self ! DelayRefresh
       case RemoteAnnotations(id2, aid, as) if id == id2 => clientInterface.remoteAnnotations(aid, as)
       case CombinedRemoteEdit(id2, op, rev) if id == id2 => clientInterface.combinedRemoteEdit(op, rev)
       case RequestInfo(id2,from,to) if id == id2 => getInfo(id,from,to).foreach(server ! _)

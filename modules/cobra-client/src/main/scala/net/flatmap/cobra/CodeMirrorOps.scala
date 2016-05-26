@@ -45,9 +45,14 @@ object CodeMirrorOps {
         val marker = c.substitute.fold {
           val options = TextMarkerOptions()
           options.shared = true
-          if (c.classes.nonEmpty) options.className = c.classes.map("cm-" + _)mkString(" ")
           c.tooltip.foreach(options.title = _)
-          doc.markText(from,to, options)
+          if (l == 0) {
+            options.className = c.classes.map("cm-empty-" + _)mkString(" ")
+            doc.markText(from,doc.posFromIndex(offset + l + 1), options)
+          } else {
+            if (c.classes.nonEmpty) options.className = c.classes.map("cm-" + _)mkString(" ")
+            doc.markText(from,to, options)
+          }
         } { substitution =>
           val options = TextMarkerOptions()
           options.shared = true
