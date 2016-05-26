@@ -126,7 +126,9 @@ object Code {
             }
             hoverInfo.foreach(_.clear())
             hoverInfo.clear()
-            hoverInfo += doc.getEditor().addLineWidget(pos.line, elem)
+            val wops = new js.Object()
+            wops.asInstanceOf[js.Dynamic].insertAt = 0
+            hoverInfo += doc.getEditor().addLineWidget(pos.line, elem, wops)
             val options = TextMarkerOptions()
             options.className = "hoverInfo"
             hoverInfo += doc.markText(f,pos,options)
