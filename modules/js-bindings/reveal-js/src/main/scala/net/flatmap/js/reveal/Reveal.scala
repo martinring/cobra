@@ -23,6 +23,19 @@ object Reveal extends EventTarget {
   def down(): Unit = js.native
   def prev(): Unit = js.native
   def next(): Unit = js.native
+
+  /**
+    * Navigate to the specified slide fragment.
+    *
+    * @param index The index of the fragment that
+    * should be shown, -1 means all are invisible
+    * @param offset Integer offset to apply to the
+    * fragment index
+    *
+    * @return true if a change was made in any
+    *         fragments visibility as part of this call
+    */
+  def navigateFragment(index: Int, offset: Int = 0): Boolean = js.native
   def prevFragment(): Unit = js.native
   def nextFragment(): Unit = js.native
 
@@ -39,6 +52,12 @@ object Reveal extends EventTarget {
 
   // Fetch the current scale of the presentation
   def getScale(): Double = js.native
+
+  // Forces an update in slide layout
+  def layout(): Unit = js.native
+
+  // Randomizes the order of slides
+  def shuffle(): Unit = js.native
 
   // Retrieves the previous and current slide elements
   def getPreviousSlide(): HTMLDivElement = js.native

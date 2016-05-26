@@ -45,14 +45,14 @@ object CodeMirrorOps {
         val marker = c.substitute.fold {
           val options = TextMarkerOptions()
           options.shared = true
-          if (c.classes.nonEmpty) options.className = c.classes.mkString(" ")
+          if (c.classes.nonEmpty) options.className = c.classes.map("cm-" + _)mkString(" ")
           c.tooltip.foreach(options.title = _)
           doc.markText(from,to, options)
         } { substitution =>
           val options = TextMarkerOptions()
           options.shared = true
           options.replacedWith =
-            net.flatmap.js.util.HTML(s"<span class='cm-m-isabelle ${c.classes.mkString(" ")}'>$substitution</span>").head.asInstanceOf[HTMLElement]
+            net.flatmap.js.util.HTML(s"<span class='cm-m-isabelle ${c.classes.map("cm-" + _).mkString(" ")}'>$substitution</span>").head.asInstanceOf[HTMLElement]
           c.tooltip.foreach(options.replacedWith.title = _)
           doc.markText(from,to,options)
         }
@@ -61,19 +61,19 @@ object CodeMirrorOps {
           def widget(doc: Doc) = Option(doc.getEditor()).foreach { editor => if (editor != js.undefined && doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
             val elem = message match {
               case ErrorMessage(txt) =>
-                val classes = c.classes + "error" + mode.name
+                val classes = c.classes.map("cm-" + _) + "error" + s"cm-m-${mode.name}"
                 net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case WarningMessage(txt) =>
-                val classes = c.classes + "warning" + mode.name
+                val classes = c.classes.map("cm-" + _) + "warning" + s"cm-m-${mode.name}"
                 net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case InfoMessage(txt) =>
-                val classes = c.classes + "info" + mode.name
+                val classes = c.classes.map("cm-" + _) + "info" + s"cm-m-${mode.name}"
                 net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case OutputMessage(txt) =>
-                val classes = c.classes + "output" + mode.name
+                val classes = c.classes.map("cm-" + _) + "output" + s"cm-m-${mode.name}"
                 net.flatmap.js.util.HTML(s"<div class='${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
               case StateMessage(txt) =>
-                val classes = c.classes + "output" + mode.name
+                val classes = c.classes.map("cm-" + _) + "output" + s"cm-m-${mode.name}"
                 if (editor.getOption("state-fragments") == "all")
                   net.flatmap.js.util.HTML(s"<div class='all fragment ${classes.mkString(" ")}'>$txt</div>").head.asInstanceOf[HTMLElement]
                 else if (editor.getOption("state-fragments") == "single")
