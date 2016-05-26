@@ -29,6 +29,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
   val cmTheme = RVar("default")
   var revealOps: Option[RevealOptions] = None
 
+  val initialOptions = scala.concurrent.Promise[RevealOptions]
+
   def receive = {
     case msg: SnippetMessage => handlers(msg.id).foreach(_(msg))
     case RevealOptionsUpdate(options) =>
@@ -38,6 +40,8 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
         case (key,value) => try { old.updateDynamic(key)(eval(value)) } catch { case NonFatal(e) => console.warn(s"could not apply config value: $key = $value") }
       }
       revealOps = Some(old.asInstanceOf[RevealOptions])
+      if (!initialOptions.isCompleted)
+        initialOptions.success(old.asInstanceOf[RevealOptions])
       if (Reveal.isReady()) {
         Reveal.configure(old.asInstanceOf[RevealOptions])
         Reveal.sync()
@@ -75,6 +79,7 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       for {
         slides <- $"#slides" <<< "slides.html"
         delayedSnippets <- Code.loadDelayed(slides)
+        options <- initialOptions.future
       } {
         val link = document.createElement("link").asInstanceOf[HTMLLinkElement]
         link.rel = "stylesheet"
