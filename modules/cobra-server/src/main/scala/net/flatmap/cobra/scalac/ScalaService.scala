@@ -10,8 +10,6 @@ object ScalaService extends LanguageService  {
 }
 
 class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler with ActorLogging {
-  override def preStart() = println("hello from scala")
-
   implicit val dispatcher = context.system.dispatcher
 
   def receive = {
