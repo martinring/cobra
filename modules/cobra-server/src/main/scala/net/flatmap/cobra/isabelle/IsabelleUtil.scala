@@ -37,7 +37,7 @@ object IsabelleUtil {
     possiblePaths("2016").find(p => (p / "bin" / "isabelle").isExecutable)
 
   def locateOldInstallation =
-    Set("2015","2014","2013","2012")
+    Set("2015","2014","2013-2","2013-1","2013","2012","2011-1","2011")
       .map(possiblePaths)
       .map(_.find(p => (p / "bin" / "isabelle").isExecutable))
       .collectFirst {
