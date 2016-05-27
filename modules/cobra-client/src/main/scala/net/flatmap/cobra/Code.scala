@@ -12,7 +12,6 @@ import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.scalajs.js._
 import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
@@ -93,7 +92,7 @@ object Code {
       }
     }
 
-    var client = ClientInterface[Char](editorInterface)
+    val client = ClientInterface[Char](editorInterface)
 
     var hoverInfo = mutable.Buffer.empty[Clearable]
 
@@ -103,7 +102,7 @@ object Code {
       case CombinedRemoteEdit(_,op,revs) =>
         client.combinedRemoteEdit(op,revs)
       case ResetSnippet(_,content,rev) =>
-        console.warn(s"snippet $id was resetted by the server")
+        console.warn(s"snippet $id was reset by the server")
         client.reset(rev)
         silently(doc.setValue(content))
       case RemoteAnnotations(_,aid,annotations) =>
@@ -126,7 +125,8 @@ object Code {
             }
             hoverInfo.foreach(_.clear())
             hoverInfo.clear()
-            hoverInfo += doc.getEditor().addLineWidget(pos.line, elem)
+            val ops = js.Dynamic.literal(insertAt = 0)
+            hoverInfo += doc.getEditor().addLineWidget(pos.line, elem, ops)
             val options = TextMarkerOptions()
             options.className = "hoverInfo"
             hoverInfo += doc.markText(f,pos,options)
@@ -203,7 +203,7 @@ object Code {
 
   def initializeEditors(root: NodeSeqQuery, documents: Map[String,Doc]) = {
     root.query("section code").elements.collect {
-      case code if (!code.classes.contains("hidden")) =>
+      case code if !code.classes.contains("hidden") =>
         val doc = code.attribute("id").flatMap(documents.get).orElse(
         code.attribute("src").collect {
           case src if src.startsWith("#") =>
@@ -213,7 +213,7 @@ object Code {
         val editor = CodeMirror(code)
         editor.swapDoc(doc)
         editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
-          (if (code.classes.contains("current-only")) "single" else "all") else null)
+          if (code.classes.contains("current-only")) "single" else "all" else null)
         editor.setOption("addModeClass",true)
         //editor.setOption("scrollbarStyle","null")
         editor.setOption("viewportMargin",js.eval("Infinity"))
