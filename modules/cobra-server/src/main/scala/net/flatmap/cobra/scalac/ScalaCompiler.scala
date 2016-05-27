@@ -17,14 +17,11 @@ import java.util.jar.JarFile
 import net.flatmap.cobra.Information
 import net.flatmap.collaboration._
 
-import scala.collection.mutable.ListBuffer
 import scala.reflect.internal.util.{BatchSourceFile, Position}
 import scala.tools.nsc.interactive.Global
 import scala.reflect.internal.util.AbstractFileClassLoader
 import scala.collection.mutable.SortedSet
 import scala.tools.nsc.interactive.Response
-import scala.io.Source
-import scala.collection.mutable.Buffer
 import scala.tools.refactoring.common.PimpedTrees
 import scala.tools.refactoring.common.CompilerAccess
 import scala.reflect.internal.util.OffsetPosition
@@ -82,8 +79,8 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
     val currentClassPath = classPath.head
 
     // if there's just one thing in the classpath, and it's a jar, assume an executable jar.
-    currentClassPath ::: (if (currentClassPath.size == 1 && currentClassPath(0).endsWith(".jar")) {
-      val jarFile = currentClassPath(0)
+    currentClassPath ::: (if (currentClassPath.size == 1 && currentClassPath.head.endsWith(".jar")) {
+      val jarFile = currentClassPath.head
       val relativeRoot = new File(jarFile).getParentFile()
       val nestedClassPath = new JarFile(jarFile).getManifest.getMainAttributes.getValue("Class-Path")
       if (nestedClassPath eq null) {
@@ -131,7 +128,7 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
 
   def identifier(pos: Position, kind: String*): Unit = identifier(pos, None, kind :_*)
 
-  def identifier(pos: Position, t: Option[String], kind: String*): Unit = if (pos.isDefined) {
+  def identifier(pos: Position, t: Option[String], kind: String*): Unit = if (pos.isDefined && pos.isRange) {
     if (!identifiers.isDefinedAt(pos.source.file.name))
       identifiers(pos.source.file.name) = SortedSet.empty(Ordering.by(x => (x._1,x._2)))
     val (start,length) =
@@ -205,35 +202,37 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
     case t: global.TypeTree =>
       val classes = "ref" :: "type" ::
         (if (t.symbol.isTypeParameter) List("param") else Nil)
-      identifier(t.namePosition, classes :_*)
+      identifier(t.namePosition, global.docComments.get(t.symbol).map(_.toString).orElse(Some(t.symbol.kindString + " " + t.symbol.nameString + t.symbol.signatureString)), classes :_*)
       t.children.foreach(annotationsFromTree(_))
     case c: global.TypeDef =>
       val classes = "def" :: "type" ::
         (if (c.symbol.isTypeParameter) List("param") else Nil)
-      identifier(c.namePosition,classes :_*)
+      identifier(c.namePosition,Some(c.symbol.kindString + " " + c.symbol.nameString + c.symbol.signatureString), classes :_*)
       c.children.foreach(annotationsFromTree(_))
     case c: global.ClassDef =>
-      identifier(c.namePosition, "def", "type")
+      identifier(c.namePosition,Some(c.symbol.kindString + " " + c.symbol.nameString + c.symbol.signatureString), "def", "type")
       c.children.foreach(annotationsFromTree(_))
     case c: global.ModuleDef =>
-      identifier(c.namePosition, "def", "module")
+      identifier(c.namePosition,Some(c.symbol.kindString + " " + c.symbol.nameString + c.symbol.signatureString), "def", "module")
       c.children.foreach(annotationsFromTree(_))
     case c: global.Bind =>
-      identifier(c.namePosition, "def", "local")
+      identifier(c.namePosition,Some(c.symbol.kindString + " " + c.symbol.nameString + c.symbol.signatureString), "def", "local")
       c.children.foreach(annotationsFromTree(_))
+    case c: global.Literal =>
+      identifier(c.pos,Some("literal " + c.toString + ": " + c.tpe.toString().takeWhile(_ != '(')))
     case c: global.ValDef =>
       val classes = "def" :: "val-def" ::
         (if (c.symbol.isLocalToBlock) List("local") else Nil) ++
           (if (c.symbol.isParameter) List("param") else Nil) ++
           (if (c.symbol.isVar) List("var-def") else Nil)
-      global.ask(() => identifier(c.namePosition,Some(c.symbol.signatureString), classes :_*))
+      global.ask(() => identifier(c.namePosition,Some(c.symbol.kindString + " " + c.symbol.nameString + c.symbol.signatureString), classes :_*))
       c.children.foreach(annotationsFromTree(_))
     case c: global.DefDef =>
       val classes = "def" :: "def-def" ::
         (if (c.symbol.isLocalToBlock) List("local") else Nil) ++
           (if (c.symbol.isParameter) List("param") else Nil) ++
           (if (c.symbol.isVar) List("var-def") else Nil)
-      global.ask(() => identifier(c.namePosition,Some(c.symbol.signatureString), classes :_*))
+      global.ask(() => identifier(c.namePosition,Some(c.symbol.kindString + " " + c.symbol.nameString + c.symbol.signatureString), classes :_*))
       c.children.foreach(annotationsFromTree(_))
     case a: global.Apply if a.symbol != global.NoSymbol =>
       if (a.symbol.isImplicit) {
@@ -248,16 +247,7 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
           (if (c.symbol.isValueParameter) List("param") else Nil) ++
           (if (c.symbol.isModule) List("module") else Nil) ++
           (if (c.symbol.isConstructor) List("constructor", "type") else Nil)
-      global.ask(() => identifier(c.namePosition,Some(c.symbol.signatureString), classes :_*))
-      val substs = List(
-        "<=" -> "≤",
-        ">=" -> "≥",
-        "&&" -> "",
-        "!=" -> "≠",
-        "==" -> "≡",
-        "&&" -> "∧",
-        "||" -> "∨")
-      substs.find(_._1 == c.name.decoded).map(x => substitute(c.namePosition, x._2))
+      global.ask(() => identifier(c.namePosition,Some(c.symbol.kindString + " " + c.symbol.nameString + c.symbol.signatureString), classes :_*))
       c.children.foreach(annotationsFromTree(_))
     case i: global.Ident if i.symbol != global.NoSymbol =>
       val classes = "ref" :: "ident" ::
@@ -267,7 +257,7 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
           (if (i.symbol.isValueParameter) List("param") else Nil) ++
           (if (i.symbol.isModule) List("module") else Nil) ++
           (if (i.symbol.isType) List("type") else Nil)
-      global.ask(() => identifier(i.namePosition,Some(i.symbol.signatureString),classes :_*))
+      global.ask(() => identifier(i.namePosition,Some(i.symbol.kindString + " " + i.symbol.nameString + i.symbol.signatureString),classes :_*))
       i.children.foreach(annotationsFromTree(_))
     case t: global.Tree =>
       t.children.foreach(annotationsFromTree(_))
@@ -317,6 +307,20 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
       file._2.localAnnotations("messages", annotations)
     }
   }
+
+  /*def getInfo(id: String, from: Int, to: Int, state: String) = {
+    messages.values.foreach(_.clear)
+    val source = new BatchSourceFile(id, state)
+    val reloaded = new Response[Unit]
+    global.askReload(List(source), reloaded)
+    reloaded.get.left.foreach { _ =>
+      val tree = new Response[global.Tree]
+      global.askLoadedTyped(source, tree)
+      tree.get.left.foreach { tree =>
+
+      }
+    }
+  }*/
 
   def getInfo(id: String, from: Int, to: Int) = identifiers.get(id).flatMap { messages =>
     messages.find {
