@@ -64,7 +64,7 @@ body {
 }
 
 .reveal .slides > section > h2:first-child, .reveal .slides > section > section:first-child > h2:first-child {
-  background: linear-gradient(90deg,transparent 0%,rgb(217,218,219) 33%, rgb(217,218,219) 67%, transparent 100%);
+  background: linear-gradient(90deg,white 0%,rgb(217,218,219) 33.33%, rgb(217,218,219) 66.67%, white 100%);
   padding-top: 25%;
   margin-top: -25%;
   padding-left: 25%;
@@ -79,7 +79,7 @@ body {
 .reveal .slides > section > h2:first-child::before, .reveal .slides > section > section:first-child > h2:first-child::before {
   content: "";
   position: absolute;
-  background: linear-gradient(90deg, transparent 0%, rgb(222, 124, 10) 33.33%);
+  background: linear-gradient(90deg, white 0%, rgb(222, 124, 10) 33.33%);
   bottom: -10px;
   height: 20px;
   width: 66.67%;
