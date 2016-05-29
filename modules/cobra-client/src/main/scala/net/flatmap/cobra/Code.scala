@@ -232,36 +232,37 @@ object Code {
             var marker = doc.markText(start, doc.posFromIndex(p.start + before.length))
             code.appendChild(fragment1)
             code.appendChild(fragment2)
-            Reveal.on(RevealEvents.FragmentShown) { e =>
-              if (e.fragment.isSameNode(fragment1))
+            var selected = false
+            var isBefore = true
+            def update(): Unit = {
+              if (!selected && fragment1.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
-                  doc.setSelection(ft.from,ft.to)
+                  doc.setSelection(ft.from, ft.to)
                 }
-            }
-            Reveal.on(RevealEvents.FragmentHidden) { e =>
-              if (e.fragment.isSameNode(fragment1))
-                Option(marker.find()).foreach { ft =>
-                  doc.undoSelection()
-                }
-            }
-            Reveal.on(RevealEvents.FragmentShown) { e =>
-              if (e.fragment.isSameNode(fragment2))
+                selected = true
+              } else if (selected && !fragment1.classes.contains("current-fragment")) {
+                doc.setSelections(js.Array())
+                selected = false
+              } else if (isBefore && fragment2.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
                   doc.replaceRange(after, ft.from, ft.to)
                   val to = doc.posFromIndex(doc.indexFromPos(ft.from) + after.length)
                   marker = doc.markText(ft.from, to)
                   doc.setSelection(ft.from, to)
                 }
-            }
-            Reveal.on(RevealEvents.FragmentHidden) { e =>
-              if (e.fragment.isSameNode(fragment2))
+                isBefore = false
+              } else if (!isBefore && !fragment2.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
                   doc.replaceRange(before, ft.from, ft.to)
                   val to = doc.posFromIndex(doc.indexFromPos(ft.from) + before.length)
                   marker = doc.markText(ft.from, to)
                   doc.setSelection(ft.from, to)
                 }
+                isBefore = true
+              }
             }
+            Reveal.on(RevealEvents.FragmentShown) { e => update() }
+            Reveal.on(RevealEvents.FragmentHidden) { e => update() }
           } { content =>
             val start = doc.posFromIndex(p.start)
             doc.replaceRange(
@@ -272,18 +273,20 @@ object Code {
             val fragment = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
             var marker = doc.markText(start,doc.posFromIndex(p.start + content.length))
             code.appendChild(fragment)
-            Reveal.on(RevealEvents.FragmentShown) { e =>
-              if (e.fragment.isSameNode(fragment))
+            var selected = false
+            def update(): Unit = {
+              if (!selected && fragment.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
-                  doc.setSelection(ft.from,ft.to)
+                  doc.setSelection(ft.from, ft.to)
                 }
+                selected = true
+              } else if (selected && !fragment.classes.contains("current-fragment")) {
+                doc.setSelections(js.Array())
+                selected = false
+              }
             }
-            Reveal.on(RevealEvents.FragmentHidden) { e =>
-              if (e.fragment.isSameNode(fragment))
-                Option(marker.find()).foreach { ft =>
-                  doc.undoSelection()
-                }
-            }
+            Reveal.on(RevealEvents.FragmentShown) { e => update() }
+            Reveal.on(RevealEvents.FragmentHidden) { e => update() }
           }
           m = mde.alternatives.findFirstMatchIn(doc.getValue())
         }
