@@ -218,34 +218,72 @@ object Code {
         var m = mde.alternatives.findFirstMatchIn(doc.getValue())
         while (m.isDefined) {
           val p = m.get
-          val List(a,b,c,d) = p.subgroups
-          val before = Option(a).getOrElse(c)
-          val after = Option(b).getOrElse(d)
-          val start = doc.posFromIndex(p.start)
-          doc.replaceRange(
-            before,
-            start,
-            doc.posFromIndex(p.end))
-          val fragment = HTML("<span class='fragment' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
-          var marker = doc.markText(start,doc.posFromIndex(p.start + before.length))
-          code.appendChild(fragment)
-          Reveal.on(RevealEvents.FragmentShown) { e =>
-            if (e.fragment.isSameNode(fragment))
-              Option(marker.find()).foreach { ft =>
-                doc.replaceRange(after,ft.from,ft.to)
-                val to = doc.posFromIndex(doc.indexFromPos(ft.from) + after.length)
-                marker = doc.markText(ft.from,to)
-                doc.setSelection(ft.from,to)
-              }
-          }
-          Reveal.on(RevealEvents.FragmentHidden) { e =>
-            if (e.fragment.isSameNode(fragment))
-              Option(marker.find()).foreach { ft =>
-                doc.replaceRange(before,ft.from,ft.to)
-                val to = doc.posFromIndex(doc.indexFromPos(ft.from) + before.length)
-                marker = doc.markText(ft.from,to)
-                doc.setSelection(ft.from,to)
-              }
+          val List(x,a,b,c,d) = p.subgroups
+          Option(x).fold {
+            val before = Option(a).getOrElse(c)
+            val after = Option(b).getOrElse(d)
+            val start = doc.posFromIndex(p.start)
+            doc.replaceRange(
+              before,
+              start,
+              doc.posFromIndex(p.end))
+            val fragment1 = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            val fragment2 = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            var marker = doc.markText(start, doc.posFromIndex(p.start + before.length))
+            code.appendChild(fragment1)
+            code.appendChild(fragment2)
+            Reveal.on(RevealEvents.FragmentShown) { e =>
+              if (e.fragment.isSameNode(fragment1))
+                Option(marker.find()).foreach { ft =>
+                  doc.setSelection(ft.from,ft.to)
+                }
+            }
+            Reveal.on(RevealEvents.FragmentHidden) { e =>
+              if (e.fragment.isSameNode(fragment1))
+                Option(marker.find()).foreach { ft =>
+                  doc.undoSelection()
+                }
+            }
+            Reveal.on(RevealEvents.FragmentShown) { e =>
+              if (e.fragment.isSameNode(fragment2))
+                Option(marker.find()).foreach { ft =>
+                  doc.replaceRange(after, ft.from, ft.to)
+                  val to = doc.posFromIndex(doc.indexFromPos(ft.from) + after.length)
+                  marker = doc.markText(ft.from, to)
+                  doc.setSelection(ft.from, to)
+                }
+            }
+            Reveal.on(RevealEvents.FragmentHidden) { e =>
+              if (e.fragment.isSameNode(fragment2))
+                Option(marker.find()).foreach { ft =>
+                  doc.replaceRange(before, ft.from, ft.to)
+                  val to = doc.posFromIndex(doc.indexFromPos(ft.from) + before.length)
+                  marker = doc.markText(ft.from, to)
+                  doc.setSelection(ft.from, to)
+                }
+            }
+          } { content =>
+            val start = doc.posFromIndex(p.start)
+            doc.replaceRange(
+              content,
+              start,
+              doc.posFromIndex(p.end)
+            )
+            val fragment = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            var marker = doc.markText(start,doc.posFromIndex(p.start + content.length))
+            code.appendChild(fragment)
+            Reveal.on(RevealEvents.FragmentShown) { e =>
+              if (e.fragment.isSameNode(fragment))
+                Option(marker.find()).foreach { ft =>
+                  doc.setSelection(ft.from,ft.to)
+                }
+            }
+            Reveal.on(RevealEvents.FragmentHidden) { e =>
+              if (e.fragment.isSameNode(fragment))
+                Option(marker.find()).foreach { ft =>
+                  doc.undoSelection()
+                }
+            }
           }
           m = mde.alternatives.findFirstMatchIn(doc.getValue())
         }

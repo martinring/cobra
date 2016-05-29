@@ -11,17 +11,17 @@ sealed abstract class Mode(val name: String, val mime: String, val regex: Regex,
 case object Scala extends Mode(
   "scala","text/x-scala",
   Comments.line("\\/\\/\\/+"),
-  new Regex("(?s)\\/\\*\\(\\*\\/(.*?)\\/\\*\\|(.*?)\\)\\*\\/|\\/\\*\\((.*?)\\|\\*\\/(.*?)\\/\\*\\)\\*\\/"),
+  new Regex("(?s)\\/\\*\\(\\*\\/(.*?)\\/\\*\\)\\*\\/|\\/\\*\\(\\*\\/(.*?)\\/\\*\\|(.*?)\\)\\*\\/|\\/\\*\\((.*?)\\|\\*\\/(.*?)\\/\\*\\)\\*\\/"),
   Set("scala"))
 case object Haskell extends Mode(
   "haskell","text/x-haskell",
   Comments.line("---+"),
-  new Regex("(?s)\\{-\\(-\\}(.*?)\\{-\\|(.*?)\\)-\\}|\\{-\\((.*?)\\|-\\}(.*?)\\{-\\)-\\}"),
+  new Regex("(?s)\\{-\\(-\\}(.*?)\\{-\\)-\\}|\\{-\\(-\\}(.*?)\\{-\\|(.*?)\\)-\\}|\\{-\\((.*?)\\|-\\}(.*?)\\{-\\)-\\}"),
   Set("hs"))
 case object Isabelle extends Mode(
   "isabelle","text/x-isabelle",
   Comments.block("\\(\\*\\*+","\\*\\)"),
-  new Regex("(?s)\\(\\*\\(\\*\\)(.*?)\\(\\*\\|(.*?)\\)\\*\\)|\\(\\*\\((.*?)\\|\\*\\)(.*?)\\(\\*\\)\\*\\)"),
+  new Regex("(?s)\\(\\*\\(\\*\\)(.*?)\\(\\*\\)\\*\\)|\\(\\*\\(\\*\\)(.*?)\\(\\*\\|(.*?)\\)\\*\\)|\\(\\*\\((.*?)\\|\\*\\)(.*?)\\(\\*\\)\\*\\)"),
   Set("thy"))
 case object Plain extends Mode("plain","text/plain",new Regex("$^"),new Regex("$^"),Set.empty)
 
