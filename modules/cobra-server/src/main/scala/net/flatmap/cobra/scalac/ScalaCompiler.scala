@@ -21,10 +21,12 @@ import scala.reflect.internal.util.{BatchSourceFile, Position}
 import scala.tools.nsc.interactive.Global
 import scala.reflect.internal.util.AbstractFileClassLoader
 import scala.collection.mutable.SortedSet
+import scala.concurrent.{Future, Promise}
 import scala.tools.nsc.interactive.Response
 import scala.tools.refactoring.common.PimpedTrees
 import scala.tools.refactoring.common.CompilerAccess
 import scala.reflect.internal.util.OffsetPosition
+import scala.util.Try
 import scala.util.control.NonFatal
 
 trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService =>
@@ -263,7 +265,8 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
       t.children.foreach(annotationsFromTree(_))
   }
 
-  def compile(id: String, state: String) = {
+  def compile[T](id: String, state: String)(andThen: => T): Future[T] = {
+    val promise = Promise[T]
     messages.values.foreach(_.clear)
     val source = new BatchSourceFile(id, state)
     val reloaded = new Response[Unit]
@@ -278,8 +281,10 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
         annotationsFromTree(tree)
         annotateSemantics()
         annotate()
+        promise.complete(Try(andThen))
       }
     }
+    promise.future
   }
 
 
@@ -322,11 +327,13 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
     }
   }*/
 
-  def getInfo(id: String, from: Int, to: Int) = identifiers.get(id).flatMap { messages =>
-    messages.find {
-      case (offset,length,tt,tpe) => from <= offset && offset <= to
-    }.map {
-      case (offset,length,tt,tpe) => Information(id,offset,offset + length, tt.mkString)
+  def getInfo(id: String, state: String, from: Int, to: Int) = compile(id,state) {
+    identifiers.get(id).flatMap { messages =>
+      messages.find {
+        case (offset,length,tt,tpe) => from <= offset && offset <= to
+      }.map {
+        case (offset,length,tt,tpe) => Information(id,offset,offset + length, tt.mkString)
+      }
     }
   }
 

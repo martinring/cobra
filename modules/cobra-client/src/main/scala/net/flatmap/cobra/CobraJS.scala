@@ -95,6 +95,7 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
         document.getElementsByTagName("head")(0).appendChild(link)
         val documents = Code.initializeDocuments(slides)
         val editors = Code.initializeEditors(slides, documents)
+        Code.attachDocuments(documents)
         val settings = revealOps getOrElse (RevealOptions())
         val mathOptions = RevealMathOptions()
         mathOptions.mathjax = "/lib/MathJax/2.6.1/MathJax.js"

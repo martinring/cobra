@@ -2,7 +2,21 @@ package net.flatmap.js.util
 
 import org.scalajs.dom._
 
-abstract class Event[+N <: raw.EventTarget, +T <: raw.Event](val name: String)
+trait EventSource[T] {
+  def on[E](event: Event[T,E])(f: E => Unit): Subscription
+
+  def once[E](event: Event[T,E])(f: E => Unit): Subscription = {
+    lazy val subscription: Subscription = on(event) { e =>
+      if (!subscription.isCancelled) {
+        f(e)
+        subscription.cancel()
+      }
+    }
+    subscription
+  }
+}
+
+abstract class Event[+N <% EventSource[N], +T](val name: String)
 
 object Event {
   object Blur extends Event[Element,FocusEvent]("blur")

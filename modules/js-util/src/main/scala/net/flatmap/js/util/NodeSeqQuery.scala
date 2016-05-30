@@ -50,7 +50,7 @@ trait NodeSeqQuery extends EventSource[Node] { self =>
       parent <- Option(n.parentNode)
     } Option(n.nextSibling).fold($.foreach(parent.appendChild(_)))(next => $.foreach(parent.insertBefore(_,next)))
   }
-  def on[T <: raw.Event](event: Event[Node,T])(f: T => Unit): Subscription = {
+  def on[T](event: Event[Node,T])(f: T => Unit): Subscription = {
     val g: scalajs.js.Function1[T,_] = f
     underlying.foreach(_.addEventListener(event.name, g))
     Subscription(underlying.foreach(_.removeEventListener(event.name, g.asInstanceOf[scalajs.js.Function1[raw.Event,_]])))
