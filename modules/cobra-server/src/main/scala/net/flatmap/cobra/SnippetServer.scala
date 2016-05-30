@@ -24,7 +24,6 @@ object SnippetServer {
 class SnippetServer(env: Map[String,String]) extends Actor with ActorLogging {
   def receive = {
     case InitDoc(id,content,mode) =>
-      println(s"INIT $id:\n$content")
       val service = SnippetServer.services.get(mode).map { ls =>
         val src = context.actorOf(ls.props(env),mode.name)
         src ! ResetSnippet(id,content,0)
@@ -52,7 +51,6 @@ class SnippetServer(env: Map[String,String]) extends Actor with ActorLogging {
       context.become(initialized(mode,server,listeners,annotations + (aid -> as)))
       (listeners - sender).foreach(_ ! RemoteAnnotations(id,aid,as))
     case Edit(id,op,rev) =>
-      println(s"EDIT $id:\n$op")
       log.debug("applying edit")
       server.applyOperation(op,rev) match {
         case Success(op) =>
