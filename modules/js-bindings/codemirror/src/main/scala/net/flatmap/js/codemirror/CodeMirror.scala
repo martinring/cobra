@@ -320,7 +320,7 @@ trait Doc extends DocEditorCommon {
     * document. It will be passed two arguments, the linked document and a
     * boolean indicating whether that document shares history with the target.*/
   def iterLinkedDocs(function: js.Function2[Doc,Boolean,Unit])
-  var isRoot: js.UndefOr[Boolean] = js.native
+  var rootDoc: js.UndefOr[Doc] = js.native
 }
 
 @js.native

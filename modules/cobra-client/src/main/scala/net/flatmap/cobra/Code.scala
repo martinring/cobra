@@ -1,8 +1,10 @@
 package net.flatmap.cobra
 
+import java.util.UUID
+
 import net.flatmap.collaboration.{Annotations, ClientInterface, EditorInterface, Operation}
 import net.flatmap.js.codemirror._
-import net.flatmap.js.reveal.{RevealEvents, Reveal}
+import net.flatmap.js.reveal.{Reveal, RevealEvents}
 import org.scalajs.dom.{Element, console, raw}
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
@@ -60,7 +62,7 @@ object Code {
       case (name,sl) if ends.contains(name) =>
         val el = ends(name)
         val doc = root.linkedDoc(new LinkedDocOptions(from = sl, to = el, sharedHist = true))
-        doc.isRoot = false
+        doc.rootDoc = root
         doc.on("beforeChange",(x: Doc, y: EditorChange) => CodeMirror.signal(root, "beforeChange", root, y))
         doc.on("cursorActivity",(x: Doc) => CodeMirror.signal(root, "cursorActivity", x))
         name -> doc
@@ -98,6 +100,8 @@ object Code {
 
     var hoverInfo = mutable.Buffer.empty[Clearable]
 
+    var currentRequest = Option.empty[String]
+
     CobraJS.listenOn(id) {
       case AcknowledgeEdit(_) => client.serverAck()
       case RemoteEdit(_,op) => client.remoteEdit(op)
@@ -109,7 +113,7 @@ object Code {
         silently(doc.setValue(content))
       case RemoteAnnotations(_,aid,annotations) =>
         client.remoteAnnotations(aid,annotations)
-      case Information(_,from,to,body) =>
+      case Information(_,from,to,body,guid) if currentRequest.contains(guid) =>
         val root = doc
         def widget(doc: Doc): Unit = if (doc.getEditor() != js.undefined) {
           val f = root.posFromIndex(from)
@@ -144,8 +148,6 @@ object Code {
         client.localEdit(CodeMirrorOps.changeToOperation(doc,e))
       }
 
-
-
     val selectHandler: js.Function1[Doc,Unit] = {
       var next = Option.empty[Option[RequestInfo]]
       val root = doc
@@ -153,11 +155,14 @@ object Code {
         hoverInfo.foreach(_.clear())
         hoverInfo.clear()
         console.log("selection Change")
-        doc.listSelections().filter(r => r.head.line != r.anchor.line || r.head.ch != r.anchor.ch).foreach { range =>
+        if (!doc.somethingSelected()) currentRequest = None
+        else doc.listSelections().filter(r => r.head.line != r.anchor.line || r.head.ch != r.anchor.ch).foreach { range =>
+          val guid = UUID.randomUUID().toString
           val req = if (range.anchor.line < range.head.line || range.anchor.line == range.head.line && range.anchor.ch < range.head.ch)
-            RequestInfo(id, root.indexFromPos(range.anchor), root.indexFromPos(range.head))
+            RequestInfo(id, root.indexFromPos(range.anchor), root.indexFromPos(range.head), guid)
           else
-            RequestInfo(id, root.indexFromPos(range.head), root.indexFromPos(range.anchor))
+            RequestInfo(id, root.indexFromPos(range.head), root.indexFromPos(range.anchor), guid)
+          currentRequest = Some(guid)
           if (next.isEmpty) {
             CobraJS.send(req)
             next = Some(None)
@@ -196,7 +201,6 @@ object Code {
         }
         val md = mode(code)
         val doc = CodeMirror.Doc(stripIndentation(code.textContent), md.mime)
-        doc.isRoot = true
         val subdocs = subdocuments(doc,md.regex)
         Map(id -> (md,doc)) ++ subdocs.mapValues(d => (md,d))
       }
@@ -206,7 +210,7 @@ object Code {
   def attachDocuments(documents: Map[String,(Mode,Doc)]) = {
     documents.foreach {
       case (id,(md,doc)) =>
-        if (doc.isRoot.getOrElse(false)) attachDocument(id,doc,md)
+        if (doc.rootDoc.isEmpty) attachDocument(id,doc,md)
     }
   }
 
@@ -225,26 +229,42 @@ object Code {
         val editor = CodeMirror(code)
         editor.swapDoc(doc)
         var m = mde.alternatives.findFirstMatchIn(doc.getValue())
+        val root = doc.rootDoc.getOrElse(doc)
+        val offset = root.indexFromPos(CodeMirror.Pos(doc.firstLine(),0))
+        var firstFragmentRegistered = false
+        def registerFirstFragment(fragment: HTMLElement) = if (!firstFragmentRegistered) {
+          Reveal.on(RevealEvents.FragmentHidden) { _ =>
+            if (!fragment.classes.contains("visible"))
+              doc.setSelection(doc.getCursor())
+          }
+          firstFragmentRegistered = true
+        }
         while (m.isDefined) {
+          console.log(doc.getValue())
           val p = m.get
           val List(x,a,b,c,d) = p.subgroups
           Option(x).fold {
             val before = Option(a).getOrElse(c)
             val after = Option(b).getOrElse(d)
-            val start = doc.posFromIndex(p.start)
+            val start = root.posFromIndex(p.start + offset)
+            val end = root.posFromIndex(p.end + offset)
+            val replaced = doc.getRange(start,end)
+            console.log("matched: " + p.matched + s" firstLine ${doc.firstLine()}")
+            console.log(s"replacing: '$replaced' (${p.start} [${start.line}:${start.ch}] to ${p.end} [${end.line}:${end.ch}]) with '$before'")
             doc.replaceRange(
               before,
               start,
-              doc.posFromIndex(p.end))
-            val fragment1 = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
-            val fragment2 = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
-            var marker = doc.markText(start, doc.posFromIndex(p.start + before.length))
+              root.posFromIndex(p.end + offset))
+            val fragment1 = HTML("<span class='fragment' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            val fragment2 = HTML("<span class='fragment' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            var marker = doc.markText(start, root.posFromIndex(p.start + offset + before.length))
             code.appendChild(fragment1)
+            registerFirstFragment(fragment1)
             code.appendChild(fragment2)
             var selected = false
             var isBefore = true
             def update(): Unit = {
-              if (!selected && fragment1.classes.contains("current-fragment")) {
+              if (!selected && fragment1.classes.contains("current-fragment") || !isBefore && fragment2.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
                   doc.setSelection(ft.from, ft.to)
                 }
@@ -256,15 +276,15 @@ object Code {
               if (isBefore && fragment2.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
                   doc.replaceRange(after, ft.from, ft.to)
-                  val to = doc.posFromIndex(doc.indexFromPos(ft.from) + after.length)
+                  val to = root.posFromIndex(root.indexFromPos(ft.from) + after.length)
                   marker = doc.markText(ft.from, to)
                   doc.setSelection(ft.from, to)
                   isBefore = false
                 }
-              } else if (!isBefore && !fragment2.classes.contains("current-fragment")) {
+              } else if (!isBefore && !fragment2.classes.contains("visible")) {
                 Option(marker.find()).foreach { ft =>
                   doc.replaceRange(before, ft.from, ft.to)
-                  val to = doc.posFromIndex(doc.indexFromPos(ft.from) + before.length)
+                  val to = root.posFromIndex(root.indexFromPos(ft.from) + before.length)
                   marker = doc.markText(ft.from, to)
                   doc.setSelection(ft.from, to)
                   isBefore = true
@@ -274,14 +294,15 @@ object Code {
             Reveal.on(RevealEvents.FragmentShown) { e => update() }
             Reveal.on(RevealEvents.FragmentHidden) { e => update() }
           } { content =>
-            val start = doc.posFromIndex(p.start)
+            val start = root.posFromIndex(p.start + offset)
             doc.replaceRange(
               content,
               start,
-              doc.posFromIndex(p.end)
+              root.posFromIndex(p.end + offset)
             )
-            val fragment = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
-            var marker = doc.markText(start,doc.posFromIndex(p.start + content.length))
+            val fragment = HTML("<span class='fragment' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            registerFirstFragment(fragment)
+            var marker = doc.markText(start,root.posFromIndex(p.start + offset + content.length))
             code.appendChild(fragment)
             var selected = false
             def update(): Unit = {

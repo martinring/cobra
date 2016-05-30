@@ -55,11 +55,15 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
 
   val Line = "([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) \"(.*)\"".r
 
-  def getInfo(id: String, from: Int, to: Int) = files.get(id).flatMap { case (state,clientInterface) =>
+  def getInfo(id: String, from: Int, to: Int, guid: String) = files.get(id).flatMap { case (state,clientInterface) =>
     import sys.process._
 
     val temp = new java.io.File(s"/tmp/$id.hs")
     val name = temp.getPath()
+
+    val write = new FileWriter(temp)
+    write.write(state)
+    write.close()
 
     val before = state.take(from)
     val line = before.count(_ == '\n') + 1
@@ -74,7 +78,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
       .split("\0").mkString("\n")
 
     if (!output.startsWith("Cannot show info"))
-      Some(Information(id,from,to,output))
+      Some(Information(id,from,to,output,guid))
     else {
       val proc: Seq[String] = Seq("ghc-mod", "type", name, line.toString, col.toString)
       val lines = proc.lineStream
@@ -90,7 +94,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
         case (f,t,_) => Math.abs(f - from) + Math.abs(t - to)
       }.headOption.map {
         case (from,to,msg) =>
-          Information(id, from, to, HaskellMarkup.prettify(msg))
+          Information(id, from, to, HaskellMarkup.prettify(msg),guid)
       }
     }
   }
@@ -141,7 +145,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
         self ! DelayRefresh
       case RemoteAnnotations(id2, aid, as) if id == id2 => clientInterface.remoteAnnotations(aid, as)
       case CombinedRemoteEdit(id2, op, rev) if id == id2 => clientInterface.combinedRemoteEdit(op, rev)
-      case RequestInfo(id2,from,to) if id == id2 => getInfo(id,from,to).foreach(server ! _)
+      case RequestInfo(id2,from,to,guid) if id == id2 => getInfo(id,from,to,guid).foreach(server ! _)
       case other => log.warning("unhandled message: " + other)
     }
   }
