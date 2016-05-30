@@ -327,12 +327,22 @@ trait ScalaCompiler extends CompilerAccess with PimpedTrees { self: ScalaService
     }
   }*/
 
-  def getInfo(id: String, state: String, from: Int, to: Int) = compile(id,state) {
+  def getInfo(id: String, state: String, from: Int, to: Int, guid: String) = compile(id,state) {
     identifiers.get(id).flatMap { messages =>
-      messages.find {
+      val msgs = messages.filter {
         case (offset,length,tt,tpe) => from <= offset && offset <= to
-      }.map {
-        case (offset,length,tt,tpe) => Information(id,offset,offset + length, tt.mkString)
+      }
+      if (msgs.isEmpty) None
+      else Some {
+        val res = msgs.toList.sortBy {
+          case (offset,length,tt,tpe) => offset - length
+        }.map {
+          case (offset,length,tt,tpe) => (offset,offset + length,tt.mkString)
+        }
+        val min = res.map(_._1).min
+        val max = res.map(_._2).max
+        val txt = res.map(_._3).mkString("\n")
+        Information(id,min,max,txt, guid)
       }
     }
   }

@@ -74,7 +74,7 @@ class IsabelleService(env: Map[String,String]) extends Actor with ActorLogging w
         clientInterface.remoteEdit(op)
       case RemoteAnnotations(id2, aid, as) if id == id2 => clientInterface.remoteAnnotations(aid, as)
       case CombinedRemoteEdit(id2, op, rev) if id == id2 => clientInterface.combinedRemoteEdit(op, rev)
-      case RequestInfo(id2,from,to) if id == id2 => getInfo(id,from,to).foreach(server ! _)
+      case RequestInfo(id2,from,to,guid) if id == id2 => getInfo(id,from,to,guid).foreach(server ! _)
       case Sendback(id2,props,s) if id == id2 =>
         props.get("id").fold {
           //if (props.get("padding").contains("line"))

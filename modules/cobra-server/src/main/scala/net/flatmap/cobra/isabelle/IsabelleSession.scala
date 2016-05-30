@@ -88,10 +88,10 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
     p.future.map(_ => ())
   }
 
-  def getInfo(id: String, from: Int, to: Int): Option[Information] = {
+  def getInfo(id: String, from: Int, to: Int, guid: String): Option[Information] = {
     val snapshot = session.snapshot(fileToNodeName(id))
     IsabelleMarkup.tooltip(snapshot, Text.Range.apply(from,to)).map { x =>
-      Information(id,x.range.start,x.range.stop,x.info.mkString)
+      Information(id,x.range.start,x.range.stop,x.info.mkString, guid)
     }
   }
 
