@@ -240,7 +240,6 @@ object Code {
           firstFragmentRegistered = true
         }
         while (m.isDefined) {
-          console.log(doc.getValue())
           val p = m.get
           val List(x,a,b,c,d) = p.subgroups
           Option(x).fold {
@@ -249,8 +248,6 @@ object Code {
             val start = root.posFromIndex(p.start + offset)
             val end = root.posFromIndex(p.end + offset)
             val replaced = doc.getRange(start,end)
-            console.log("matched: " + p.matched + s" firstLine ${doc.firstLine()}")
-            console.log(s"replacing: '$replaced' (${p.start} [${start.line}:${start.ch}] to ${p.end} [${end.line}:${end.ch}]) with '$before'")
             doc.replaceRange(
               before,
               start,

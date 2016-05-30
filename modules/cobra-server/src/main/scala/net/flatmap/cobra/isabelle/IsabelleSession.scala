@@ -116,11 +116,14 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
   def start(env: Map[String,String]) = {
     env.get("ISABELLE_HOME").fold {
       if (!sys.env.isDefinedAt("ISABELLE_HOME")) {
-        IsabelleUtil.locateInstallation.foreach( p =>
+        IsabelleUtil.locateInstallation.map( p =>
           isabelle.Isabelle_System.init(p.toString)
-        )
+        ).fold {
+          log.error("Isabelle is not configured! Please add 'env.isabelle_home' to 'cobra.conf'")
+        } { _ =>
+
+        }
       }
-      else log.error("Isabelle is not configured! Please add 'env.isabelle_home' to 'cobra.conf'")
     } (isabelle.Isabelle_System.init(_))
     val ops = isabelle.Options.init
     val initialized = Promise[Unit]()
