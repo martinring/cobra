@@ -1,7 +1,7 @@
 package net.flatmap.js.reveal
 
 import net.flatmap.js.util.Event
-import org.scalajs.dom.raw.{HTMLDivElement, EventTarget}
+import org.scalajs.dom.raw.{HTMLElement, HTMLDivElement, EventTarget}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
@@ -90,7 +90,14 @@ trait SlideChangedEvent extends org.scalajs.dom.Event {
   def indexv: Int = js.native
 }
 
+@js.native
+trait FragmentEvent extends org.scalajs.dom.Event {
+  def fragment: HTMLElement = js.native
+}
+
 object RevealEvents {
+  object FragmentShown extends Event[Reveal.type , FragmentEvent]("fragmentshown")
+  object FragmentHidden extends Event[Reveal.type , FragmentEvent]("fragmenthidden")
   object SlideChanged extends Event[Reveal.type ,SlideChangedEvent]("slidechanged")
   object Ready extends Event[Reveal.type, org.scalajs.dom.Event]("ready")
 }

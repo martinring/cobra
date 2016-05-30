@@ -114,7 +114,14 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
   }
 
   def start(env: Map[String,String]) = {
-    env.get("ISABELLE_HOME").foreach(isabelle.Isabelle_System.init(_))
+    env.get("ISABELLE_HOME").fold {
+      if (!sys.env.isDefinedAt("ISABELLE_HOME")) {
+        IsabelleUtil.locateInstallation.foreach( p =>
+          isabelle.Isabelle_System.init(p.toString)
+        )
+      }
+      else log.error("Isabelle is not configured! Please add 'env.isabelle_home' to 'cobra.conf'")
+    } (isabelle.Isabelle_System.init(_))
     val ops = isabelle.Options.init
     val initialized = Promise[Unit]()
     log.info("building session content")
@@ -153,7 +160,6 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
     session.commands_changed += Session.Consumer("clide"){ msg =>
       outdated ++= msg.nodes
       self ! RequireRefresh
-      //refreshAnnotations()
     }
     session.start("clide", List("-S","HOL"))
     initialized.future
