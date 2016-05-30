@@ -45,7 +45,7 @@ class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler wit
 
     files += id -> (content,clientInterface)
     reset()
-    compile(id,content)
+    compile(id,content)(())
 
     case object Refresh
     case object DelayRefresh
@@ -58,7 +58,7 @@ class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler wit
       case Refresh =>
         files.get(id).foreach { case (b,c) =>
           reset()
-          compile(id,b)
+          compile(id,b)(())
         }
         refreshDelay = None
       case AcknowledgeEdit(id2) if id == id2 => clientInterface.serverAck()
@@ -67,7 +67,7 @@ class ScalaService(env: Map[String,String]) extends Actor with ScalaCompiler wit
         self ! DelayRefresh
       case RemoteAnnotations(id2, aid, as) if id == id2 => clientInterface.remoteAnnotations(aid, as)
       case CombinedRemoteEdit(id2, op, rev) if id == id2 => clientInterface.combinedRemoteEdit(op, rev)
-      case RequestInfo(id2,from,to) if id == id2 => getInfo(id,from,to).foreach(server ! _)
+      case RequestInfo(id2,from,to) if id == id2 => getInfo(id,files(id)._1,from,to).foreach(x => x.foreach(server ! _))
       case other => log.warning("unhandled message: " + other)
     }
   }

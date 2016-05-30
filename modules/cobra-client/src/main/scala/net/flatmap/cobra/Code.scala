@@ -60,6 +60,7 @@ object Code {
       case (name,sl) if ends.contains(name) =>
         val el = ends(name)
         val doc = root.linkedDoc(new LinkedDocOptions(from = sl, to = el, sharedHist = true))
+        doc.isRoot = false
         doc.on("beforeChange",(x: Doc, y: EditorChange) => CodeMirror.signal(root, "beforeChange", root, y))
         doc.on("cursorActivity",(x: Doc) => CodeMirror.signal(root, "cursorActivity", x))
         name -> doc
@@ -70,6 +71,7 @@ object Code {
     Mode.modes.find(mode => code.classes.contains(mode.name)).getOrElse(Plain)
 
   def attachDocument(id: String, doc: Doc, mode: Mode) = {
+    doc.clearHistory()
     CobraJS.send(InitDoc(id,doc.getValue(), mode))
 
     var silent = false
@@ -194,11 +196,18 @@ object Code {
         }
         val md = mode(code)
         val doc = CodeMirror.Doc(stripIndentation(code.textContent), md.mime)
+        doc.isRoot = true
         val subdocs = subdocuments(doc,md.regex)
-        attachDocument(id,doc,md)
         Map(id -> (md,doc)) ++ subdocs.mapValues(d => (md,d))
       }
     }.toMap
+  }
+
+  def attachDocuments(documents: Map[String,(Mode,Doc)]) = {
+    documents.foreach {
+      case (id,(md,doc)) =>
+        if (doc.isRoot.getOrElse(false)) attachDocument(id,doc,md)
+    }
   }
 
   def initializeEditors(root: NodeSeqQuery, documents: Map[String,(Mode,Doc)]) = {
@@ -243,22 +252,23 @@ object Code {
               } else if (selected && !fragment1.classes.contains("current-fragment")) {
                 doc.setSelections(js.Array())
                 selected = false
-              } else if (isBefore && fragment2.classes.contains("current-fragment")) {
+              }
+              if (isBefore && fragment2.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
                   doc.replaceRange(after, ft.from, ft.to)
                   val to = doc.posFromIndex(doc.indexFromPos(ft.from) + after.length)
                   marker = doc.markText(ft.from, to)
                   doc.setSelection(ft.from, to)
+                  isBefore = false
                 }
-                isBefore = false
               } else if (!isBefore && !fragment2.classes.contains("current-fragment")) {
                 Option(marker.find()).foreach { ft =>
                   doc.replaceRange(before, ft.from, ft.to)
                   val to = doc.posFromIndex(doc.indexFromPos(ft.from) + before.length)
                   marker = doc.markText(ft.from, to)
                   doc.setSelection(ft.from, to)
+                  isBefore = true
                 }
-                isBefore = true
               }
             }
             Reveal.on(RevealEvents.FragmentShown) { e => update() }

@@ -18,25 +18,11 @@ package object util {
   def query(selector: String): NodeSeqQuery = QueryNodeSeq(document.querySelectorAll(selector))
   def query(elem: Node*): NodeSeqQuery = elem
 
-  trait EventSource[T <: EventTarget] {
-    def on[E <: raw.Event](event: Event[T,E])(f: E => Unit): Subscription
-
-    def once[E <: raw.Event](event: Event[T,E])(f: E => Unit): Subscription = {
-      lazy val subscription: Subscription = on(event) { e =>
-        if (!subscription.isCancelled) {
-          f(e)
-          subscription.cancel()
-        }
-      }
-      subscription
-    }
-  }
-
   implicit class BetterEventTarget[T <: EventTarget](underlying: T) extends EventSource[T] {
-    def on[E <: raw.Event](event: Event[T,E])(f: E => Unit): Subscription = {
+    def on[E](event: Event[T,E])(f: E => Unit): Subscription = {
       val g: scalajs.js.Function1[E,_] = f
       underlying.addEventListener(event.name, g)
-      Subscription(underlying.removeEventListener(event.name, g.asInstanceOf[scalajs.js.Function1[raw.Event,_]]))
+      Subscription(underlying.removeEventListener(event.name, g.asInstanceOf[scalajs.js.Function1[E,_]]))
     }
   }
 
