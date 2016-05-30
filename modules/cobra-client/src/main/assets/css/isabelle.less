@@ -219,64 +219,48 @@
     color: gray;
   }
 
-  /*span.cm-error {
+  span.cm-warning {    
     position: relative;
-    &:after {
-      border: .2em solid #f44336;
-      border-top: none;
-      border-radius: 1.2em 1em 2em 1.5em;
-      bottom: -.3em;
-      content: '';
-      left: -.2em;
-      position: absolute;
-      right: -.3em;
-      top: -.1em;
-      transform: rotate(-1deg);
-    }
-    &:before {
-      border-top: .2em solid #f44336;
-      border-radius: .5em;
-      content: '';
-      height: 1em;
-      left: 0;
-      position: absolute;
-      top: -.3em;
-      transform: rotate(-10deg);
-      width: 2em;
-    }
-  }*/
-
-  span.cm-warning {
-    position: relative;
-    &:after {
-      content: "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+    background-color: rgba(200,0,0,0.3);
+    &::after {
       font-family: "Fira Code";
-      color: orange;
+      font-weight: normal;
+      font-style: normal;
+      content: "▲";
       position: absolute;
-      letter-spacing: -0.23em;
-      left: 0px;
-      top: 0.3em;
-      right: 0;
-      height: 1em;
-      overflow: hidden;
-      padding-left: 0.2em;
-    }
+      top: .6em;
+      left: ~"calc(50% - .3em)";
+      color: darkorange;
+    }    
   }
 
   span.cm-info, span.cm-writeln {
-    background-color: fade(rgb(0,104,163),20%);
+    background-color: rgba(0,104,163,0.2);
+    position: relative;
+    &::after {
+      font-family: "Fira Code";
+      font-weight: normal;
+      font-style: normal;
+      content: "▲";
+      position: absolute;
+      top: .6em;
+      left: 0;
+      color: rgb(0,104,163);
+    }
   }
 
   span.cm-empty-error {
     position: relative;
-  }
-
-  span.cm-empty-error::after {
+    &::after {
+      font-family: "Fira Code";
+      font-weight: normal;
+      font-style: normal;
       content: "▲";
       position: absolute;
       top: .6em;
       left: 0;
       color: crimson;
+    }
   }
 
   span.cm-empty-error {
@@ -285,18 +269,24 @@
 
   span.cm-error {
     position: relative;
-    background-color: rgba(200,0,0,0.3)
-  }
-
-  span.cm-error::after {
+    background-color: rgba(200,0,0,0.3);
+    &::after {
+      font-family: "Fira Code";
+      font-weight: normal;
+      font-style: normal;
       content: "▲";
       position: absolute;
       top: .6em;
       left: ~"calc(50% - .3em)";
       color: crimson;
-  }
+    }
+  }    
 
-  span.cm-error + span.cm-error::after {
+  span.cm-error + span.cm-error::after,
+  span.cm-warning + span.cm-warning::after,
+  span.cm-info + span.cm-info::after,
+  span.cm-writeln + span.cm-writeln::after,
+   {
     content: none;
   }
 }

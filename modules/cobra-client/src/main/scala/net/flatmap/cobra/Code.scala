@@ -2,7 +2,7 @@ package net.flatmap.cobra
 
 import net.flatmap.collaboration.{Annotations, ClientInterface, EditorInterface, Operation}
 import net.flatmap.js.codemirror._
-import net.flatmap.js.reveal.Reveal
+import net.flatmap.js.reveal.{RevealEvents, Reveal}
 import org.scalajs.dom.{Element, console, raw}
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
@@ -12,7 +12,6 @@ import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.scalajs.js._
 import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
@@ -93,7 +92,7 @@ object Code {
       }
     }
 
-    var client = ClientInterface[Char](editorInterface)
+    val client = ClientInterface[Char](editorInterface)
 
     var hoverInfo = mutable.Buffer.empty[Clearable]
 
@@ -103,7 +102,7 @@ object Code {
       case CombinedRemoteEdit(_,op,revs) =>
         client.combinedRemoteEdit(op,revs)
       case ResetSnippet(_,content,rev) =>
-        console.warn(s"snippet $id was resetted by the server")
+        console.warn(s"snippet $id was reset by the server")
         client.reset(rev)
         silently(doc.setValue(content))
       case RemoteAnnotations(_,aid,annotations) =>
@@ -126,9 +125,8 @@ object Code {
             }
             hoverInfo.foreach(_.clear())
             hoverInfo.clear()
-            val wops = new js.Object()
-            wops.asInstanceOf[js.Dynamic].insertAt = 0
-            hoverInfo += doc.getEditor().addLineWidget(pos.line, elem, wops)
+            val ops = js.Dynamic.literal(insertAt = 0)
+            hoverInfo += doc.getEditor().addLineWidget(pos.line, elem, ops)
             val options = TextMarkerOptions()
             options.className = "hoverInfo"
             hoverInfo += doc.markText(f,pos,options)
@@ -176,7 +174,7 @@ object Code {
     doc.on("cursorActivity",selectHandler)
   }
 
-  def initializeDocuments(root: NodeSeqQuery): Map[String,Doc] = {
+  def initializeDocuments(root: NodeSeqQuery): Map[String,(Mode,Doc)] = {
     var lastSuccessfulSuffix = 0
 
     def nextIds = {
@@ -189,7 +187,7 @@ object Code {
     def nextId = nextIds.find(id => $"#$id".elements.isEmpty).get
 
     root.query("code").elements.flatMap { code =>
-      if (code.attribute("src").exists(_.startsWith("#"))) Map.empty[String,Doc] else {
+      if (code.attribute("src").exists(_.startsWith("#"))) Map.empty[String,(Mode,Doc)] else {
         val id = code.attribute("id").getOrElse {
           code.id = nextId
           code.id
@@ -198,24 +196,102 @@ object Code {
         val doc = CodeMirror.Doc(stripIndentation(code.textContent), md.mime)
         val subdocs = subdocuments(doc,md.regex)
         attachDocument(id,doc,md)
-        Map(id -> doc) ++ subdocs
+        Map(id -> (md,doc)) ++ subdocs.mapValues(d => (md,d))
       }
     }.toMap
   }
 
-  def initializeEditors(root: NodeSeqQuery, documents: Map[String,Doc]) = {
+  def initializeEditors(root: NodeSeqQuery, documents: Map[String,(Mode,Doc)]) = {
     root.query("section code").elements.collect {
-      case code if (!code.classes.contains("hidden")) =>
-        val doc = code.attribute("id").flatMap(documents.get).orElse(
+      case code if !code.classes.contains("hidden") =>
+        val (mde,doc) = code.attribute("id").flatMap(documents.get).orElse(
         code.attribute("src").collect {
           case src if src.startsWith("#") =>
             src.tail
-        }.flatMap(documents.get)).getOrElse(CodeMirror.Doc(code.textContent, mode(code).mime : String))
+        }.flatMap(documents.get)).getOrElse {
+          val m = mode(code)
+          (m,CodeMirror.Doc(code.textContent,m.mime))
+        }
         code.innerHTML = ""
         val editor = CodeMirror(code)
         editor.swapDoc(doc)
+        var m = mde.alternatives.findFirstMatchIn(doc.getValue())
+        while (m.isDefined) {
+          val p = m.get
+          val List(x,a,b,c,d) = p.subgroups
+          Option(x).fold {
+            val before = Option(a).getOrElse(c)
+            val after = Option(b).getOrElse(d)
+            val start = doc.posFromIndex(p.start)
+            doc.replaceRange(
+              before,
+              start,
+              doc.posFromIndex(p.end))
+            val fragment1 = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            val fragment2 = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            var marker = doc.markText(start, doc.posFromIndex(p.start + before.length))
+            code.appendChild(fragment1)
+            code.appendChild(fragment2)
+            var selected = false
+            var isBefore = true
+            def update(): Unit = {
+              if (!selected && fragment1.classes.contains("current-fragment")) {
+                Option(marker.find()).foreach { ft =>
+                  doc.setSelection(ft.from, ft.to)
+                }
+                selected = true
+              } else if (selected && !fragment1.classes.contains("current-fragment")) {
+                doc.setSelections(js.Array())
+                selected = false
+              } else if (isBefore && fragment2.classes.contains("current-fragment")) {
+                Option(marker.find()).foreach { ft =>
+                  doc.replaceRange(after, ft.from, ft.to)
+                  val to = doc.posFromIndex(doc.indexFromPos(ft.from) + after.length)
+                  marker = doc.markText(ft.from, to)
+                  doc.setSelection(ft.from, to)
+                }
+                isBefore = false
+              } else if (!isBefore && !fragment2.classes.contains("current-fragment")) {
+                Option(marker.find()).foreach { ft =>
+                  doc.replaceRange(before, ft.from, ft.to)
+                  val to = doc.posFromIndex(doc.indexFromPos(ft.from) + before.length)
+                  marker = doc.markText(ft.from, to)
+                  doc.setSelection(ft.from, to)
+                }
+                isBefore = true
+              }
+            }
+            Reveal.on(RevealEvents.FragmentShown) { e => update() }
+            Reveal.on(RevealEvents.FragmentHidden) { e => update() }
+          } { content =>
+            val start = doc.posFromIndex(p.start)
+            doc.replaceRange(
+              content,
+              start,
+              doc.posFromIndex(p.end)
+            )
+            val fragment = HTML("<span class='fragment current-visible' style='display:none'>b</span>").head.asInstanceOf[HTMLElement]
+            var marker = doc.markText(start,doc.posFromIndex(p.start + content.length))
+            code.appendChild(fragment)
+            var selected = false
+            def update(): Unit = {
+              if (!selected && fragment.classes.contains("current-fragment")) {
+                Option(marker.find()).foreach { ft =>
+                  doc.setSelection(ft.from, ft.to)
+                }
+                selected = true
+              } else if (selected && !fragment.classes.contains("current-fragment")) {
+                doc.setSelections(js.Array())
+                selected = false
+              }
+            }
+            Reveal.on(RevealEvents.FragmentShown) { e => update() }
+            Reveal.on(RevealEvents.FragmentHidden) { e => update() }
+          }
+          m = mde.alternatives.findFirstMatchIn(doc.getValue())
+        }
         editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
-          (if (code.classes.contains("current-only")) "single" else "all") else null)
+          if (code.classes.contains("current-only")) "single" else "all" else null)
         editor.setOption("addModeClass",true)
         //editor.setOption("scrollbarStyle","null")
         editor.setOption("viewportMargin",js.eval("Infinity"))
