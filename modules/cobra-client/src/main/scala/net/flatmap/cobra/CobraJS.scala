@@ -101,7 +101,9 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
         mathOptions.mathjax = "/lib/MathJax/2.6.1/MathJax.js"
         mathOptions.config = "TeX-AMS_HTML-full"
         settings.dependencies = js.Array(
-          RevealDependency(src = "/lib/reveal.js/plugin/math/math.js", async = true)
+          RevealDependency(src = "/lib/reveal.js/plugin/math/math.js", async = true),
+          RevealDependency(src = "/lib/reveal.js/plugin/zoom-js/zoom.js", async = true),
+          RevealDependency(src = "/lib/reveal.js/plugin/notes/notes.js", async = true)
         )
         settings.math = mathOptions
         if (!Reveal.isReady()) Reveal.initialize(settings)
