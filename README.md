@@ -2,16 +2,16 @@
 
 Cobra is a modern code and proof presentation framework, leveraging cutting-edge presentation technology together with a state of the art interactive theorem prover to present formalized mathematics as active documents. Cobra provides both an easy way to present proofs and a novel approach to auditorium interaction. The presentation is checked live by the theorem prover, and moreover allows live changes both by the presenter as well as the audience.
 
-Cobra currently supports **Isabelle** proofs as well as **Scala** and **Haskell** code
+Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
 
 ## Download **Cobra** 0.9
 
-There is a pre built binary relase for Cobra. 
+There is a pre built binary relase for Cobra.
 
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/raw/gh-pages/modules/cobra-server/target/universal/cobra-0.9.zip) | Fedora: [rpm](https://github.com/flatmap/cobra/raw/gh-pages/modules/cobra-server/target/rpm/RPMS/noarch/cobra-0.9-1.noarch.rpm)
+All platforms: [zip](https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/universal/cobra-0.9.zip) | Fedora: [rpm](https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/rpm/RPMS/noarch/cobra-0.9-1.noarch.rpm)
 
 ## Getting Started
 
