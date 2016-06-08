@@ -318,6 +318,7 @@ object Code {
           }
           m = mde.alternatives.findFirstMatchIn(doc.getValue())
         }
+        editor.setOption("states",code.classes.contains("states"))
         editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
           if (code.classes.contains("current-only")) "single" else "all" else null)
         editor.setOption("addModeClass",true)
