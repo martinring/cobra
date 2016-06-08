@@ -18,25 +18,39 @@
     </section>
 
     <section class="main-content">
+<h1><strong>Cobra</strong> <img src="https://travis-ci.org/flatmap/cobra.svg?branch=master"/></h1>
 
-<p>Cobra is a modern proof and code presentation
-framework, leveraging cutting-edge presentation technology together with
-a state of the art interactive theorem prover to present formalized
-mathematics as active documents. Cobra provides both an easy way
-to present proofs and a novel approach to auditorium interaction. The
-presentation is checked live by the theorem prover, and moreover
-allows live changes both by the presenter as well as the audience.</p>
+<p>Cobra is a modern code and proof presentation framework, leveraging cutting-edge presentation technology together with a state of the art interactive theorem prover to present formalized mathematics as active documents. Cobra provides both an easy way to present proofs and a novel approach to auditorium interaction. The presentation is checked live by the theorem prover, and moreover allows live changes both by the presenter as well as the audience.</p>
 
-<p>Cobra currently supports <a href="https://isabelle.in.tum.de/index.html">Isabelle</a> proofs as well as <a href="http://www.scala-lang.org/">Scala</a> and <a>Haskell</a> code</p>
+<p>Cobra currently supports <a href="https://isabelle.in.tum.de/index.html"><strong>Isabelle</strong></a> proofs as well as <a href="http://www.scala-lang.org/"><strong>Scala</strong></a> and <a href="http://haskell.org"><strong>Haskell</strong></a> code</p>
 
-<h3>Download Cobra 0.9</h3>
+<h2>Download <strong>Cobra</strong> 0.9</h2>
 
-        <a href="https://github.com/flatmap/cobra/raw/gh-pages/modules/cobra-server/target/universal/cobra-0.9.zip" class="btn">Download .zip</a>
-        <a href="https://github.com/flatmap/cobra/raw/gh-pages/modules/cobra-server/target/rpm/RPMS/noarch/cobra-0.9-1.noarch.rpm" class="btn">Download .rpm</a>
+<p>There is a pre built binary relase for Cobra.</p>
 
-        <h3>Using Cobra</h3>
+<blockquote>
+  <p><strong>Note, that Java 8 or higher is required for cobra to run.</strong>
+<strong>It will fail to start, when used with Java 7 or below!</strong></p>
+</blockquote>
 
-        <pre><code>... coming soon ...</code></pre>
+<p>All platforms: <a href="https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/universal/cobra-0.9.zip">zip</a> | Fedora: <a href="https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/rpm/RPMS/noarch/cobra-0.9-1.noarch.rpm">rpm</a></p>
+
+<h2>Getting Started</h2>
+
+<ul>
+<li><strong>Installation</strong>:
+<ul><li><strong>rpm</strong>: just install using your package manager</li>
+<li><strong>zip</strong>: extract to arbitrary location and add <code>bin/cobra</code> / <code>bin/cobra.bat</code> to your path</li></ul></li>
+<li><strong>Create a new presentation</strong>: call <code>cobra new</code> from the command line and follow the instructions</li>
+<li><strong>Start the presentation server</strong>: call <code>cobra</code> in the directory of the presentation.</li>
+<li><strong>View the presentation</strong>: Navigate to localhost:8080 with your web browser.</li>
+<li><strong>Edit your presentation</strong>: Configuration can be edited in <code>cobra.conf</code>, content in <code>slides.html</code>.</li>
+</ul>
+
+<h2>License</h2>
+
+<p>Cobra is Licensed under LGPL</p>
+
     </section>
     <footer class="site-footer">
       <span class="site-footer-owner"><a href="https://github.com/flatmap/cobra">Cobra</a> is maintained by <a href="https://github.com/martinring">Martin Ring</a> at the DFKI.</span>
