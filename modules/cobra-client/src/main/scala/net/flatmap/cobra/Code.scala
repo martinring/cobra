@@ -2,6 +2,7 @@ package net.flatmap.cobra
 
 import java.util.UUID
 
+import net.flatmap.cobra.isabelle.Symbols
 import net.flatmap.collaboration.{Annotations, ClientInterface, EditorInterface, Operation}
 import net.flatmap.js.codemirror._
 import net.flatmap.js.reveal.{Reveal, RevealEvents}
@@ -232,6 +233,7 @@ object Code {
         val root = doc.rootDoc.getOrElse(doc)
         val offset = root.indexFromPos(CodeMirror.Pos(doc.firstLine(),0))
         var firstFragmentRegistered = false
+        if (mde == Isabelle) Symbols.enable(editor)
         def registerFirstFragment(fragment: HTMLElement) = if (!firstFragmentRegistered) {
           Reveal.on(RevealEvents.FragmentHidden) { _ =>
             if (!fragment.classes.contains("visible"))

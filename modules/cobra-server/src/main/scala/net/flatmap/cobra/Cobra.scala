@@ -14,14 +14,14 @@ object Cobra extends App {
   }
 
   private def printLogo() = {
-    println("""     ____      _                  """)
-    println("""    / ___|___ | |__  _ __ __ _    """)
-    println("""   | |   / _ \| '_ \| '__/ _` |   """)
-    println("""   | |__| (_) | |_) | | | (_| |   """)
-    println("""    \____\___/|_.__/|_|  \__,_|   """)
-    println("""__________________________________""")
-    println("""| version 1.0 - 2016 Martin Ring |""")
-    println("")
+    println("""       ____      _                    """)
+    println("""      / ___|___ | |__  _ __ __ _ TM   """)
+    println("""     | |   / _ \| '_ \| '__/ _` |     """)
+    println("""     | |__| (_) | |_) | | | (_| |     """)
+    println("""      \____\___/|_.__/|_|  \__,_|     """)
+    println("""______________________________________""")
+    println("""| version 1.0 - (c) 2016 Martin Ring |""")
+    println()
   }
 
   if (args.length > 1 && args.head == "configure") {
@@ -35,11 +35,7 @@ object Cobra extends App {
             } { old =>
               println(s"An incompatible Isabelle installation was found at $old.")
             }
-            if (scala.io.StdIn.readLine("Should i download isabelle 2016 and install it to '~/bin'? (y/N)") == "y") {
-              println("Ok, please wait a second...")
-            } else {
-              println("Ok, Isabelle wont assist you in your presentations then.")
-            }
+            IsabelleUtil.download()
           } { path =>
             println(s"A compatible Isabelle distribution was found at '$path'.")
             println("Nothing to do.")
