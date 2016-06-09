@@ -55,9 +55,10 @@ a {
       margin-left: 0; } }
 
 .page-header {
+  z-index: -1000;
   color: #fff;
   text-align: center;
-
+  /*transition: filter .2s ease*/
   background-size: cover;
   background-image: url("../serveimage.jpg");  /*linear-gradient(120deg, #155799, #159957);*/ }
 
