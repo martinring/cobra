@@ -107,6 +107,8 @@ class CodeMirror protected () extends js.Object {
   def getWrapperElement(): HTMLElement = js.native
   def getScrollerElement(): HTMLElement = js.native
   def getGutterElement(): HTMLElement = js.native
+
+  def execCommand(name: String) = js.native
 }
 
 @js.native
@@ -361,7 +363,7 @@ trait EditorChange extends js.Object {
   def from: Position = js.native
   def to: Position = js.native
   def text: js.Array[String] = js.native
-  def removed: String = js.native
+  def removed: js.Array[String] = js.native
 }
 
 @js.native
