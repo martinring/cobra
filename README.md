@@ -11,7 +11,7 @@ There is a pre built binary relase for Cobra.
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/universal/cobra-0.9.zip) | Fedora: [rpm](https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/rpm/RPMS/noarch/cobra-0.9-1.noarch.rpm)
+All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0/cobra-1.0.zip) | Fedora: [rpm](https://github.com/flatmap/cobra/releases/download/version-1.0/cobra-1.0-1.noarch.rpm)
 
 ## Getting Started
 
