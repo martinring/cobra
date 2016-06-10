@@ -4,14 +4,14 @@ Cobra is a modern code and proof presentation framework, leveraging cutting-edge
 
 Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
 
-## Download **Cobra** 1.0
+## Download **Cobra** 1.0.1
 
 There is a pre built binary relase for Cobra.
 
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0/cobra-1.0.zip) | Fedora: [rpm](https://github.com/flatmap/cobra/releases/download/version-1.0/cobra-1.0-1.noarch.rpm)
+All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra-1.0.1.zip) | Fedora: [rpm](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra-1.0.1-1.noarch.rpm)
 
 ## Getting Started
 
@@ -87,8 +87,9 @@ The comments won't be shown in the presentation and the sub-snippets can be incl
 
 Note that, the sub-snippets may be nested or even overlapping as in the example and included in several editors. They will allways stay in sync.
 
-
 The language mode is derived from the super-snippet.
+
+It is also possible to hide snippets. This is convenient, when super snippets shall not be included in the presentation. This can be done by adding the class `hidden` to a code snippet.
 
 The comment syntax for Haskell and Isabelle is as follows:
 
