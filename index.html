@@ -32,40 +32,227 @@
     </section>
 
     <section class="main-content">
-<h1><strong>Cobra</strong> <img src="https://travis-ci.org/flatmap/cobra.svg?branch=master"/></h1>
+
+
+<h1><a id="user-content-cobra-" class="anchor" href="#cobra-" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><strong>Cobra</strong> <a href="https://camo.githubusercontent.com/87d58f83c502d8f32367499e3fcc9ccf4ef908cc/68747470733a2f2f7472617669732d63692e6f72672f666c61746d61702f636f6272612e7376673f6272616e63683d6d6173746572" target="_blank"><img src="https://camo.githubusercontent.com/87d58f83c502d8f32367499e3fcc9ccf4ef908cc/68747470733a2f2f7472617669732d63692e6f72672f666c61746d61702f636f6272612e7376673f6272616e63683d6d6173746572" data-canonical-src="https://travis-ci.org/flatmap/cobra.svg?branch=master" style="max-width:100%;"></a></h1>
 
 <p>Cobra is a modern code and proof presentation framework, leveraging cutting-edge presentation technology together with a state of the art interactive theorem prover to present formalized mathematics as active documents. Cobra provides both an easy way to present proofs and a novel approach to auditorium interaction. The presentation is checked live by the theorem prover, and moreover allows live changes both by the presenter as well as the audience.</p>
 
 <p>Cobra currently supports <a href="https://isabelle.in.tum.de/index.html"><strong>Isabelle</strong></a> proofs as well as <a href="http://www.scala-lang.org/"><strong>Scala</strong></a> and <a href="http://haskell.org"><strong>Haskell</strong></a> code</p>
 
-<h2>Download <strong>Cobra</strong> 0.9</h2>
+<h2><a id="user-content-download-cobra-10" class="anchor" href="#download-cobra-10" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Download <strong>Cobra</strong> 1.0</h2>
 
 <p>There is a pre built binary relase for Cobra.</p>
 
 <blockquote>
-  <p><strong>Note, that Java 8 or higher is required for cobra to run.</strong>
+<p><strong>Note, that Java 8 or higher is required for cobra to run.</strong>
 <strong>It will fail to start, when used with Java 7 or below!</strong></p>
 </blockquote>
 
-<p>All platforms: <a href="https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/universal/cobra-0.9.zip">zip</a> | Fedora: <a href="https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/rpm/RPMS/noarch/cobra-0.9-1.noarch.rpm">rpm</a></p>
+<p>All platforms: <a href="https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/universal/cobra-1.0.zip">zip</a> | Fedora: <a href="https://github.com/flatmap/cobra/raw/master/modules/cobra-server/target/rpm/RPMS/noarch/cobra-1.0-1.noarch.rpm">rpm</a></p>
 
-<h2>Getting Started</h2>
+<h2><a id="user-content-getting-started" class="anchor" href="#getting-started" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Getting Started</h2>
 
 <ul>
 <li><strong>Installation</strong>:
-<ul><li><strong>rpm</strong>: just install using your package manager</li>
-<li><strong>zip</strong>: extract to arbitrary location and add <code>bin/cobra</code> / <code>bin/cobra.bat</code> to your path</li></ul></li>
+
+<ul>
+<li><strong>rpm</strong>: just install using your package manager</li>
+<li><strong>zip</strong>: extract to arbitrary location and add <code>bin/cobra</code> / <code>bin/cobra.bat</code> to your path</li>
+</ul></li>
 <li><strong>Create a new presentation</strong>: call <code>cobra new</code> from the command line and follow the instructions</li>
 <li><strong>Start the presentation server</strong>: call <code>cobra</code> in the directory of the presentation.</li>
 <li><strong>View the presentation</strong>: Navigate to localhost:8080 with your web browser.</li>
 <li><strong>Edit your presentation</strong>: Configuration can be edited in <code>cobra.conf</code>, content in <code>slides.html</code>.</li>
 </ul>
 
-<h2>License</h2>
+<h3><a id="user-content-presentation-format" class="anchor" href="#presentation-format" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Presentation Format</h3>
+
+<p>The content of a presentation is stored in a file called <code>slides.html</code>. Cobra will support a MarkDown slideformat in Version 1.1.</p>
+
+<p>To add a slide, simply add <code>&lt;section&gt;</code> tags to the <code>slides.html</code> file. For the general slide format please refer to the <strong>reveal.js</strong> <a href="https://github.com/hakimel/reveal.js">documentation</a>.</p>
+
+<h4><a id="user-content-including-code-snippets" class="anchor" href="#including-code-snippets" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Including Code Snippets</h4>
+
+<p>The simplest option is to include inline code snippets:</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">code</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>scala<span class="pl-pds">"</span></span>&gt;
+  case class Person(name: String, age: String)
+  object Test {
+    val p = Person("Albert Einstein", ???)
+  }
+&lt;/<span class="pl-ent">code</span>&gt;</pre></div>
+
+<p>This will produce a code snippet, which will be semantically treated by the scala compiler. It is possible to edit the code in the presentation, just as in an IDE. It is also possible to select parts of the code (e.g. identifiers) to display semantic information about the code.</p>
+
+<p>To include Isabelle or haskell simply replace <code>scala</code> class with <code>isabelle</code> or <code>haskell</code></p>
+
+<h4><a id="user-content-external-sources" class="anchor" href="#external-sources" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>External Sources</h4>
+
+<p>It is possible to include external source files. Simply place a code file within the folder of the presenation. (e.g. <code>&lt;presentation root&gt;/src/Test.scala</code>)</p>
+
+<p>You can then include the snippet with</p>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">code</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>src/Test.scala<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">code</span>&gt;</pre></div>
+
+<p>Note, that you don't have to specify the language in this case, since it is recognised from the file extesion.</p>
+
+<h4><a id="user-content-advanced-inclusion-options" class="anchor" href="#advanced-inclusion-options" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Advanced Inclusion Options</h4>
+
+<p>Often it is desired to include only parts of larger examples, for example omitting all imports for the presentation:</p>
+
+<p>This can be done with special comments:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">import</span> <span class="pl-v">system.io.</span><span class="pl-v">_</span>
+
+<span class="pl-en">Object</span> <span class="pl-en">Example</span> {
+  <span class="pl-c">/// begin #example</span>
+  <span class="pl-k">val</span> <span class="pl-en">x</span> <span class="pl-k">=</span> <span class="pl-c1">7</span>
+
+  <span class="pl-c">/// begin #def-f</span>
+  <span class="pl-k">def</span> <span class="pl-en">f</span>(<span class="pl-v">y</span>: <span class="pl-k">Int</span>) <span class="pl-k">=</span> <span class="pl-k">???</span>
+  <span class="pl-c">/// end #example</span>
+  <span class="pl-c">/// end #def-f</span>
+}</pre></div>
+
+<p>The comments won't be shown in the presentation and the sub-snippets can be included as such:</p>
+
+<pre><code>&lt;code src="#example&gt;&lt;/code&gt;
+</code></pre>
+
+<p>Note that, the sub-snippets may be nested or even overlapping as in the example and included in several editors. They will allways stay in sync.</p>
+
+<p>The language mode is derived from the super-snippet.</p>
+
+<p>The comment syntax for Haskell and Isabelle is as follows:</p>
+
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c">--- begin #snippet-name</span>
+haskell code
+<span class="pl-c">--- end #snippet-name</span></pre></div>
+
+<div class="highlight highlight-source-ocaml"><pre><span class="pl-c">(** begin #snippet-name *)</span>
+isabelle code
+<span class="pl-c">(** end #snippet-name *)</span></pre></div>
+
+<p>Snippet names are global and thus have to be unique.</p>
+
+<h4><a id="user-content-code-fragments" class="anchor" href="#code-fragments" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Code Fragments</h4>
+
+<p>Within presentations it is desireable to not show everything at the beginning or exchange parts of the code. This can be achieved with special syntax:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">val</span> <span class="pl-en">x</span> <span class="pl-k">=</span> <span class="pl-c">/*(*/</span><span class="pl-k">???</span><span class="pl-c">/*|3 * 7)*/</span>
+<span class="pl-c">// or</span>
+<span class="pl-k">val</span> <span class="pl-en">x</span> <span class="pl-k">=</span> <span class="pl-c">/*(???|*/</span><span class="pl-c1">3</span> <span class="pl-k">*</span> <span class="pl-c1">7</span><span class="pl-c">/*)*/</span></pre></div>
+
+<p>will result both in the following sequence</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">val</span> <span class="pl-en">x</span> <span class="pl-k">=</span> <span class="pl-k">???</span></pre></div>
+
+<p><em>hit next</em></p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">val</span> <span class="pl-en">x</span> <span class="pl-k">=</span> <span class="pl-c1">3</span> <span class="pl-k">*</span> <span class="pl-c1">7</span></pre></div>
+
+<p>The difference in the two lines is just their meaning in the source file.</p>
+
+<p>Again the syntax for haskell and isabelle is analogous:</p>
+
+<div class="highlight highlight-source-haskell"><pre>fibs <span class="pl-k">=</span> <span class="pl-c">{-(-}</span><span class="pl-c1">undefined</span><span class="pl-c">{-|0 : 1 : zipWith (+) fibs (tail fibs))-}</span></pre></div>
+
+<div class="highlight highlight-source-isabelle-theory"><pre><span class="pl-c1">lemma</span> <span class="pl-smi">x</span><span class="pl-k">:</span> <span class="pl-s">"A ==&gt; A"</span> <span class="pl-c">(*(*)</span><span class="pl-ii">oops</span><span class="pl-c">(*|by auto)*)</span></pre></div>
+
+<h4><a id="user-content-selection-fragments" class="anchor" href="#selection-fragments" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Selection Fragments</h4>
+
+<p>It is also possible to select parts of the code automatically as such:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">val</span> <span class="pl-en">x</span> <span class="pl-k">=</span> <span class="pl-c">/*(*/</span><span class="pl-c1">7</span><span class="pl-c">/*)*/</span></pre></div>
+
+<div class="highlight highlight-source-haskell"><pre>x <span class="pl-k">=</span> <span class="pl-c">{-(-}</span><span class="pl-c1">7</span><span class="pl-c">{-)-}</span></pre></div>
+
+<div class="highlight highlight-source-isabelle-theory"><pre><span class="pl-c1">lemma</span> <span class="pl-smi">x</span><span class="pl-k">:</span> <span class="pl-s">"A ==&gt; (*(*)A(*)*)"</span></pre></div>
+
+<p>They will act the same as manual selections, displaying semantic information about the selected portion.</p>
+
+<p>In Version 1.1, it will be possible to annotate custom text to selected portions.</p>
+
+<h2><a id="user-content-license" class="anchor" href="#license" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>License</h2>
 
 <p>Cobra is Licensed under LGPL</p>
 
+<h2><a id="user-content-libraries-used-by-cobra" class="anchor" href="#libraries-used-by-cobra" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Libraries used by <strong>Cobra</strong></h2>
+
+<table><thead>
+<tr>
+<th>Name</th>
+<th>Author</th>
+<th>License</th>
+<th>Usage</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><a href="https://github.com/hakimel/reveal.js">reveal.js</a></td>
+<td><a href="https://github.com/hakimel">Hakim El Hattab</a></td>
+<td><a href="https://raw.githubusercontent.com/hakimel/reveal.js/master/LICENSE">MIT</a></td>
+<td>Bundeled</td>
+</tr>
+<tr>
+<td><a href="https://codemirror.net/">CodeMirror</a></td>
+<td><a href="http://marijnhaverbeke.nl/">Marijn Haverbeke</a></td>
+<td><a href="https://raw.githubusercontent.com/codemirror/CodeMirror/master/LICENSE">MIT</a></td>
+<td>Bundeled</td>
+</tr>
+<tr>
+<td><a href="https://www.mathjax.org/">MathJax</a></td>
+<td><a href="https://www.mathjax.org/#about">MathJax Consortium</a></td>
+<td><a href="https://github.com/mathjax/MathJax/blob/master/LICENSE">Apache 2.0</a></td>
+<td>Bundeled</td>
+</tr>
+<tr>
+<td><a href="http://akka.io/">akka / akka-http</a></td>
+<td><a href="http://akka.io/team/">Akka Team</a>, <a href="https://www.lightbend.com/">Lightbend</a></td>
+<td><a href="https://github.com/akka/akka/blob/master/LICENSE">Apache 2.0</a></td>
+<td>Library</td>
+</tr>
+<tr>
+<td><a href="https://isabelle.in.tum.de/index.html">Isabelle</a></td>
+<td><a href="http://www.cl.cam.ac.uk/research/hvg/Isabelle/Cambridge/">University of Cambridge</a>, <a href="http://www21.in.tum.de/">TU Munich</a></td>
+<td><a href="https://isabelle.in.tum.de/dist/Isabelle2016/COPYRIGHT">BSD</a></td>
+<td>Library / Optional Dependency</td>
+</tr>
+<tr>
+<td><a href="http://www.mew.org/%7Ekazu/proj/ghc-mod/en/">ghc-mod</a></td>
+<td><a href="http://www.iij-ii.co.jp/en/">IIJ Innovation Institute Inc</a></td>
+<td><a href="https://github.com/DanielG/ghc-mod/blob/master/LICENSE">BSD3/AGPL3</a></td>
+<td>Optional Dependency</td>
+</tr>
+<tr>
+<td><a href="http://www.scala-lang.org/">scalac</a></td>
+<td><a href="https://www.epfl.ch/">EPFL</a>, <a href="https://www.lightbend.com/">Lightbend</a></td>
+<td><a href="http://www.scala-lang.org/license.html">Scala License</a></td>
+<td>Library</td>
+</tr>
+<tr>
+<td><a href="https://github.com/scala-ide/scala-refactoring#the-scala-refactoring-library">Scala Refactoring Library</a></td>
+<td><a href="http://misto.ch/">Mirko Stocker</a></td>
+<td><a href="http://www.scala-lang.org/license.html">Scala License</a></td>
+<td>Library</td>
+</tr>
+<tr>
+<td><a href="https://www.scala-js.org/">Scala.js</a></td>
+<td><a href="http://lampwww.epfl.ch/%7Edoeraene/">Sébastien Doeraene</a></td>
+<td><a href="http://www.scala-lang.org/license.html">Scala License</a></td>
+<td>Compile Time</td>
+</tr>
+</tbody></table>
+
+<h3><a id="user-content-other-libraries-and-compile-time-dependencies" class="anchor" href="#other-libraries-and-compile-time-dependencies" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Other Libraries and Compile Time Dependencies</h3>
+
+<p><a href="https://octicons.github.com/">octicons</a> (SIL OFL 1.1), <a href="http://logback.qos.ch/">LOGBack</a> (EPL 1.0 / LGPL 2.1), <a href="https://github.com/typesafehub/config">Typesafe Config</a> (Apache 2.0), <a href="https://github.com/webjars/webjars-locator">webjars-locator</a> (MIT), <a href="https://github.com/spray/sbt-revolver">sbt-revolver</a> (Apache 2.0), <a href="http://www.scala-sbt.org/sbt-native-packager/">SBT Native Packager</a> (MIT), <a href="https://github.com/sbt/sbt-web">sbt-web</a> (Apache 2.0), <a href="https://github.com/vmunier/sbt-play-scalajs">sbt-play-scalajs</a> (All Rights Reserved), <a href="https://github.com/scala-js/scala-js-dom">scala-js-dom</a> (MIT), <a href="https://github.com/ochrons/boopickle">BooPickle</a> (MIT), <a href="https://github.com/pathikrit/better-files">better-files</a> (MIT)</p>
+
+
+
     </section>
+    
+    
     <footer class="site-footer">
       <span class="site-footer-owner"><a href="https://github.com/flatmap/cobra">Cobra</a> is maintained by <a href="https://github.com/martinring">Martin Ring</a> at the DFKI.</span>
     </footer>
