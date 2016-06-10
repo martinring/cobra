@@ -4,13 +4,20 @@ cancelable in Global := true
 
 val commonSettings = Seq(
   scalaVersion := "2.11.8",
-  version := "0.9",
+  version := "1.0",
   maintainer := "Martin Ring",
   organization := "net.flatmap",
   scalacOptions ++= Seq("-deprecation","-feature")
 )
 
 scalaVersion := "2.11.8"
+
+lazy val iconGlob = sys.props("os.name").toLowerCase match {
+  case os if os.contains("mac") ⇒ "*.icns"
+  case os if os.contains("win") ⇒ "*.ico"
+  case _ ⇒ "*.png"
+}
+
 
 lazy val server = (project in file("modules/cobra-server"))
   .enablePlugins(JavaAppPackaging,UniversalPlugin,LinuxPlugin,RpmPlugin,DebianPlugin,WindowsPlugin)
@@ -21,6 +28,7 @@ lazy val server = (project in file("modules/cobra-server"))
     name := "cobra",
     rpmVendor := "Martin Ring",
     rpmLicense := Some("LGPL"),
+    jdkAppIcon :=  (sourceDirectory.value ** iconGlob).getPaths.headOption.map(file),
     packageSummary := "Cobra proof and code presentation framework",
     packageDescription := """Cobra is a modern code and proof presentation
                             |framework, leveraging cutting-edge presentation technology together with

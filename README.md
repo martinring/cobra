@@ -4,7 +4,7 @@ Cobra is a modern code and proof presentation framework, leveraging cutting-edge
 
 Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
 
-## Download **Cobra** 0.9
+## Download **Cobra** 1.0
 
 There is a pre built binary relase for Cobra.
 
@@ -22,6 +22,144 @@ All platforms: [zip](https://github.com/flatmap/cobra/raw/master/modules/cobra-s
  * **Start the presentation server**: call `cobra` in the directory of the presentation.
  * **View the presentation**: Navigate to localhost:8080 with your web browser.
  * **Edit your presentation**: Configuration can be edited in `cobra.conf`, content in `slides.html`.
+
+### Presentation Format
+
+The content of a presentation is stored in a file called `slides.html`. Cobra will support a MarkDown slideformat in Version 1.1.
+
+To add a slide, simply add `<section>` tags to the `slides.html` file. For the general slide format please refer to the **reveal.js** [documentation](https://github.com/hakimel/reveal.js).
+
+#### Including Code Snippets
+
+The simplest option is to include inline code snippets:
+
+```html
+<code class="scala">
+  case class Person(name: String, age: String)
+  object Test {
+    val p = Person("Albert Einstein", ???)
+  }
+</code>
+```
+
+This will produce a code snippet, which will be semantically treated by the scala compiler. It is possible to edit the code in the presentation, just as in an IDE. It is also possible to select parts of the code (e.g. identifiers) to display semantic information about the code.
+
+To include Isabelle or haskell simply replace `scala` class with `isabelle` or `haskell`
+
+
+####External Sources
+
+It is possible to include external source files. Simply place a code file within the folder of the presenation. (e.g. `<presentation root>/src/Test.scala`)
+
+You can then include the snippet with
+
+```html
+<code src="src/Test.scala"></code>
+```
+
+Note, that you don't have to specify the language in this case, since it is recognised from the file extesion.
+
+####Advanced Inclusion Options
+
+Often it is desired to include only parts of larger examples, for example omitting all imports for the presentation:
+
+This can be done with special comments:
+
+```scala
+import system.io._
+
+Object Example {
+  /// begin #example
+  val x = 7
+
+  /// begin #def-f
+  def f(y: Int) = ???
+  /// end #example
+  /// end #def-f
+}
+```
+
+The comments won't be shown in the presentation and the sub-snippets can be included as such:
+
+```
+<code src="#example></code>
+```
+
+Note that, the sub-snippets may be nested or even overlapping as in the example and included in several editors. They will allways stay in sync.
+
+
+The language mode is derived from the super-snippet.
+
+The comment syntax for Haskell and Isabelle is as follows:
+
+```haskell
+--- begin #snippet-name
+haskell code
+--- end #snippet-name
+```
+
+```ml
+(** begin #snippet-name *)
+isabelle code
+(** end #snippet-name *)
+```
+
+Snippet names are global and thus have to be unique.
+
+####Code Fragments
+
+Within presentations it is desireable to not show everything at the beginning or exchange parts of the code. This can be achieved with special syntax:
+
+```scala
+val x = /*(*/???/*|3 * 7)*/
+// or
+val x = /*(???|*/3 * 7/*)*/
+```
+
+will result both in the following sequence
+
+
+```scala
+val x = ???
+```
+
+*hit next*
+
+```scala
+val x = 3 * 7
+```
+
+The difference in the two lines is just their meaning in the source file.
+
+Again the syntax for haskell and isabelle is analogous:
+
+```haskell
+fibs = {-(-}undefined{-|0 : 1 : zipWith (+) fibs (tail fibs))-}
+```
+
+```isabelle
+lemma x: "A ==> A" (*(*)oops(*|by auto)*)
+```
+
+####Selection Fragments
+
+It is also possible to select parts of the code automatically as such:
+
+```scala
+val x = /*(*/7/*)*/
+```
+
+```haskell
+x = {-(-}7{-)-}
+```
+
+```isabelle
+lemma x: "A ==> (*(*)A(*)*)"
+```
+
+They will act the same as manual selections, displaying semantic information about the selected portion.
+
+In Version 1.1, it will be possible to annotate custom text to selected portions.
 
 ## License
 
