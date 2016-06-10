@@ -14,13 +14,13 @@ object Cobra extends App {
   }
 
   private def printLogo() = {
-    println("""       ____      _                    """)
-    println("""      / ___|___ | |__  _ __ __ _ TM   """)
-    println("""     | |   / _ \| '_ \| '__/ _` |     """)
-    println("""     | |__| (_) | |_) | | | (_| |     """)
-    println("""      \____\___/|_.__/|_|  \__,_|     """)
-    println("""______________________________________""")
-    println("""| version 1.0 - (c) 2016 Martin Ring |""")
+    println("""        ____      _                     """)
+    println("""       / ___|___ | |__  _ __ __ _ TM    """)
+    println("""      | |   / _ \| '_ \| '__/ _` |      """)
+    println("""      | |__| (_) | |_) | | | (_| |      """)
+    println("""       \____\___/|_.__/|_|  \__,_|      """)
+    println("""________________________________________""")
+    println("""| version 1.0.1 - (c) 2016 Martin Ring |""")
     println()
   }
 
@@ -88,14 +88,14 @@ object Cobra extends App {
         println(" (i) if you want to use isabelle, please run 'cobra configure isabelle'")
         println("     or configure env.isabelle_home in cobra.conf")
         println()
-        "// configure if you want to use isabelle\n" +
-        "// ISABELLE_HOME = '...'"
+        "# configure if you want to use isabelle\n" +
+        "# ISABELLE_HOME = '...'"
       } { case path =>
         println(s"A compatible Isabelle distribution was found at $path")
-        s"// ISABELLE_HOME = '$path'"
+        s"# ISABELLE_HOME = '$path'"
       }
     } { isa_home =>
-      s"// isabelle_home = $isa_home"
+      s"# isabelle_home = $isa_home"
     }
 
     val conf = scala.io.Source.fromURL(getClass.getResource("/template-cobra.conf")).mkString
