@@ -24,7 +24,7 @@ lazy val server = (project in file("modules/cobra-server"))
   .settings(commonSettings :_*)
   .settings(
     name in Universal := "cobra",
-    packageName in Universal := "cobra-" + version.value,
+    packageName in Universal := "cobra",
     name := "cobra",
     rpmVendor := "Martin Ring",
     rpmLicense := Some("LGPL"),
