@@ -2,77 +2,91 @@
   .CodeMirror-linewidget {
     overflow: visible;
 
-    block {
-      display: inline-block;
-    }
-
-    sendback {
-      color: rgb(0,104,163);
-      cursor: pointer;
-      &:hover {
-        text-decoration: underline;
+    div.cm-m-isabelle {
+      & > block {
+        display: block;
       }
-    }
 
-    text_fold {
-      display: block;
-    }
-
-    subgoal {
-      margin-left: 1em;
-    }
-
-    xml_elem xml_body {
-      display: none;
-    }
-
-    position {
-      color: rgb(0,104,163);
-      cursor: pointer;
-      &:hover {
-        text-decoration: underline;
+      & > block block {
+        display: inline-block;
       }
-    }
 
-    delimiter {
-      font-family: "MathJax_Math";
-    }
+      sendback {
+        color: rgb(0, 104, 163);
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
 
-    keyword1 {
-      color: blue;
-      font-weight: bold;
-    }
+      text_fold {
+        display: block;
+      }
 
-    bound {
-      color: green;
-    }
+      subgoal {
+        margin-left: 1em;
+      }
 
-    keyword2 {
-      color: blue;
-    }
+      xml_elem xml_body {
+        display: none;
+      }
 
-    free {
-      color: blue;
-      font-style: italic;
-    }
+      position {
+        color: rgb(0, 104, 163);
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
 
-    var {
-      color: darkblue;
-      font-style: italic;
-    }
+      delimiter {
+        font-family: "MathJax_Math";
+      }
 
-    entity {
-      font-family: "MathJax_Math";
-    }
+      keyword1 {
+        color: blue;
+        font-weight: bold;
+      }
 
-    tfree {
-      font-family: "MathJax_Math";
-      font-style: italic;
-      color: cadetblue;
-    }
+      bound {
+        color: green;
+      }
 
-    literal {
-      color: rgb(0,104,163);
+      keyword2 {
+        color: blue;
+      }
+
+      free {
+        color: blue;
+        font-style: italic;
+      }
+
+      var {
+        color: darkblue;
+        font-style: italic;
+      }
+
+      entity {
+        font-family: "MathJax_Math";
+      }
+
+      tfree {
+        font-family: "MathJax_Math";
+        font-style: italic;
+        color: cadetblue;
+      }
+
+      literal {
+        color: rgb(0, 104, 163);
+      }
+
+      &.info,
+      &.output,
+      &.error,
+      &.warning {
+        font-family: "MathJax_Main";
+      }
+
     }
 
     .error {
@@ -83,13 +97,6 @@
       padding-left: 10px;
       background-color: #eee;
       margin: 4px 5px 8px 0;
-    }
-
-    .cm-m-isabelle.info,
-    .cm-m-isabelle.output,
-    .cm-m-isabelle.error,
-    .cm-m-isabelle.warning {
-      font-family: "MathJax_Main";
     }
 
     .info {
@@ -137,7 +144,6 @@
   span.cm-m-isabelle.cm-operator:first-child + span.cm-m-isabelle {
     font-family: "Fira Code";
   }
-
   span.cm-m-isabelle.cm-operator:first-child {
       font-family: "Fira Code";
   }
@@ -148,7 +154,7 @@
       font-family: MathJax_Math;
   }
 
-  CodeMirror-widget span.cm-m-isabelle.symbol {
+  .CodeMirror-widget span.cm-m-isabelle.symbol {
     pointer-events: none;
   }
 
@@ -205,18 +211,6 @@
   }
   span.cm-free, span.cm-term, span.free, span.term {
     color: blue;
-  }
-  span.skolem {
-    color: #d2691e
-  }
-  span.bound {
-    color: green
-  }
-  span.var {
-    color: darkorange;
-  }
-  span.delimiter, span.control {
-    color: gray;
   }
 
   span.cm-warning {    

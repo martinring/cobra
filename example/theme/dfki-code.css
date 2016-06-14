@@ -17,9 +17,7 @@
 .cm-s-dfki-code .CodeMirror-cursor { border-left: 2px solid #222; }
 
 .cm-s-dfki-code .cm-keyword { color: #0000FF; }
-.cm-s-dfki-code .cm-keyword-2 { color: #AF00DB; }
-.cm-s-dfki-code .cm-keyword-3 { color: #AF00DB; }
-.cm-s-dfki-code .cm-keyword-4 { color: #AF00DB; }
+.cm-s-dfki-code .cm-def { color: #AF00DB; }
 .cm-s-dfki-code .cm-atom { color: rgb(222, 124, 10); }
 .cm-s-dfki-code .cm-number { color:  #09885a; }
 .cm-s-dfki-code .cm-def { color: #795E26; }
