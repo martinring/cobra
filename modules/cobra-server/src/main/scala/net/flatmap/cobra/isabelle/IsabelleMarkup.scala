@@ -29,33 +29,34 @@ import net.flatmap.collaboration.{Document => _, _}
 
 object IsabelleMarkup {
   val classes = Map(
-    Markup.KEYWORD3 -> "keyword-3",
-    Markup.QUASI_KEYWORD -> "keyword-4",
-      Markup.VERBATIM -> "string-2",
-      Markup.LITERAL -> "atom",
-      Markup.DELIMITER -> "operator",
-      Markup.OPERATOR -> "builtin",
-      Markup.TFREE -> "variable-3",
-      Markup.TVAR -> "variable-2",
-      Markup.FREE -> "variable",
-      Markup.SKOLEM -> "property",
-      Markup.BOUND -> "qualifier",
-      Markup.VAR -> "variable",
-      Markup.INNER_STRING -> "string-2",
-      Markup.INNER_COMMENT -> "comment",
-      Markup.DYNAMIC_FACT -> "def",
-      Markup.ANTIQUOTE -> "meta")
+    Markup.KEYWORD2 -> Set("keyword","strong"),
+    Markup.KEYWORD3 -> Set("keyword","em"),
+    Markup.QUASI_KEYWORD -> Set("keyword","em"),
+    Markup.VERBATIM -> Set("string-2"),
+    Markup.LITERAL -> Set("atom"),
+    Markup.DELIMITER -> Set("operator"),
+    Markup.OPERATOR -> Set("builtin"),
+    Markup.TFREE -> Set("variable-3"),
+    Markup.TVAR -> Set("variable-2"),
+    Markup.FREE -> Set("variable"),
+    Markup.SKOLEM -> Set("property"),
+    Markup.BOUND -> Set("qualifier"),
+    Markup.VAR -> Set("variable"),
+    Markup.INNER_STRING -> Set("string-2"),
+    Markup.INNER_COMMENT -> Set("comment"),
+    Markup.DYNAMIC_FACT -> Set("def"),
+    Markup.ANTIQUOTE -> Set("meta"))
 
   val classesElements = Markup.Elements(classes.keySet)
 
   def highlighting(snapshot: Document.Snapshot): Annotations = {
-    val cs: List[Text.Info[Option[(String,String)]]] = snapshot.cumulate(Text.Range(0,Int.MaxValue), Option.empty[(String,String)], classesElements, _ =>
+    val cs: List[Text.Info[Option[(Set[String],String)]]] = snapshot.cumulate(Text.Range(0,Int.MaxValue), Option.empty[(Set[String],String)], classesElements, _ =>
       {
         case (_, Text.Info(_,elem)) => Some(classes.get(elem.name).map((_,elem.body.mkString)))
       })
     cs.foldLeft(new Annotations) {
       case (as, Text.Info(range,None))    => as.plain(range.length)
-      case (as, Text.Info(range,Some((c,t)))) => as.annotate(range.length, AnnotationOptions(classes = Set(c),tooltip = Some(t)))
+      case (as, Text.Info(range,Some((c,t)))) => as.annotate(range.length, AnnotationOptions(classes = c,tooltip = Some(t)))
     }
   }
 
