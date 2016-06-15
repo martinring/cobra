@@ -17,13 +17,23 @@ All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-
 
 There is a YUM repository available which provides automatic updates
 
-    wget https://bintray.com/flatmap/rpm/rpm -O bintray-flatmap-rpm.repo
-    sudo mv bintray-flatmap-rpm.repo /etc/yum.repos.d/
-    sudo dnf install cobra
+```sh
+wget https://bintray.com/flatmap/rpm/rpm -O bintray-flatmap-rpm.repo
+sudo mv bintray-flatmap-rpm.repo /etc/yum.repos.d/
+sudo dnf install cobra
+```
 
 ### Ubuntu / Debian
 
-PPA coming soon.
+There is a PPA available for Debian / Ubuntu 
+
+```sh
+echo "deb https://dl.bintray.com/flatmap/deb {distribution} {components}" | sudo tee -a /etc/apt/sources.list
+sudo apt-get update
+sudo apt-get install cobra
+```
+
+> The cobra PPA is currently not signed. Signage will be added shortly
 
 ## Getting Started
 
