@@ -1,13 +1,15 @@
+os:
+- linux
+- osx
 language: scala
 scala:
 - 2.11.8
 jdk:
 - oraclejdk8
 install:
-- sudo apt-get install rpm
-- sudo apt-get install dpkg-dev dpkg-sig fakeroot lintian
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install rpm dpkg-dev dpkg-sig fakeroot lintian ; fi
 script:
-- sbt universal:packageBin rpm:packageBin debian:packageBin
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sbt universal:packageBin rpm:packageBin  debian:packageBin; else sbt dmg:packageBin; fi
 deploy:
   file_glob: true
   provider: releases
@@ -17,6 +19,7 @@ deploy:
   - modules/cobra-server/target/universal/cobra-*.zip
   - modules/cobra-server/target/rpm/RPMS/noarch/cobra-*.noarch.rpm
   - modules/cobra-server/target/cobra_*_all.deb
+  - modules/cobra-server/target/**.dmg
   skip_cleanup: true
   on:
     tags: true
