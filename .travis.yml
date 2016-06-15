@@ -9,14 +9,24 @@ install:
 script:
 - sbt universal:packageBin rpm:packageBin debian:packageBin
 deploy:
+- provider: releases
   file_glob: true
-  provider: releases
   api_key:
     secure: UvbXVPifMe2eTnX7SLRuAwS7DMmHGSt/u4hRO8ABmcfG58/qtPFlF33+rU63m8ICvVa+xkRgSk+a6jqExffc3p0J7qC/NPAHgEzCNGxvr9CWfzzp4ypCIhpB19dzMueVXEYpJRiRc2lG+bPs/skChcT9+30JKKwMN5PFgiy8+VaEW/D6ML9jV/MHPwnVu3cwjHrFgzhk5H66k/5T7VvVPCH4eWX1kl3XDcUF7cazPpx/3uQfs/KVVOCT2/DmeHJsajXqbngLS6O6oBmuFkj1KbcZh4RiT/hk20mY4MPMmhArEi4/N8qhRIcn3CLDgnXdXgqM4oyj27OOddjkygBKGLCUv+fkOQT42YXF9xyGCG/2VujIlc4pe2cKVN55Mavm1mOGsRpTNoiT3dBFrhcfXmO7W3N44DYejsfWIYFmWRg90WK2oPqKgxVHNEpBv9AVmgCbaYYVbbFdJzUmD1jMzuH/4bNT5sYt+rX7B1wBijfVNwbyrOwPqTnDoxvqQ9BZnsKB38EH6GT1s+X/6p9RuD/9dpNunmsOMCZcexX6E42CIW1JbySjTD69EQdPVNPBtRPdK540Gl74t2gyQGUrJIcL73kDph68RcfEBXbJyhzqihoVpqcxlUtN8LWk14Spz1LsuuPkvfY0bsi7M8A6Yd6UfFtW4gUqJh536ceXQrQ=
   file:
   - modules/cobra-server/target/universal/cobra-*.zip
   - modules/cobra-server/target/rpm/RPMS/noarch/cobra-*.noarch.rpm
   - modules/cobra-server/target/cobra_*_all.deb
+  skip_cleanup: true
+  on:
+    tags: true
+- provider: bintray
+  file_glob: true
+  user: martinring
+  key:
+    secure: o6MheZEOgotRHQ9JIZcJG6aAnT5V2IdOVV3EE1dnWZLxiUGCnnBh1eyanuegUYXcuEoJ03C8urNf0rDQO0LvLW8G88D1GKJFYgGYD2rfnHKMC79y7k80yBKHtRlQwPXG10MoamdeDARGRN8c3Xy1ZAHhwfXJ/iL7zR3Y6B1Drpls0kI2nAjuEa6/dpSarfQmmF/0ngSOcIShU4yKlJ3jeqVEc+UqSFze2SFuhOwWillZlv/M5EjPZl9ukTZE1C3+udRv+a8kVdsF5rFBfKY9dR2VKVOBhs8OyiUCUbDdfYbC/pPbwSy6qJhfLnb0c4j9KtEcunfX4StLvSRB1s2h6pEdBpjwwyOrEHyg6gqOe6bFpVrXOoJ2w81d+0z3CHGOLJO5zd+Gh16JOcitJ9XYa5Dm+E9c5tap/h5rbT3UFHAqxNN5UCQHhnZ2hn6w0VCMGyeaEOxzcsX6OCkZIeQoARz17sNiWGshNDyBq2NUQqdDLOlhd0OSWPdvuu/47IGQ8wzL0sQFXFVVJPU6c8/Vn8MxT4SVOPfI/+yR5oLBfZnjISO0678zM8uBxHOsbAfF0jRmJJQ1o0JL8AMyt7u7Dd7FzCQ4zwwv0Hf73uu49g28v80EwYcvifaT1QiqOeC2dJ10ORT1TsLs48m+ctdLIcoTU6Vf1m+gL8MLiDGMPt4=
+  file:
+  - .bintray-rpm.yml
   skip_cleanup: true
   on:
     tags: true
