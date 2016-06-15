@@ -12,14 +12,17 @@
         "licenses": ["LGPL"],
         "labels": ["presentation","scala","haskell","isabelle"],
         "public_download_numbers": false,
-        "public_stats": false,
+        "public_stats": false
     },
     "version": {
         "name": "version-1.0.1"
     },
     "files":
-        [
-        {"includePattern": "modules/cobra-server/target/**/(.*\\.rpm)", "uploadPattern": "$1"}
-        ],
+    [
+      {
+        "includePattern": "modules/cobra-server/target/**/(.*\\.rpm)",
+        "uploadPattern": "$1"
+      }
+    ],
     "publish": true
 }
