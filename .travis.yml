@@ -3,13 +3,13 @@ scala:
 - 2.11.8
 jdk:
 - oraclejdk8
+install:
+- sudo apt-get install rpm
+- sudo apt-get install dpkg-dev dpkg-sig fakeroot lintian
+script:
+- sbt universal:packageBin rpm:packageBin debian:packageBin
 deploy:
   file_glob: true
-  install:
-  - sudo apt-get install rpm
-  - sudo apt-get install dpkg-dev dpkg-sig fakeroot lintian
-  script:
-  - sbt universal:packageBin rpm:packageBin debian:packageBin
   provider: releases
   api_key:
     secure: UvbXVPifMe2eTnX7SLRuAwS7DMmHGSt/u4hRO8ABmcfG58/qtPFlF33+rU63m8ICvVa+xkRgSk+a6jqExffc3p0J7qC/NPAHgEzCNGxvr9CWfzzp4ypCIhpB19dzMueVXEYpJRiRc2lG+bPs/skChcT9+30JKKwMN5PFgiy8+VaEW/D6ML9jV/MHPwnVu3cwjHrFgzhk5H66k/5T7VvVPCH4eWX1kl3XDcUF7cazPpx/3uQfs/KVVOCT2/DmeHJsajXqbngLS6O6oBmuFkj1KbcZh4RiT/hk20mY4MPMmhArEi4/N8qhRIcn3CLDgnXdXgqM4oyj27OOddjkygBKGLCUv+fkOQT42YXF9xyGCG/2VujIlc4pe2cKVN55Mavm1mOGsRpTNoiT3dBFrhcfXmO7W3N44DYejsfWIYFmWRg90WK2oPqKgxVHNEpBv9AVmgCbaYYVbbFdJzUmD1jMzuH/4bNT5sYt+rX7B1wBijfVNwbyrOwPqTnDoxvqQ9BZnsKB38EH6GT1s+X/6p9RuD/9dpNunmsOMCZcexX6E42CIW1JbySjTD69EQdPVNPBtRPdK540Gl74t2gyQGUrJIcL73kDph68RcfEBXbJyhzqihoVpqcxlUtN8LWk14Spz1LsuuPkvfY0bsi7M8A6Yd6UfFtW4gUqJh536ceXQrQ=
