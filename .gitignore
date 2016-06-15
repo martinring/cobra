@@ -18,6 +18,3 @@ project/plugins/project/
 
 .idea
 *.iml
-
-!modules/cobra-server/target/universal/cobra-*.zip
-!modules/cobra-server/target/rpm/noarch/RPMS/cobra-*.rpm
