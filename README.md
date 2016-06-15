@@ -11,13 +11,25 @@ There is a pre built binary relase for Cobra.
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra-1.0.1.zip) | Linux: [rpm](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra-1.0.1-1.noarch.rpm), [deb](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra_1.0.1_all.deb)
+All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra-1.0.1.zip) | Linux: [deb](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra_1.0.1_all.deb)
+
+### Fedora / RHEL
+
+There is a YUM repository available which provides automatic updates
+
+    wget https://bintray.com/flatmap/rpm/rpm -O bintray-flatmap-rpm.repo
+    sudo mv bintray-flatmap-rpm.repo /etc/yum.repos.d/
+    sudo dnf install cobra
+
+### Ubuntu / Debian
+
+PPA coming soon.
 
 ## Getting Started
 
  * **Installation**:
-   * **rpm**: just install using your package manager
    * **zip**: extract to arbitrary location and add `bin/cobra` / `bin/cobra.bat` to your path
+   * **other**: follow instructions above
  * **Create a new presentation**: call `cobra new` from the command line and follow the instructions
  * **Start the presentation server**: call `cobra` in the directory of the presentation.
  * **View the presentation**: Navigate to localhost:8080 with your web browser.
