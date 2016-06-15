@@ -20,7 +20,7 @@
     "files":
     [
       {
-        "includePattern": "modules/cobra-server/target/**/(.*\\.rpm)",
+        "includePattern": "modules/cobra-server/target/rpm/RPMS/noarch/(.*\\.rpm)",
         "uploadPattern": "$1"
       }
     ],
