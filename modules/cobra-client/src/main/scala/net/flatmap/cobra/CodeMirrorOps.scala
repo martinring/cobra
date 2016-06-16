@@ -64,6 +64,8 @@ object CodeMirrorOps {
         val buf = mutable.Buffer.empty[Clearable]
         c.messages.foreach { message =>
           def widget(doc: Doc) = Option(doc.getEditor()).foreach { editor => if (editor != js.undefined && doc.firstLine() <= to.line && doc.lastLine() >= to.line) {
+            if (editor.getOption("no-infos") != true || !message.isInstanceOf[InfoMessage])
+            if (editor.getOption("no-warnings") != true || !message.isInstanceOf[WarningMessage])
             if (editor.getOption("states") == true || !message.isInstanceOf[StateMessage]) {
               val elem = message match {
                 case ErrorMessage(txt) =>

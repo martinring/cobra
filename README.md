@@ -68,6 +68,15 @@ This will produce a code snippet, which will be semantically treated by the scal
 
 To include Isabelle or haskell simply replace `scala` class with `isabelle` or `haskell`
 
+####Configuring Inline Messages
+
+It is possible to **show inline states** (for Isabelle) by adding the class `states` to a code tag
+
+If you want to **step through states**, you can additionally add the class `state-fragments`
+
+You can **hide info messages** by adding `no-infos` class
+
+You can **hide warning messages** by adding `no-warnings` class
 
 ####External Sources
 

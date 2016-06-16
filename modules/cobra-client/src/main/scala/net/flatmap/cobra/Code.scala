@@ -331,6 +331,8 @@ object Code {
         })
         
         editor.setOption("states",code.classes.contains("states"))
+        editor.setOption("no-infos",code.classes.contains("no-infos"))
+        editor.setOption("no-warnings",code.classes.contains("no-warnings"))
         editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
           if (code.classes.contains("current-only")) "single" else "all" else null)
         editor.setOption("addModeClass",true)
