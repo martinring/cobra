@@ -25,15 +25,19 @@ sudo dnf install cobra
 
 ### Ubuntu / Debian
 
-There is a PPA available for Debian / Ubuntu
+There is a PPA available for Debian / Ubuntu. Releases are signed with bintray's public key. To add it please ececute
+
+```sh
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 
+```
+
+Now you can add the repo and install cobra
 
 ```sh
 echo "deb https://dl.bintray.com/flatmap/deb wheezy main" | sudo tee -a /etc/apt/sources.list
 sudo apt-get update
 sudo apt-get install cobra
 ```
-
-> The cobra PPA is currently not signed. Signage will be added shortly
 
 ## Getting Started
 
