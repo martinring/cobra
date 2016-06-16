@@ -10,6 +10,7 @@ import org.scalajs.dom.{Element, console, raw}
 import net.flatmap.js.util._
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLElement
+import net.flatmap.js.reveal._
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -320,6 +321,15 @@ object Code {
           }
           m = mde.alternatives.findFirstMatchIn(doc.getValue())
         }
+
+        // Disable Keyboard Controls when Editor is active
+        editor.on("focus", { cm: CodeMirror =>
+          Reveal.configure(js.Dynamic.literal(keyboard = false).asInstanceOf[RevealOptions])
+        })
+        editor.on("blur", { cm: CodeMirror =>
+          Reveal.configure(js.Dynamic.literal(keyboard = true).asInstanceOf[RevealOptions])
+        })
+        
         editor.setOption("states",code.classes.contains("states"))
         editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
           if (code.classes.contains("current-only")) "single" else "all" else null)
