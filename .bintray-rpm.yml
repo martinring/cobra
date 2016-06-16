@@ -15,9 +15,9 @@
         "public_stats": false
     },
     "version": {
-        "name": "version-1.0.3",
-        "desc": "Version 1.0.3",
-        "vcs_tag": "version-1.0.3",
+        "name": "version-1.0.4",
+        "desc": "Version 1.0.4",
+        "vcs_tag": "version-1.0.4",
         "gpgSign": true
     },
     "files":
