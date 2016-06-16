@@ -4,6 +4,7 @@ import net.flatmap.js.codemirror.CodeMirror
 import org.scalajs.dom.raw.HTMLElement
 
 import scala.scalajs.js
+import scala.language.implicitConversions
 
 /**
   * Created by martin on 20.05.16.

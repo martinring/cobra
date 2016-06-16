@@ -108,7 +108,7 @@ class CodeMirror protected () extends js.Object {
   def getScrollerElement(): HTMLElement = js.native
   def getGutterElement(): HTMLElement = js.native
 
-  def execCommand(name: String) = js.native
+  def execCommand(name: String): Unit = js.native
 }
 
 @js.native
