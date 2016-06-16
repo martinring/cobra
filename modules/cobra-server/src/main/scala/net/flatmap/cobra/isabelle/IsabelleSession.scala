@@ -115,7 +115,7 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
 
   def start(env: Map[String,String]) = {
     env.get("ISABELLE_HOME").fold {
-      if (!sys.env.isDefinedAt("ISABELLE_HOME")) {
+      sys.env.get("ISABELLE_HOME").fold {
         IsabelleUtil.locateInstallation.map( p =>
           isabelle.Isabelle_System.init(p.toString)
         ).fold {
@@ -123,7 +123,7 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
         } { _ =>
 
         }
-      }
+      } (isabelle.Isabelle_System.init(_))
     } (isabelle.Isabelle_System.init(_))
     val ops = isabelle.Options.init
     val initialized = Promise[Unit]()
