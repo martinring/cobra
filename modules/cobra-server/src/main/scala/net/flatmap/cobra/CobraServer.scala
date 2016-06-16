@@ -222,6 +222,12 @@ class CobraServer(val directory: File) {
         }
         Source.fromPublisher(pub)
       })
+    case ResetAllSnippets =>
+      documents.foreach { case (id,actor) =>
+        actor ! PoisonPill
+      }
+      documents.clear()
+      Source.empty
     case msg: SnippetMessage =>
       documents.get(msg.id).foreach(doc => doc.tell(msg,client))
       Source.empty

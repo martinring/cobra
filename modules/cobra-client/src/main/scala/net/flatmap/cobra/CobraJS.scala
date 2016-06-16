@@ -57,6 +57,10 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
       codeTheme.href = code
       cmTheme := code.split("/").last.dropRight(4)
     case FileUpdate("slides.html") =>
+      send(ResetAllSnippets)
+      initialize()
+    case FileUpdate(other) => // TODO: differentiate here!
+      send(ResetAllSnippets)
       initialize()
   }
 

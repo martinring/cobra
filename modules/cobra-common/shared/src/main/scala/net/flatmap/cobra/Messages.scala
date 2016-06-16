@@ -39,6 +39,9 @@ case class ThemeUpdate(code: String, slides: String) extends ServerMessage
 case class LanguageUpdate(newLang: String) extends ServerMessage
 case class SnippetChanged(src: String) extends ServerMessage
 
+// TODO: This is a temporary hack until snippet management is implemented on the server.
+case object ResetAllSnippets extends ClientMessage
+
 trait Picklers {
   implicit val charActionPickler: Pickler[Action[Char]] =
     compositePickler[Action[Char]]

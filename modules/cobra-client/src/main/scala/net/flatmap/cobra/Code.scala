@@ -28,6 +28,7 @@ object Code {
       val src = code.getAttribute("src")
       val ext = src.split("\\.").last
       Mode.modes.find(_.fileendings.contains(ext)).foreach(code.classes += _.name)
+      CobraJS.send(WatchFile(src))
       code.text = Ajax.get(src).filter(_.status == 200).map(_.responseText).recover {
         case NonFatal(e) =>
           console.error(s"could not load source from '$src'")
