@@ -37,27 +37,18 @@ object HaskellMarkup {
 
   val substs = Map(
     "."  -> "∘",
-    "->" -> "→",
-    "<-" -> "←",
-    "!!" -> "‼",
     "/=" -> "≠",
     "<=" -> "≤",
     ">=" -> "≥",
     "\\" -> "λ",
     "&&" -> "∧",
     "||" -> "∨",
-    "::" -> "∷",
-    "..." -> "…",
     "forall" -> "∀",
     "alpha" -> "α",
     "beta" -> "β",
     "gamma" -> "γ",
     "pi" -> "π",
     "sqrt" -> "√")
-
-  def prettify(s: String): String = (substs - ".").foldLeft(s) {
-    case (s,(a,b)) => s.replace(a,b)
-  }
 
   val r = ("(?:" + (donts ++ substs.keys.map(_.replace("\\","\\\\").replace(".", "\\.").replace("|","\\|"))).reduce(_ + "|" + _) + ")").r
 
@@ -92,11 +83,11 @@ object HaskellMarkup {
         }
         t match {
           case "Error" =>
-            result = result.annotate(0, AnnotationOptions(messages = List(ErrorMessage(prettify(e)))))
+            result = result.annotate(0, AnnotationOptions(messages = List(ErrorMessage(e))))
           case "Warning" =>
-            result = result.annotate(0, AnnotationOptions(messages = List(WarningMessage(prettify(e)))))
+            result = result.annotate(0, AnnotationOptions(messages = List(WarningMessage(e))))
           case other =>
-            result = result.annotate(0, AnnotationOptions(messages = List(InfoMessage(other + ": " + prettify(e)))))
+            result = result.annotate(0, AnnotationOptions(messages = List(InfoMessage(other + ": " + e))))
         }
     }
     result.plain(state.length - position)

@@ -5,7 +5,7 @@ import java.io.FileWriter
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
 import net.flatmap.cobra.{CombinedRemoteEdit, RemoteAnnotations, RemoteEdit, RequestInfo, _}
 import net.flatmap.collaboration._
-import sun.reflect.annotation.AnnotationType
+import better.files._
 import scala.concurrent.duration._
 
 object HaskellService extends LanguageService  {
@@ -21,6 +21,8 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
     case ResetSnippet(id, content, rev) =>
       context.become(initialized(id,content,rev,sender()))
   }
+
+  val tempDir = File.newTemporaryDirectory("cobra-hs")
 
   val files = collection.mutable.Map.empty[String,(String,ClientInterface[Char])]
 
@@ -58,12 +60,11 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
   def getInfo(id: String, from: Int, to: Int, guid: String) = files.get(id).flatMap { case (state,clientInterface) =>
     import sys.process._
 
-    val temp = new java.io.File(s"/tmp/$id.hs")
-    val name = temp.getPath()
+    val temp = tempDir / s"$id.hs"
+    val name = temp.path.toAbsolutePath.toString
 
-    val write = new FileWriter(temp)
-    write.write(state)
-    write.close()
+    temp.clear()
+    temp < state
 
     val before = state.take(from)
     val line = before.count(_ == '\n') + 1
@@ -94,7 +95,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
         case (f,t,_) => Math.abs(f - from) + Math.abs(t - to)
       }.headOption.map {
         case (from,to,msg) =>
-          Information(id, from, to, HaskellMarkup.prettify(msg),guid)
+          Information(id, from, to, msg, guid)
       }
     }
   }
