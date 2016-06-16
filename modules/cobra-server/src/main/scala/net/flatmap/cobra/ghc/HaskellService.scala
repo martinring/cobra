@@ -29,12 +29,11 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
   def compile(id: String, content: String, clientInterface: ClientInterface[Char]) = {
     import sys.process._
 
-    val temp = new java.io.File(s"/tmp/$id.hs")
-    val name = temp.getPath()
+    val temp = tempDir / s"$id.hs"
+    val name = temp.path.toAbsolutePath.toString
 
-    val write = new FileWriter(temp)
-    write.write(content)
-    write.close()
+    temp.clear()
+    temp < state
 
     val lines = {
       val outer = Seq("ghc-mod","check",name).lineStream

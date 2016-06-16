@@ -16,7 +16,7 @@ deploy:
   file:
   - modules/cobra-server/target/universal/cobra-*.zip
   - modules/cobra-server/target/rpm/RPMS/noarch/cobra-*.noarch.rpm
-  - modules/cobra-server/target/cobra_*_all.deb
+  - modules/cobra-server/target/cobra*all.deb
   skip_cleanup: true
   on:
     tags: true
