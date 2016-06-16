@@ -4,14 +4,14 @@ Cobra is a modern code and proof presentation framework, leveraging cutting-edge
 
 Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
 
-## Download **Cobra** 1.0.1
+## Download **Cobra** 1.0.2
 
 There is a pre built binary relase for Cobra.
 
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra-1.0.1.zip) | Linux: [deb](https://github.com/flatmap/cobra/releases/download/version-1.0.1/cobra_1.0.1_all.deb)
+All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.2/cobra-1.0.2.zip) | Linux: [deb](https://github.com/flatmap/cobra/releases/download/version-1.0.2/cobra_1.0.2_all.deb)
 
 ### Fedora / RHEL
 
@@ -118,7 +118,7 @@ The comments won't be shown in the presentation and the sub-snippets can be incl
 <code src="#example></code>
 ```
 
-Note that, the sub-snippets may be nested or even overlapping as in the example and included in several editors. They will allways stay in sync.
+Note that, the sub-snippets may be nested or even overlapping as in the example and included in several editors. They will always stay in sync.
 
 The language mode is derived from the super-snippet.
 
@@ -142,7 +142,7 @@ Snippet names are global and thus have to be unique.
 
 ####Code Fragments
 
-Within presentations it is desireable to not show everything at the beginning or exchange parts of the code. This can be achieved with special syntax:
+Within presentations it is desirable to not show everything at the beginning or exchange parts of the code. This can be achieved with special syntax:
 
 ```scala
 val x = /*(*/???/*|3 * 7)*/
@@ -165,7 +165,7 @@ val x = 3 * 7
 
 The difference in the two lines is just their meaning in the source file.
 
-Again the syntax for haskell and isabelle is analogous:
+Again the syntax for Haskell and Isabelle is analogous:
 
 ```haskell
 fibs = {-(-}undefined{-|0 : 1 : zipWith (+) fibs (tail fibs))-}

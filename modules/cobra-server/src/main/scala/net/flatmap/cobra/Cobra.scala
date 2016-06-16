@@ -8,6 +8,8 @@ import better.files._
   * Created by martin on 03.02.16.
   */
 object Cobra extends App {
+  val version = "1.0.2"
+
   private def assume(cond: Boolean, msg: String) = if (!cond) {
     println("failed to initialize: " + msg)
     sys.exit()
@@ -20,7 +22,7 @@ object Cobra extends App {
     println("""      | |__| (_) | |_) | | | (_| |      """)
     println("""       \____\___/|_.__/|_|  \__,_|      """)
     println("""________________________________________""")
-    println("""| version 1.0.1 - (c) 2016 Martin Ring |""")
+    println(s"""| version $version - (c) 2016 Martin Ring |""")
     println()
   }
 
