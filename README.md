@@ -11,7 +11,7 @@ There is a pre built binary relase for Cobra.
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.4/cobra-1.0.4.zip) | Linux: [deb](https://github.com/flatmap/cobra/releases/download/version-1.0.4/cobra_1.0.4_all.deb)
+All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.4/cobra-1.0.4.zip)
 
 ### Fedora / RHEL
 
@@ -36,7 +36,7 @@ Now you can add the repo and install cobra
 ```sh
 echo "deb https://dl.bintray.com/flatmap/deb wheezy main" | sudo tee -a /etc/apt/sources.list
 sudo apt-get update
-sudo apt-get install cobra
+sudo apt-get install cobra-presentations
 ```
 
 ## Getting Started
