@@ -1,6 +1,6 @@
 {
     "package": {
-        "name": "cobra",
+        "name": "cobra-presentations",
         "repo": "deb",
         "subject": "flatmap",
         "desc": "Proof and Code Presentation Framework",
