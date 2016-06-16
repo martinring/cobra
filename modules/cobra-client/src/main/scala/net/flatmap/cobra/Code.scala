@@ -324,7 +324,7 @@ object Code {
         editor.setOption("state-fragments",if (code.classes.contains("state-fragments"))
           if (code.classes.contains("current-only")) "single" else "all" else null)
         editor.setOption("addModeClass",true)
-        //editor.setOption("scrollbarStyle","null")
+        editor.setOption("scrollbarStyle",null)
         editor.setOption("viewportMargin",js.eval("Infinity"))
         CobraJS.cmTheme.react(editor.setOption("theme",_))
         if (CobraJS.printing) editor.setOption("readOnly","nocursor")

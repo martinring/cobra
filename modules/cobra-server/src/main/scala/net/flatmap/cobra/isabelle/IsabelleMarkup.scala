@@ -29,23 +29,24 @@ import net.flatmap.collaboration.{Document => _, _}
 
 object IsabelleMarkup {
   val classes = Map(
-    Markup.KEYWORD2 -> Set("keyword","strong"),
-    Markup.KEYWORD3 -> Set("keyword","em"),
-    Markup.QUASI_KEYWORD -> Set("keyword","em"),
-    Markup.VERBATIM -> Set("string-2"),
-    Markup.LITERAL -> Set("atom"),
-    Markup.DELIMITER -> Set("operator"),
-    Markup.OPERATOR -> Set("builtin"),
-    Markup.TFREE -> Set("variable-3"),
-    Markup.TVAR -> Set("variable-2"),
-    Markup.FREE -> Set("variable"),
-    Markup.SKOLEM -> Set("property"),
-    Markup.BOUND -> Set("qualifier"),
-    Markup.VAR -> Set("variable"),
-    Markup.INNER_STRING -> Set("string-2"),
-    Markup.INNER_COMMENT -> Set("comment"),
-    Markup.DYNAMIC_FACT -> Set("def"),
-    Markup.ANTIQUOTE -> Set("meta"))
+    Markup.KEYWORD1 -> Set("keyword","keyword-1"),
+    Markup.KEYWORD2 -> Set("keyword","em","keyword-2"),
+    Markup.KEYWORD3 -> Set("keyword","strong","em","keyword-3"),
+    Markup.QUASI_KEYWORD -> Set("keyword","em","quasi-keyword"),
+    Markup.VERBATIM -> Set("string-2","verbatim"),
+    Markup.LITERAL -> Set("atom","literal"),
+    Markup.DELIMITER -> Set("operator","delimiter"),
+    Markup.OPERATOR -> Set("builtin","operator"),
+    Markup.TFREE -> Set("variable-3","tfree"),
+    Markup.TVAR -> Set("variable-2","tvar"),
+    Markup.FREE -> Set("variable","free"),
+    Markup.SKOLEM -> Set("property","skolem"),
+    Markup.BOUND -> Set("qualifier","bound"),
+    Markup.VAR -> Set("variable","var"),
+    Markup.INNER_STRING -> Set("string-2","inner-string"),
+    Markup.INNER_COMMENT -> Set("comment","inner-comment"),
+    Markup.DYNAMIC_FACT -> Set("def","dynamic-fact"),
+    Markup.ANTIQUOTE -> Set("meta","antiquote"))
 
   val classesElements = Markup.Elements(classes.keySet)
 
@@ -171,13 +172,6 @@ object IsabelleMarkup {
               else ""
             Some(add(prev, r, (true, XML.Text(txt1 + txt2))))
 
-          /*case (prev, Text.Info(r, XML.Elem(Markup.Path(name), _))) =>
-            val file = jedit_file(name)
-            val text =
-              if (name == file) "file " + quote(file)
-              else "path " + quote(name) + "\nfile " + quote(file)
-            Some(add(prev, r, (true, XML.Text(text))))*/
-
           case (prev, Text.Info(r, XML.Elem(Markup.Doc(name), _))) =>
             val text = "doc " + quote(name)
             Some(add(prev, r, (true, XML.Text(text))))
@@ -197,8 +191,6 @@ object IsabelleMarkup {
               if (Debugger.breakpoint_state(breakpoint)) "breakpoint (enabled)"
               else "breakpoint (disabled)"
             Some(add(prev, r, (true, XML.Text(text))))
-          /*case (prev, Text.Info(r, XML.Elem(Markup.Language(language, _, _, _), _))) =>
-            Some(add(prev, r, (true, XML.Text("language: " + language))))*/
 
           case (prev, Text.Info(r, XML.Elem(Markup(Markup.MARKDOWN_PARAGRAPH, _), _))) =>
             Some(add(prev, r, (true, XML.Text("Markdown: paragraph"))))
@@ -253,22 +245,6 @@ object IsabelleMarkup {
       case (as, sym) =>
         as.annotate(sym.length, AnnotationOptions(classes = Set("symbol"), substitute = Some(Symbol.decode(sym))))
     }
-
-
-  /*def progress(state: String, snapshot: Document.Snapshot): Annotations = {
-    var offset = 0
-    val it = state.linesWithSeparators
-    var result = new Annotations
-    while (it.hasNext) {
-      val line = it.next()
-      overview_class(snapshot, Text.Range(offset, offset + line.length())) match {
-        case None => result = result.plain(line.length())
-        case Some(c) => result = result.annotate(line.length, List(AnnotationType.Progress -> c))
-      }
-      offset += line.length()
-    }
-    result
-  }*/
 
   private val overview_include = Markup.Elements(Markup.WARNING, Markup.ERROR, Markup.RUNNING, Markup.ACCEPTED, Markup.FAILED)
 
