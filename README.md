@@ -25,7 +25,7 @@ sudo dnf install cobra
 
 ### Ubuntu / Debian
 
-There is a PPA available for Debian / Ubuntu 
+There is a PPA available for Debian / Ubuntu
 
 ```sh
 echo "deb https://dl.bintray.com/flatmap/deb {distribution} {components}" | sudo tee -a /etc/apt/sources.list
@@ -66,7 +66,9 @@ The simplest option is to include inline code snippets:
 
 This will produce a code snippet, which will be semantically treated by the scala compiler. It is possible to edit the code in the presentation, just as in an IDE. It is also possible to select parts of the code (e.g. identifiers) to display semantic information about the code.
 
-To include Isabelle or haskell simply replace `scala` class with `isabelle` or `haskell`
+To include Isabelle or Haskell simply replace `scala` class with `isabelle` or `haskell`
+
+> Note: When including Isabelle inline you will want to set the `id` of the `code` tag to the name of your theory, because otherwise a name for your theory is generated and will most definitely clash with what you define in your header. (see #12)
 
 ####Configuring Inline Messages
 
