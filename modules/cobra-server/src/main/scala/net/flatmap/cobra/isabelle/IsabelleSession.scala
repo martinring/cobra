@@ -140,7 +140,7 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
         }
       }      
     })    
-    session.phase_changed += Session.Consumer("clide"){ p => p match {
+    session.phase_changed += Session.Consumer("cobra"){ p => p match {
       case Session.Startup  =>
         log.info("I'm starting up, please wait a second!")
       case Session.Shutdown =>
@@ -156,15 +156,15 @@ trait IsabelleSession { self: IsabelleService with IsabelleConversions with Acto
         if (!initialized.isCompleted)
           initialized.success(())
     } }
-    session.syslog_messages += Session.Consumer("clide"){ msg =>
+    session.syslog_messages += Session.Consumer("cobra"){ msg =>
       log.info("SYSLOG: {}", XML.content(msg.body))
       log.info(XML.content(msg.body))
     }
-    session.commands_changed += Session.Consumer("clide"){ msg =>
+    session.commands_changed += Session.Consumer("cobra"){ msg =>
       outdated ++= msg.nodes
       self ! RequireRefresh
     }
-    session.start("clide", List("-S","HOL"))
+    session.start("cobra", List("HOL"))
     initialized.future
   }
 
