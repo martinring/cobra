@@ -5,7 +5,6 @@
  * This theme is Copyright (C) 2012 Owen Versteeg, https://github.com/StereotypicalApps. It is MIT licensed.
  * reveal.js is Copyright (C) 2011-2012 Hakim El Hattab, http://hakim.se
  */
-@import url(theSans.css);
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
@@ -20,7 +19,7 @@ body {
 }
 
 .reveal {
-  font-family: "TheSans", sans-serif;
+  font-family: "TheSans", "Open Sans", Helvetica, sans-serif;
   font-size: 30px;
   font-weight: normal;
   color: rgb(88,88,90);
