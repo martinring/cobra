@@ -15,7 +15,11 @@
         "public_stats": false
     },
     "version": {
-        "name": "version-1.0.1"
+        "name": "version-1.0.2",
+        "desc": "Version 1.0.2",
+        "released": "2016-06-16",
+        "vcs_tag": "version-1.0.2",
+        "gpgSign": true
     },
     "files":
     [
