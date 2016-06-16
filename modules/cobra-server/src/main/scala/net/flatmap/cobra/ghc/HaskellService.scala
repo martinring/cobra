@@ -33,7 +33,7 @@ class HaskellService(env: Map[String,String]) extends Actor with ActorLogging {
     val name = temp.path.toAbsolutePath.toString
 
     temp.clear()
-    temp < state
+    temp < content
 
     val lines = {
       val outer = Seq("ghc-mod","check",name).lineStream
