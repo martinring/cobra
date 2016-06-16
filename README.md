@@ -28,7 +28,7 @@ sudo dnf install cobra
 There is a PPA available for Debian / Ubuntu
 
 ```sh
-echo "deb https://dl.bintray.com/flatmap/deb {distribution} {components}" | sudo tee -a /etc/apt/sources.list
+echo "deb https://dl.bintray.com/flatmap/deb wheezy main" | sudo tee -a /etc/apt/sources.list
 sudo apt-get update
 sudo apt-get install cobra
 ```
