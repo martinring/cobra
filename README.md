@@ -13,7 +13,18 @@ There is a pre built binary relase for Cobra.
 
 All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.4/cobra-1.0.4.zip)
 
-### Fedora / RHEL
+### macOS
+
+Until the notability of the cobra GitHub repository meets the requirements of homebrew-core, we have an own tap:
+
+```sh
+brew tap flatmap/cobra
+brew install cobra
+```
+
+### Linux
+
+#### Fedora / RHEL
 
 There is a YUM repository available which provides automatic updates
 
@@ -23,7 +34,7 @@ sudo mv bintray-flatmap-rpm.repo /etc/yum.repos.d/
 sudo dnf install cobra
 ```
 
-### Ubuntu / Debian
+#### Ubuntu / Debian
 
 There is a PPA available for Debian / Ubuntu. Releases are signed with bintray's public key. To add it please ececute
 
