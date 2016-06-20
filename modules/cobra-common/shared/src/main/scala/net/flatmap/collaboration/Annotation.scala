@@ -149,7 +149,6 @@ object Annotations {
     loop(a.annotations.reverse,o.actions.reverse,Nil).map(Annotations(_,a.responses))
   }
 
-  /** TODO */
   def compose(a: Annotations, b: Annotations): Try[Annotations] = {
     @tailrec
     def loop(as: List[Annotation], bs: List[Annotation], xs: List[Annotation]): Try[List[Annotation]] = (as,bs,xs) match {
