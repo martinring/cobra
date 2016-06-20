@@ -4,7 +4,7 @@ cancelable in Global := true
 
 val commonSettings = Seq(
   scalaVersion := "2.11.8",
-  version := "1.0.4",
+  version := "1.0.5",
   maintainer := "Martin Ring",
   organization := "net.flatmap",
   scalacOptions ++= Seq("-deprecation","-feature")

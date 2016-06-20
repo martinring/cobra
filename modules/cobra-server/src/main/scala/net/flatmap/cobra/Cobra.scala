@@ -8,7 +8,7 @@ import better.files._
   * Created by martin on 03.02.16.
   */
 object Cobra extends App {
-  val version = "1.0.4"
+  val version = "1.0.5"
 
   private def assume(cond: Boolean, msg: String) = if (!cond) {
     println("failed to initialize: " + msg)

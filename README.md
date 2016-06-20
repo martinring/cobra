@@ -6,14 +6,14 @@ Cobra is a modern code and proof presentation framework, leveraging cutting-edge
 
 Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
 
-## Download **Cobra** 1.0.4
+## Download **Cobra** 1.0.5
 
 There is a pre built binary relase for Cobra.
 
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.4/cobra-1.0.4.zip)
+All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip)
 
 ### macOS
 
@@ -24,9 +24,7 @@ brew tap flatmap/cobra
 brew install cobra
 ```
 
-### Linux
-
-#### Fedora / RHEL
+### Fedora / RHEL
 
 There is a YUM repository available which provides automatic updates
 
@@ -36,9 +34,9 @@ sudo mv bintray-flatmap-rpm.repo /etc/yum.repos.d/
 sudo dnf install cobra
 ```
 
-#### Ubuntu / Debian
+### Ubuntu / Debian
 
-There is a PPA available for Debian / Ubuntu. Releases are signed with bintray's public key. To add it please ececute
+There is a PPA available for Debian / Ubuntu. Releases are signed with bintray's private key. To add the public key please ececute
 
 ```sh
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 
@@ -64,7 +62,7 @@ sudo apt-get install cobra-presentations
 
 ### Presentation Format
 
-The content of a presentation is stored in a file called `slides.html`. Cobra will support a MarkDown slideformat in Version 1.1.
+The content of a presentation is stored in a file called `slides.html`. Cobra will support a MarkDown slide format in Version 1.2.
 
 To add a slide, simply add `<section>` tags to the `slides.html` file. For the general slide format please refer to the **reveal.js** [documentation](https://github.com/hakimel/reveal.js).
 
