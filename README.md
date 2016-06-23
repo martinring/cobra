@@ -57,10 +57,10 @@ Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/
 
 Cobra presentations are viewed in the browser. Cobra starts a very light and fast web server for every presentation.
 
-Every presentation has an own directory. Every file within the presentation directory is served as a static resource to the webbrowser.
+Every presentation has an own directory. Every file within the presentation directory is served as a static resource to the web browser.
 
  * **Create a new presentation**: call `cobra new` from the command line and follow the instructions
- * **Start the presentation server**: call `cobra` in the directory of the presentation. Or `cobra <dir>` where `dir` is the presentation directory.
+ * **Start the presentation server**: call `cobra` in the directory of the presentation. Or `cobra <dir>` where `<dir>` is the presentation directory.
  * **View the presentation**: Navigate to localhost:8080 with your web browser.
  * **Edit your presentation**: Configuration can be edited in `cobra.conf`, content in `slides.html`. There is no need to restart the presentation server. Changes will be immediately visible in the browser, when files are changed.
 
