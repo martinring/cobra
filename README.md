@@ -5,7 +5,7 @@ Cobra is a modern code and proof presentation framework, leveraging cutting-edge
 
 Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs. Support for [**Coq**]() will follow at a later point. 
 
-Thanks to the great Isabelle/ML integration, Cobra is also suitable for presentations of **ML** code.
+Thanks to the great Isabelle/ML integration, Cobra is also suitable for presentations of [**Standard ML**](http://sml-family.org) code.
 
 In addition, Cobra has (early) support for [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code. Consider these two modes not production ready. They are ready to play around, but are not stable, and don't support any kind of execution of code.
 
