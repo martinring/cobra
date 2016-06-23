@@ -210,6 +210,162 @@ They will act the same as manual selections, displaying semantic information abo
 
 In Version 1.1, it will be possible to annotate custom text to selected portions.
 
+## Configuration
+
+The file `cobra.conf` can be edited while the server is running, any change will have immediate effect, when the file is saved. Any running presentation will be updated in the browser, this way you can play around with setting until they suit your needs.
+
+`cobra.conf` is a [HOCON](https://github.com/typesafehub/config/blob/master/HOCON.md) style configuration file with the following defaults:
+
+```hocon
+cobra {
+  # display title of the presentation
+  title = "Cobra"
+  # display language of the presentation
+  language = "en"
+
+  theme {
+    # slide theme
+    # standard themes: black|white|league|sky|beige|simple|serif|blood|night|
+    #                  moon|solarized
+    # or reference to user theme (e.g. "/theme/mytheme.css")
+    slides = "white"
+
+    # code theme
+    # standard themes: 3024-day|3024-night|abcdef|ambiance-mobile|ambiance|
+    #                  base16-dark|base16-light|bespin|blackboard|cobalt|
+    #                  colorforth|dracula|eclipse|elegant|erlang-dark|hopscotch|
+    #                  icecoder|isotope|lesser-dark|liquibyte|material|mbo|
+    #                  mdn-like|midnight|monokai|neat|neo|night|paraiso-dark|
+    #                  paraiso-light|pastel-on-dark|railscasts|rubyblue|seti|
+    #                  solarized|the-matrix|tomorrow-night-bright|
+    #                  tomorrow-night-eighties|ttcn|twilight|vibrant-ink|
+    #                  xq-dark|xq-light|yeti|zenburn
+    # or reference to user theme (e.g. "/theme/my-code-theme.css")    
+    code = "default"
+  }
+
+  # network interface to bind on
+  binding {
+    interface = "localhost"
+    port = 8080
+  }
+
+  # environment variables
+  env {
+    # overrides ISABELLE_HOME environment variable
+    # isabelle_home = "..." 
+  }
+
+  # reveal.js related settings
+  reveal {
+    # Display controls in the bottom right corner
+    controls = true
+
+    # Display a presentation progress bar
+    progress = true
+
+    # Display the page number of the current slide
+    slideNumber = false
+
+    # Push each slide change to the browser history
+    history = true
+
+    # Enable keyboard shortcuts for navigation
+    keyboard = true
+
+    # Enable the slide overview mode
+    overview = true
+
+    # Vertical centering of slides
+    center = false
+
+    # Enables touch navigation on devices with touch input
+    touch = true
+
+    # Loop the presentation
+    loop = false
+
+    # Change the presentation direction to be RTL
+    rtl = false
+
+    # Randomizes the order of slides each time the presentation loads
+    shuffle = false
+
+    # Turns fragments on and off globally
+    fragments = true
+
+    # Flags if the presentation is running in an embedded mode,
+    # i.e. contained within a limited portion of the screen
+    embedded = false
+
+    # Flags if we should show a help overlay when the questionmark
+    # key is pressed
+    help = true
+
+    # Flags if speaker notes should be visible to all viewers
+    showNotes = false
+
+    # Number of milliseconds between automatically proceeding to the
+    # next slide, disabled when set to 0, this value can be overwritten
+    # by using a data-autoslide attribute on your slides
+    autoSlide = 0
+
+    # Stop auto-sliding after user input
+    autoSlideStoppable = true
+
+    # Use this method for navigation when auto-sliding
+    autoSlideMethod = Reveal.navigateNext
+
+    # Enable slide navigation via mouse wheel
+    mouseWheel = false
+
+    # Hides the address bar on mobile devices
+    hideAddressBar = true
+
+    # Opens links in an iframe preview overlay
+    previewLinks = false
+
+    # Transition style
+    transition = "default" # none/fade/slide/convex/concave/zoom
+
+    # Transition speed
+    transitionSpeed = "default" # default/fast/slow
+
+    # Transition style for full page slide backgrounds
+    backgroundTransition = "default" # none/fade/slide/convex/concave/zoom
+
+    # Number of slides away from the current that are visible
+    viewDistance = 3
+
+    # Parallax background image
+    parallaxBackgroundImage = "" # e.g. "'https:#s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+    # Parallax background size
+    parallaxBackgroundSize = "" # CSS syntax, e.g. "2100px 900px"
+
+    # Number of pixels to move the parallax background per slide
+    # - Calculated automatically unless specified
+    # - Set to 0 to disable movement along an axis
+    parallaxBackgroundHorizontal = null
+    parallaxBackgroundVertical = null
+
+    # The "normal" size of the presentation, aspect ratio will be preserved
+    # when the presentation is scaled to fit different resolutions. Can be
+    # specified using percentage units.
+    width = 960
+    height = 700
+
+    # Factor of the display size that should remain empty around the content
+    margin = 0.1
+
+    # Bounds for smallest/largest possible scale to apply to content
+    # Should not be changed, if in-slide code editing should be enabled!
+    minScale = 1.0
+    maxScale = 1.0
+  }
+}
+```
+
 ## License
 
 Cobra is Licensed under LGPL
