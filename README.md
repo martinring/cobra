@@ -3,7 +3,11 @@
 
 Cobra is a modern code and proof presentation framework, leveraging cutting-edge presentation technology together with a state of the art interactive theorem prover to present formalized mathematics as active documents. Cobra provides both an easy way to present proofs and a novel approach to auditorium interaction. The presentation is checked live by the theorem prover, and moreover allows live changes both by the presenter as well as the audience.
 
-Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
+Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs. Support for [**Coq**]() will follow at a later point. 
+
+Thanks to the great Isabelle/ML integration, Cobra is also suitable for presentations of **ML** code.
+
+In addition, Cobra has (early) support for [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code. Consider these two modes not production ready. They are ready to play around, but are not stable, and don't support any kind of execution of code.
 
 ## Install **Cobra** 1.0.5
 
