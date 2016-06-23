@@ -55,11 +55,12 @@ Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/
 
 ## Getting Started
 
- * **Installation**:
-   * **zip**: extract to arbitrary location and add `bin/cobra` / `bin/cobra.bat` to your path
-   * **other**: follow instructions above
+Cobra presentations are viewed in the browser. Cobra starts a very light and fast web server for every presentation.
+
+Every presentation has an own directory. Every file within the presentation directory is served as a static resource to the webbrowser.
+
  * **Create a new presentation**: call `cobra new` from the command line and follow the instructions
- * **Start the presentation server**: call `cobra` in the directory of the presentation.
+ * **Start the presentation server**: call `cobra` in the directory of the presentation. Or `cobra <dir>` where `dir` is the presentation directory.
  * **View the presentation**: Navigate to localhost:8080 with your web browser.
  * **Edit your presentation**: Configuration can be edited in `cobra.conf`, content in `slides.html`. There is no need to restart the presentation server. Changes will be immediately visible in the browser, when files are changed.
 
@@ -219,150 +220,150 @@ The file `cobra.conf` can be edited while the server is running, any change will
 
 `cobra.conf` is a [HOCON](https://github.com/typesafehub/config/blob/master/HOCON.md) style configuration file with the following defaults:
 
-```
+```json
 cobra {
-  # display title of the presentation
+  // display title of the presentation
   title = "Cobra"
-  # display language of the presentation
+  // display language of the presentation
   language = "en"
 
   theme {
-    # slide theme
-    # standard themes: black|white|league|sky|beige|simple|serif|blood|night|
-    #                  moon|solarized
-    # or reference to user theme (e.g. "/theme/mytheme.css")
+    // slide theme
+    // standard themes: black|white|league|sky|beige|simple|serif|blood|night|
+    //                  moon|solarized
+    // or reference to user theme (e.g. "/theme/mytheme.css")
     slides = "white"
 
-    # code theme
-    # standard themes: 3024-day|3024-night|abcdef|ambiance-mobile|ambiance|
-    #                  base16-dark|base16-light|bespin|blackboard|cobalt|
-    #                  colorforth|dracula|eclipse|elegant|erlang-dark|hopscotch|
-    #                  icecoder|isotope|lesser-dark|liquibyte|material|mbo|
-    #                  mdn-like|midnight|monokai|neat|neo|night|paraiso-dark|
-    #                  paraiso-light|pastel-on-dark|railscasts|rubyblue|seti|
-    #                  solarized|the-matrix|tomorrow-night-bright|
-    #                  tomorrow-night-eighties|ttcn|twilight|vibrant-ink|
-    #                  xq-dark|xq-light|yeti|zenburn
-    # or reference to user theme (e.g. "/theme/my-code-theme.css")    
+    // code theme
+    // standard themes: 3024-day|3024-night|abcdef|ambiance-mobile|ambiance|
+    //                  base16-dark|base16-light|bespin|blackboard|cobalt|
+    //                  colorforth|dracula|eclipse|elegant|erlang-dark|hopscotch|
+    //                  icecoder|isotope|lesser-dark|liquibyte|material|mbo|
+    //                  mdn-like|midnight|monokai|neat|neo|night|paraiso-dark|
+    //                  paraiso-light|pastel-on-dark|railscasts|rubyblue|seti|
+    //                  solarized|the-matrix|tomorrow-night-bright|
+    //                  tomorrow-night-eighties|ttcn|twilight|vibrant-ink|
+    //                  xq-dark|xq-light|yeti|zenburn
+    // or reference to user theme (e.g. "/theme/my-code-theme.css")    
     code = "default"
   }
 
-  # network interface to bind on
+  // network interface to bind on
   binding {
     interface = "localhost"
     port = 8080
   }
 
-  # environment variables
+  // environment variables
   env {
-    # overrides ISABELLE_HOME environment variable
-    # isabelle_home = "..." 
+    // overrides ISABELLE_HOME environment variable
+    // isabelle_home = "..." 
   }
 
-  # reveal.js related settings
+  // reveal.js related settings
   reveal {
-    # Display controls in the bottom right corner
+    // Display controls in the bottom right corner
     controls = true
 
-    # Display a presentation progress bar
+    // Display a presentation progress bar
     progress = true
 
-    # Display the page number of the current slide
+    // Display the page number of the current slide
     slideNumber = false
 
-    # Push each slide change to the browser history
+    // Push each slide change to the browser history
     history = true
 
-    # Enable keyboard shortcuts for navigation
+    // Enable keyboard shortcuts for navigation
     keyboard = true
 
-    # Enable the slide overview mode
+    // Enable the slide overview mode
     overview = true
 
-    # Vertical centering of slides
+    // Vertical centering of slides
     center = false
 
-    # Enables touch navigation on devices with touch input
+    // Enables touch navigation on devices with touch input
     touch = true
 
-    # Loop the presentation
+    // Loop the presentation
     loop = false
 
-    # Change the presentation direction to be RTL
+    // Change the presentation direction to be RTL
     rtl = false
 
-    # Randomizes the order of slides each time the presentation loads
+    // Randomizes the order of slides each time the presentation loads
     shuffle = false
 
-    # Turns fragments on and off globally
+    // Turns fragments on and off globally
     fragments = true
 
-    # Flags if the presentation is running in an embedded mode,
-    # i.e. contained within a limited portion of the screen
+    // Flags if the presentation is running in an embedded mode,
+    // i.e. contained within a limited portion of the screen
     embedded = false
 
-    # Flags if we should show a help overlay when the questionmark
-    # key is pressed
+    // Flags if we should show a help overlay when the questionmark
+    // key is pressed
     help = true
 
-    # Flags if speaker notes should be visible to all viewers
+    // Flags if speaker notes should be visible to all viewers
     showNotes = false
 
-    # Number of milliseconds between automatically proceeding to the
-    # next slide, disabled when set to 0, this value can be overwritten
-    # by using a data-autoslide attribute on your slides
+    // Number of milliseconds between automatically proceeding to the
+    // next slide, disabled when set to 0, this value can be overwritten
+    // by using a data-autoslide attribute on your slides
     autoSlide = 0
 
-    # Stop auto-sliding after user input
+    // Stop auto-sliding after user input
     autoSlideStoppable = true
 
-    # Use this method for navigation when auto-sliding
+    // Use this method for navigation when auto-sliding
     autoSlideMethod = Reveal.navigateNext
 
-    # Enable slide navigation via mouse wheel
+    // Enable slide navigation via mouse wheel
     mouseWheel = false
 
-    # Hides the address bar on mobile devices
+    // Hides the address bar on mobile devices
     hideAddressBar = true
 
-    # Opens links in an iframe preview overlay
+    // Opens links in an iframe preview overlay
     previewLinks = false
 
-    # Transition style
-    transition = "default" # none/fade/slide/convex/concave/zoom
+    // Transition style
+    transition = "default" // none/fade/slide/convex/concave/zoom
 
-    # Transition speed
-    transitionSpeed = "default" # default/fast/slow
+    // Transition speed
+    transitionSpeed = "default" // default/fast/slow
 
-    # Transition style for full page slide backgrounds
-    backgroundTransition = "default" # none/fade/slide/convex/concave/zoom
+    // Transition style for full page slide backgrounds
+    backgroundTransition = "default" // none/fade/slide/convex/concave/zoom
 
-    # Number of slides away from the current that are visible
+    // Number of slides away from the current that are visible
     viewDistance = 3
 
-    # Parallax background image
-    parallaxBackgroundImage = "" # e.g. "'https:#s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+    // Parallax background image
+    parallaxBackgroundImage = "" // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
 
-    # Parallax background size
-    parallaxBackgroundSize = "" # CSS syntax, e.g. "2100px 900px"
+    // Parallax background size
+    parallaxBackgroundSize = "" // CSS syntax, e.g. "2100px 900px"
 
-    # Number of pixels to move the parallax background per slide
-    # - Calculated automatically unless specified
-    # - Set to 0 to disable movement along an axis
+    // Number of pixels to move the parallax background per slide
+    // - Calculated automatically unless specified
+    // - Set to 0 to disable movement along an axis
     parallaxBackgroundHorizontal = null
     parallaxBackgroundVertical = null
 
-    # The "normal" size of the presentation, aspect ratio will be preserved
-    # when the presentation is scaled to fit different resolutions. Can be
-    # specified using percentage units.
+    // The "normal" size of the presentation, aspect ratio will be preserved
+    // when the presentation is scaled to fit different resolutions. Can be
+    // specified using percentage units.
     width = 960
     height = 700
 
-    # Factor of the display size that should remain empty around the content
+    // Factor of the display size that should remain empty around the content
     margin = 0.1
 
-    # Bounds for smallest/largest possible scale to apply to content
-    # Should not be changed, if in-slide code editing should be enabled!
+    // Bounds for smallest/largest possible scale to apply to content
+    // Should not be changed, if in-slide code editing should be enabled!
     minScale = 1.0
     maxScale = 1.0
   }
