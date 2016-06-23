@@ -5,14 +5,14 @@ Cobra is a modern code and proof presentation framework, leveraging cutting-edge
 
 Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
 
-## Download **Cobra** 1.0.5
-
-There is a pre built binary relase for Cobra.
+## Install **Cobra** 1.0.5
 
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip)
+### Windows
+
+Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip) and extract anywhere; Add `bin/cobra.bat` to your PATH.
 
 ### macOS
 
@@ -49,6 +49,10 @@ sudo apt-get update
 sudo apt-get install cobra-presentations
 ```
 
+### Other Platforms
+
+Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip) and extract anywhere; Add `bin/cobra` to your PATH.
+
 ## Getting Started
 
  * **Installation**:
@@ -57,7 +61,7 @@ sudo apt-get install cobra-presentations
  * **Create a new presentation**: call `cobra new` from the command line and follow the instructions
  * **Start the presentation server**: call `cobra` in the directory of the presentation.
  * **View the presentation**: Navigate to localhost:8080 with your web browser.
- * **Edit your presentation**: Configuration can be edited in `cobra.conf`, content in `slides.html`.
+ * **Edit your presentation**: Configuration can be edited in `cobra.conf`, content in `slides.html`. There is no need to restart the presentation server. Changes will be immediately visible in the browser, when files are changed.
 
 ### Presentation Format
 
@@ -215,7 +219,7 @@ The file `cobra.conf` can be edited while the server is running, any change will
 
 `cobra.conf` is a [HOCON](https://github.com/typesafehub/config/blob/master/HOCON.md) style configuration file with the following defaults:
 
-```hocon
+```
 cobra {
   # display title of the presentation
   title = "Cobra"
