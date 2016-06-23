@@ -224,7 +224,7 @@ The file `cobra.conf` can be edited while the server is running, any change will
 
 `cobra.conf` is a [HOCON](https://github.com/typesafehub/config/blob/master/HOCON.md) style configuration file with the following defaults:
 
-```json
+```
 cobra {
   // display title of the presentation
   title = "Cobra"
