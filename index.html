@@ -24,6 +24,7 @@
     </script-->
   </head>
   <body>
+    
 <a href="https://github.com/flatmap/cobra"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
     <section class="page-header" id="header">
       <div class="logo">
@@ -33,11 +34,13 @@
 
     <section class="main-content">
 
-<h1><a id="user-content-cobra-" class="anchor" href="#cobra-" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><strong>Cobra</strong> <a href="https://travis-ci.org/flatmap/cobra"><img src="https://camo.githubusercontent.com/87d58f83c502d8f32367499e3fcc9ccf4ef908cc/68747470733a2f2f7472617669732d63692e6f72672f666c61746d61702f636f6272612e7376673f6272616e63683d6d6173746572" alt="Build Status" data-canonical-src="https://travis-ci.org/flatmap/cobra.svg?branch=master" style="max-width:100%;"></a></h1>
-
 <p>Cobra is a modern code and proof presentation framework, leveraging cutting-edge presentation technology together with a state of the art interactive theorem prover to present formalized mathematics as active documents. Cobra provides both an easy way to present proofs and a novel approach to auditorium interaction. The presentation is checked live by the theorem prover, and moreover allows live changes both by the presenter as well as the audience.</p>
 
-<p>Cobra currently supports <a href="https://isabelle.in.tum.de/index.html"><strong>Isabelle</strong></a> proofs as well as <a href="http://www.scala-lang.org/"><strong>Scala</strong></a> and <a href="http://haskell.org"><strong>Haskell</strong></a> code</p>
+<p>Cobra currently supports <a href="https://isabelle.in.tum.de/index.html"><strong>Isabelle</strong></a> proofs. Support for <a href="/flatmap/cobra/blob/master"><strong>Coq</strong></a> will follow at a later point. </p>
+
+<p>Thanks to the great Isabelle/ML integration, Cobra is also suitable for presentations of <a href="http://sml-family.org"><strong>Standard ML</strong></a> code.</p>
+
+<p>In addition, Cobra has (early) support for <a href="http://www.scala-lang.org/"><strong>Scala</strong></a> and <a href="http://haskell.org"><strong>Haskell</strong></a> code. Consider these two modes not production ready. They are ready to play around, but are not stable, and don't support any kind of execution of code.</p>
 
 <h2><a id="user-content-install-cobra-105" class="anchor" href="#install-cobra-105" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Install <strong>Cobra</strong> 1.0.5</h2>
 
@@ -224,153 +227,154 @@ isabelle code
 
 <p><code>cobra.conf</code> is a <a href="https://github.com/typesafehub/config/blob/master/HOCON.md">HOCON</a> style configuration file with the following defaults:</p>
 
-<div class="highlight highlight-source-json"><pre>cobra {
-  <span class="pl-ii">//</span> <span class="pl-ii">display</span> <span class="pl-ii">title</span> <span class="pl-ii">of</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation</span>
-  <span class="pl-ii">title</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>Cobra<span class="pl-pds">"</span></span>
-  <span class="pl-ii">//</span> <span class="pl-ii">display</span> <span class="pl-ii">language</span> <span class="pl-ii">of</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation</span>
-  <span class="pl-ii">language</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>en<span class="pl-pds">"</span></span>
+<pre><code>cobra {
+  // display title of the presentation
+  title = "Cobra"
+  // display language of the presentation
+  language = "en"
 
-  <span class="pl-ii">theme</span> <span class="pl-ii">{</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">slide</span> <span class="pl-ii">theme</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">standard</span> <span class="pl-ii">themes</span>: <span class="pl-ii">black|white|league|sky|beige|simple|serif|blood|night|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">moon|solarized</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">or</span> <span class="pl-ii">reference</span> <span class="pl-ii">to</span> <span class="pl-ii">user</span> <span class="pl-ii">theme</span> <span class="pl-ii">(e.g.</span> <span class="pl-s"><span class="pl-pds">"</span>/theme/mytheme.css<span class="pl-pds">"</span></span><span class="pl-ii">)</span>
-    <span class="pl-ii">slides</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>white<span class="pl-pds">"</span></span>
+  theme {
+    // slide theme
+    // standard themes: black|white|league|sky|beige|simple|serif|blood|night|
+    //                  moon|solarized
+    // or reference to user theme (e.g. "/theme/mytheme.css")
+    slides = "white"
 
-    <span class="pl-ii">//</span> <span class="pl-ii">code</span> <span class="pl-ii">theme</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">standard</span> <span class="pl-ii">themes:</span> <span class="pl-c1">3024</span><span class="pl-ii">-day|</span><span class="pl-c1">3024</span><span class="pl-ii">-night|abcdef|ambiance-mobile|ambiance|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">base</span><span class="pl-c1">16</span><span class="pl-ii">-dark|base</span><span class="pl-c1">16</span><span class="pl-ii">-light|bespin|blackboard|cobalt|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">colorforth|dracula|eclipse|elegant|erlang-dark|hopscotch|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">icecoder|isotope|lesser-dark|liquibyte|material|mbo|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">mdn-like|midnight|monokai|neat|neo|night|paraiso-dark|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">paraiso-light|pastel-on-dark|railscasts|rubyblue|seti|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">solarized|the-matrix|tomorrow-night-bright|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">tomorrow-night-eighties|ttcn|twilight|vibrant-ink|</span>
-    <span class="pl-ii">//</span>                  <span class="pl-ii">xq-dark|xq-light|yeti|zenburn</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">or</span> <span class="pl-ii">reference</span> <span class="pl-ii">to</span> <span class="pl-ii">user</span> <span class="pl-ii">theme</span> <span class="pl-ii">(e.g.</span> <span class="pl-s"><span class="pl-pds">"</span>/theme/my-code-theme.css<span class="pl-pds">"</span></span><span class="pl-ii">)</span>    
-    <span class="pl-ii">code</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span>
+    // code theme
+    // standard themes: 3024-day|3024-night|abcdef|ambiance-mobile|ambiance|
+    //                  base16-dark|base16-light|bespin|blackboard|cobalt|
+    //                  colorforth|dracula|eclipse|elegant|erlang-dark|hopscotch|
+    //                  icecoder|isotope|lesser-dark|liquibyte|material|mbo|
+    //                  mdn-like|midnight|monokai|neat|neo|night|paraiso-dark|
+    //                  paraiso-light|pastel-on-dark|railscasts|rubyblue|seti|
+    //                  solarized|the-matrix|tomorrow-night-bright|
+    //                  tomorrow-night-eighties|ttcn|twilight|vibrant-ink|
+    //                  xq-dark|xq-light|yeti|zenburn
+    // or reference to user theme (e.g. "/theme/my-code-theme.css")    
+    code = "default"
   }
 
   // network interface to bind on
   binding {
-    <span class="pl-ii">interface</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>localhost<span class="pl-pds">"</span></span>
-    <span class="pl-ii">port</span> <span class="pl-ii">=</span> <span class="pl-ii">8080</span>
+    interface = "localhost"
+    port = 8080
   }
 
   // environment variables
   env {
-    <span class="pl-ii">//</span> <span class="pl-ii">overrides</span> <span class="pl-ii">ISABELLE_HOME</span> <span class="pl-ii">environment</span> <span class="pl-ii">variable</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">isabelle_home</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span> 
+    // overrides ISABELLE_HOME environment variable
+    // isabelle_home = "..." 
   }
 
   // reveal.js related settings
   reveal {
-    <span class="pl-ii">//</span> <span class="pl-ii">Display</span> <span class="pl-ii">controls</span> <span class="pl-ii">in</span> <span class="pl-ii">the</span> <span class="pl-ii">bottom</span> <span class="pl-ii">right</span> <span class="pl-ii">corner</span>
-    <span class="pl-ii">controls</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Display controls in the bottom right corner
+    controls = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Display</span> <span class="pl-ii">a</span> <span class="pl-ii">presentation</span> <span class="pl-ii">progress</span> <span class="pl-ii">bar</span>
-    <span class="pl-ii">progress</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Display a presentation progress bar
+    progress = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Display</span> <span class="pl-ii">the</span> <span class="pl-ii">page</span> <span class="pl-ii">number</span> <span class="pl-ii">of</span> <span class="pl-ii">the</span> <span class="pl-ii">current</span> <span class="pl-ii">slide</span>
-    <span class="pl-ii">slideNumber</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Display the page number of the current slide
+    slideNumber = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Push</span> <span class="pl-ii">each</span> <span class="pl-ii">slide</span> <span class="pl-ii">change</span> <span class="pl-ii">to</span> <span class="pl-ii">the</span> <span class="pl-ii">browser</span> <span class="pl-ii">history</span>
-    <span class="pl-ii">history</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Push each slide change to the browser history
+    history = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Enable</span> <span class="pl-ii">keyboard</span> <span class="pl-ii">shortcuts</span> <span class="pl-ii">for</span> <span class="pl-ii">navigation</span>
-    <span class="pl-ii">keyboard</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Enable keyboard shortcuts for navigation
+    keyboard = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Enable</span> <span class="pl-ii">the</span> <span class="pl-ii">slide</span> <span class="pl-ii">overview</span> <span class="pl-ii">mode</span>
-    <span class="pl-ii">overview</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Enable the slide overview mode
+    overview = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Vertical</span> <span class="pl-ii">centering</span> <span class="pl-ii">of</span> <span class="pl-ii">slides</span>
-    <span class="pl-ii">center</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Vertical centering of slides
+    center = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Enables</span> <span class="pl-ii">touch</span> <span class="pl-ii">navigation</span> <span class="pl-ii">on</span> <span class="pl-ii">devices</span> <span class="pl-ii">with</span> <span class="pl-ii">touch</span> <span class="pl-ii">input</span>
-    <span class="pl-ii">touch</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Enables touch navigation on devices with touch input
+    touch = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Loop</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation</span>
-    <span class="pl-ii">loop</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Loop the presentation
+    loop = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Change</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation</span> <span class="pl-ii">direction</span> <span class="pl-ii">to</span> <span class="pl-ii">be</span> <span class="pl-ii">RTL</span>
-    <span class="pl-ii">rtl</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Change the presentation direction to be RTL
+    rtl = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Randomizes</span> <span class="pl-ii">the</span> <span class="pl-ii">order</span> <span class="pl-ii">of</span> <span class="pl-ii">slides</span> <span class="pl-ii">each</span> <span class="pl-ii">time</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation</span> <span class="pl-ii">loads</span>
-    <span class="pl-ii">shuffle</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Randomizes the order of slides each time the presentation loads
+    shuffle = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Turns</span> <span class="pl-ii">fragments</span> <span class="pl-ii">on</span> <span class="pl-ii">and</span> <span class="pl-ii">off</span> <span class="pl-ii">globally</span>
-    <span class="pl-ii">fragments</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Turns fragments on and off globally
+    fragments = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Flags</span> <span class="pl-ii">if</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation</span> <span class="pl-ii">is</span> <span class="pl-ii">running</span> <span class="pl-ii">in</span> <span class="pl-ii">an</span> <span class="pl-ii">embedded</span> <span class="pl-ii">mode,</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">i.e.</span> <span class="pl-ii">contained</span> <span class="pl-ii">within</span> <span class="pl-ii">a</span> <span class="pl-ii">limited</span> <span class="pl-ii">portion</span> <span class="pl-ii">of</span> <span class="pl-ii">the</span> <span class="pl-ii">screen</span>
-    <span class="pl-ii">embedded</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Flags if the presentation is running in an embedded mode,
+    // i.e. contained within a limited portion of the screen
+    embedded = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Flags</span> <span class="pl-ii">if</span> <span class="pl-ii">we</span> <span class="pl-ii">should</span> <span class="pl-ii">show</span> <span class="pl-ii">a</span> <span class="pl-ii">help</span> <span class="pl-ii">overlay</span> <span class="pl-ii">when</span> <span class="pl-ii">the</span> <span class="pl-ii">questionmark</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">key</span> <span class="pl-ii">is</span> <span class="pl-ii">pressed</span>
-    <span class="pl-ii">help</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Flags if we should show a help overlay when the questionmark
+    // key is pressed
+    help = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Flags</span> <span class="pl-ii">if</span> <span class="pl-ii">speaker</span> <span class="pl-ii">notes</span> <span class="pl-ii">should</span> <span class="pl-ii">be</span> <span class="pl-ii">visible</span> <span class="pl-ii">to</span> <span class="pl-ii">all</span> <span class="pl-ii">viewers</span>
-    <span class="pl-ii">showNotes</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Flags if speaker notes should be visible to all viewers
+    showNotes = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Number</span> <span class="pl-ii">of</span> <span class="pl-ii">milliseconds</span> <span class="pl-ii">between</span> <span class="pl-ii">automatically</span> <span class="pl-ii">proceeding</span> <span class="pl-ii">to</span> <span class="pl-ii">the</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">next</span> <span class="pl-ii">slide,</span> <span class="pl-ii">disabled</span> <span class="pl-ii">when</span> <span class="pl-ii">set</span> <span class="pl-ii">to</span> <span class="pl-ii">0,</span> <span class="pl-ii">this</span> <span class="pl-ii">value</span> <span class="pl-ii">can</span> <span class="pl-ii">be</span> <span class="pl-ii">overwritten</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">by</span> <span class="pl-ii">using</span> <span class="pl-ii">a</span> <span class="pl-ii">data-autoslide</span> <span class="pl-ii">attribute</span> <span class="pl-ii">on</span> <span class="pl-ii">your</span> <span class="pl-ii">slides</span>
-    <span class="pl-ii">autoSlide</span> <span class="pl-ii">=</span> <span class="pl-ii">0</span>
+    // Number of milliseconds between automatically proceeding to the
+    // next slide, disabled when set to 0, this value can be overwritten
+    // by using a data-autoslide attribute on your slides
+    autoSlide = 0
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Stop</span> <span class="pl-ii">auto-sliding</span> <span class="pl-ii">after</span> <span class="pl-ii">user</span> <span class="pl-ii">input</span>
-    <span class="pl-ii">autoSlideStoppable</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Stop auto-sliding after user input
+    autoSlideStoppable = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Use</span> <span class="pl-ii">this</span> <span class="pl-ii">method</span> <span class="pl-ii">for</span> <span class="pl-ii">navigation</span> <span class="pl-ii">when</span> <span class="pl-ii">auto-sliding</span>
-    <span class="pl-ii">autoSlideMethod</span> <span class="pl-ii">=</span> <span class="pl-ii">Reveal.navigateNext</span>
+    // Use this method for navigation when auto-sliding
+    autoSlideMethod = Reveal.navigateNext
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Enable</span> <span class="pl-ii">slide</span> <span class="pl-ii">navigation</span> <span class="pl-ii">via</span> <span class="pl-ii">mouse</span> <span class="pl-ii">wheel</span>
-    <span class="pl-ii">mouseWheel</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Enable slide navigation via mouse wheel
+    mouseWheel = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Hides</span> <span class="pl-ii">the</span> <span class="pl-ii">address</span> <span class="pl-ii">bar</span> <span class="pl-ii">on</span> <span class="pl-ii">mobile</span> <span class="pl-ii">devices</span>
-    <span class="pl-ii">hideAddressBar</span> <span class="pl-ii">=</span> <span class="pl-ii">true</span>
+    // Hides the address bar on mobile devices
+    hideAddressBar = true
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Opens</span> <span class="pl-ii">links</span> <span class="pl-ii">in</span> <span class="pl-ii">an</span> <span class="pl-ii">iframe</span> <span class="pl-ii">preview</span> <span class="pl-ii">overlay</span>
-    <span class="pl-ii">previewLinks</span> <span class="pl-ii">=</span> <span class="pl-ii">false</span>
+    // Opens links in an iframe preview overlay
+    previewLinks = false
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Transition</span> <span class="pl-ii">style</span>
-    <span class="pl-ii">transition</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span> <span class="pl-ii">//</span> <span class="pl-ii">none/fade/slide/convex/concave/zoom</span>
+    // Transition style
+    transition = "default" // none/fade/slide/convex/concave/zoom
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Transition</span> <span class="pl-ii">speed</span>
-    <span class="pl-ii">transitionSpeed</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span> <span class="pl-ii">//</span> <span class="pl-ii">default/fast/slow</span>
+    // Transition speed
+    transitionSpeed = "default" // default/fast/slow
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Transition</span> <span class="pl-ii">style</span> <span class="pl-ii">for</span> <span class="pl-ii">full</span> <span class="pl-ii">page</span> <span class="pl-ii">slide</span> <span class="pl-ii">backgrounds</span>
-    <span class="pl-ii">backgroundTransition</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span> <span class="pl-ii">//</span> <span class="pl-ii">none/fade/slide/convex/concave/zoom</span>
+    // Transition style for full page slide backgrounds
+    backgroundTransition = "default" // none/fade/slide/convex/concave/zoom
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Number</span> <span class="pl-ii">of</span> <span class="pl-ii">slides</span> <span class="pl-ii">away</span> <span class="pl-ii">from</span> <span class="pl-ii">the</span> <span class="pl-ii">current</span> <span class="pl-ii">that</span> <span class="pl-ii">are</span> <span class="pl-ii">visible</span>
-    <span class="pl-ii">viewDistance</span> <span class="pl-ii">=</span> <span class="pl-ii">3</span>
+    // Number of slides away from the current that are visible
+    viewDistance = 3
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Parallax</span> <span class="pl-ii">background</span> <span class="pl-ii">image</span>
-    <span class="pl-ii">parallaxBackgroundImage</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span> <span class="pl-ii">//</span> <span class="pl-ii">e.g.</span> <span class="pl-s"><span class="pl-pds">"</span>'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'<span class="pl-pds">"</span></span>
+    // Parallax background image
+    parallaxBackgroundImage = "" // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Parallax</span> <span class="pl-ii">background</span> <span class="pl-ii">size</span>
-    <span class="pl-ii">parallaxBackgroundSize</span> <span class="pl-ii">=</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span> <span class="pl-ii">//</span> <span class="pl-ii">CSS</span> <span class="pl-ii">syntax,</span> <span class="pl-ii">e.g.</span> <span class="pl-s"><span class="pl-pds">"</span>2100px 900px<span class="pl-pds">"</span></span>
+    // Parallax background size
+    parallaxBackgroundSize = "" // CSS syntax, e.g. "2100px 900px"
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Number</span> <span class="pl-ii">of</span> <span class="pl-ii">pixels</span> <span class="pl-ii">to</span> <span class="pl-ii">move</span> <span class="pl-ii">the</span> <span class="pl-ii">parallax</span> <span class="pl-ii">background</span> <span class="pl-ii">per</span> <span class="pl-ii">slide</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">-</span> <span class="pl-ii">Calculated</span> <span class="pl-ii">automatically</span> <span class="pl-ii">unless</span> <span class="pl-ii">specified</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">-</span> <span class="pl-ii">Set</span> <span class="pl-ii">to</span> <span class="pl-ii">0</span> <span class="pl-ii">to</span> <span class="pl-ii">disable</span> <span class="pl-ii">movement</span> <span class="pl-ii">along</span> <span class="pl-ii">an</span> <span class="pl-ii">axis</span>
-    <span class="pl-ii">parallaxBackgroundHorizontal</span> <span class="pl-ii">=</span> <span class="pl-ii">null</span>
-    <span class="pl-ii">parallaxBackgroundVertical</span> <span class="pl-ii">=</span> <span class="pl-ii">null</span>
+    // Number of pixels to move the parallax background per slide
+    // - Calculated automatically unless specified
+    // - Set to 0 to disable movement along an axis
+    parallaxBackgroundHorizontal = null
+    parallaxBackgroundVertical = null
 
-    <span class="pl-ii">//</span> <span class="pl-ii">The</span> <span class="pl-s"><span class="pl-pds">"</span>normal<span class="pl-pds">"</span></span> <span class="pl-ii">size</span> <span class="pl-ii">of</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation,</span> <span class="pl-ii">aspect</span> <span class="pl-ii">ratio</span> <span class="pl-ii">will</span> <span class="pl-ii">be</span> <span class="pl-ii">preserved</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">when</span> <span class="pl-ii">the</span> <span class="pl-ii">presentation</span> <span class="pl-ii">is</span> <span class="pl-ii">scaled</span> <span class="pl-ii">to</span> <span class="pl-ii">fit</span> <span class="pl-ii">different</span> <span class="pl-ii">resolutions.</span> <span class="pl-ii">Can</span> <span class="pl-ii">be</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">specified</span> <span class="pl-ii">using</span> <span class="pl-ii">percentage</span> <span class="pl-ii">units.</span>
-    <span class="pl-ii">width</span> <span class="pl-ii">=</span> <span class="pl-ii">960</span>
-    <span class="pl-ii">height</span> <span class="pl-ii">=</span> <span class="pl-ii">700</span>
+    // The "normal" size of the presentation, aspect ratio will be preserved
+    // when the presentation is scaled to fit different resolutions. Can be
+    // specified using percentage units.
+    width = 960
+    height = 700
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Factor</span> <span class="pl-ii">of</span> <span class="pl-ii">the</span> <span class="pl-ii">display</span> <span class="pl-ii">size</span> <span class="pl-ii">that</span> <span class="pl-ii">should</span> <span class="pl-ii">remain</span> <span class="pl-ii">empty</span> <span class="pl-ii">around</span> <span class="pl-ii">the</span> <span class="pl-ii">content</span>
-    <span class="pl-ii">margin</span> <span class="pl-ii">=</span> <span class="pl-ii">0.1</span>
+    // Factor of the display size that should remain empty around the content
+    margin = 0.1
 
-    <span class="pl-ii">//</span> <span class="pl-ii">Bounds</span> <span class="pl-ii">for</span> <span class="pl-ii">smallest/largest</span> <span class="pl-ii">possible</span> <span class="pl-ii">scale</span> <span class="pl-ii">to</span> <span class="pl-ii">apply</span> <span class="pl-ii">to</span> <span class="pl-ii">content</span>
-    <span class="pl-ii">//</span> <span class="pl-ii">Should</span> <span class="pl-ii">not</span> <span class="pl-ii">be</span> <span class="pl-ii">changed,</span> <span class="pl-ii">if</span> <span class="pl-ii">in-slide</span> <span class="pl-ii">code</span> <span class="pl-ii">editing</span> <span class="pl-ii">should</span> <span class="pl-ii">be</span> <span class="pl-ii">enabled!</span>
-    <span class="pl-ii">minScale</span> <span class="pl-ii">=</span> <span class="pl-ii">1.0</span>
-    <span class="pl-ii">maxScale</span> <span class="pl-ii">=</span> <span class="pl-ii">1.0</span>
+    // Bounds for smallest/largest possible scale to apply to content
+    // Should not be changed, if in-slide code editing should be enabled!
+    minScale = 1.0
+    maxScale = 1.0
   }
-}</pre></div>
+}
+</code></pre>
 
 <h2><a id="user-content-license" class="anchor" href="#license" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>License</h2>
 
@@ -445,6 +449,7 @@ isabelle code
 <h3><a id="user-content-other-libraries-and-compile-time-dependencies" class="anchor" href="#other-libraries-and-compile-time-dependencies" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Other Libraries and Compile Time Dependencies</h3>
 
 <p><a href="https://octicons.github.com/">octicons</a> (SIL OFL 1.1), <a href="http://logback.qos.ch/">LOGBack</a> (EPL 1.0 / LGPL 2.1), <a href="https://github.com/typesafehub/config">Typesafe Config</a> (Apache 2.0), <a href="https://github.com/webjars/webjars-locator">webjars-locator</a> (MIT), <a href="https://github.com/spray/sbt-revolver">sbt-revolver</a> (Apache 2.0), <a href="http://www.scala-sbt.org/sbt-native-packager/">SBT Native Packager</a> (MIT), <a href="https://github.com/sbt/sbt-web">sbt-web</a> (Apache 2.0), <a href="https://github.com/vmunier/sbt-play-scalajs">sbt-play-scalajs</a> (All Rights Reserved), <a href="https://github.com/scala-js/scala-js-dom">scala-js-dom</a> (MIT), <a href="https://github.com/ochrons/boopickle">BooPickle</a> (MIT), <a href="https://github.com/pathikrit/better-files">better-files</a> (MIT)</p>
+</article>
 
     </section>
     
