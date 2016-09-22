@@ -7,8 +7,6 @@ import net.flatmap.collaboration._
 
 import scala.util.matching.Regex
 
-
-
 sealed trait ClientMessage
 sealed trait ServerMessage
 sealed trait SnippetMessage { val id: String }
@@ -56,8 +54,8 @@ trait Picklers {
 
   implicit val modePickler: Pickler[Mode] =
     compositePickler[Mode]
-      .addConcreteType[Scala.type ]
-      .addConcreteType[Isabelle.type ]
+      .addConcreteType[Scala.type]
+      .addConcreteType[Isabelle.type]
       .addConcreteType[Plain.type]
       .addConcreteType[Haskell.type]
 

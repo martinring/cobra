@@ -4,10 +4,12 @@ cancelable in Global := true
 
 val commonSettings = Seq(
   scalaVersion := "2.11.8",
-  version := "1.0.3",
+  version := "1.0.4",
   maintainer := "Martin Ring",
   organization := "net.flatmap",
-  scalacOptions ++= Seq("-deprecation","-feature")
+  scalacOptions ++= Seq("-deprecation","-feature"),
+  // Disable ScalaDoc generation
+  mappings in (Compile, packageDoc) := Seq()
 )
 
 scalaVersion := "2.11.8"
@@ -38,10 +40,10 @@ lazy val server = (project in file("modules/cobra-server"))
                             |to present proofs and a novel approach to auditorium interaction. The
                             |presentation is checked live by the theorem prover, and moreover
                             |allows live changes both by the presenter as well as the audience.""".stripMargin.split('\n').mkString(" "),
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.5",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.5",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.10",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.10",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7",
-    libraryDependencies += "org.webjars" % "webjars-locator" % "0.31",
+    libraryDependencies += "org.webjars" % "webjars-locator" % "0.32",
     libraryDependencies += "org.scala-lang" % "scala-compiler" % "2.11.8",
     libraryDependencies += "org.scala-refactoring" %% "org.scala-refactoring.library" % "0.6.2",
     libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.16.0",
@@ -103,7 +105,7 @@ lazy val common = (crossProject in file("modules/cobra-common"))
   .settings(commonSettings :_*)
   .settings(
     name := "cobra.common",
-    libraryDependencies += "me.chrons" %%% "boopickle" % "1.1.3"
+    libraryDependencies += "me.chrons" %%% "boopickle" % "1.2.4"
   ).jvmSettings(
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
   )
@@ -133,13 +135,13 @@ lazy val codemirror = (project in file("modules/js-bindings/codemirror"))
     name := "codemirror",
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "addon/runmode/runmode.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/haskell/haskell.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/clike/clike.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/htmlmixed/htmlmixed.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/javascript/javascript.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.14.2" / "mode/css/css.js" dependsOn "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "addon/runmode/runmode.js" dependsOn "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/haskell/haskell.js" dependsOn "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/clike/clike.js" dependsOn "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/htmlmixed/htmlmixed.js" dependsOn "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/javascript/javascript.js" dependsOn "codemirror.js",
+    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/css/css.js" dependsOn "codemirror.js",
     skip in packageJSDependencies := false
   ).dependsOn(utilJS)
 
