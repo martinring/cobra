@@ -4,7 +4,7 @@ cancelable in Global := true
 
 val commonSettings = Seq(
   scalaVersion := "2.11.8",
-  version := "1.0.4",
+  version := "1.0.5",
   maintainer := "Martin Ring",
   organization := "net.flatmap",
   scalacOptions ++= Seq("-deprecation","-feature"),
@@ -89,7 +89,7 @@ lazy val client     = (project in file("modules/cobra-client"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     libraryDependencies += "org.webjars" % "MathJax" % "2.6.1",
-    libraryDependencies += "org.webjars" % "octicons" % "3.5.0"
+    libraryDependencies += "org.webjars.bower" % "octicons" % "4.3.0"
   ).dependsOn(reveal,codemirror,utilJS,commonJS)
 
 lazy val utilJS = (project in file("modules/js-util"))

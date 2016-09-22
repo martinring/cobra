@@ -1,7 +1,7 @@
 {
     "package": {
-        "name": "cobra-presentations",
-        "repo": "deb",
+        "name": "cobra",
+        "repo": "rpm",
         "subject": "flatmap",
         "desc": "Proof and Code Presentation Framework",
         "website_url": " http://www.flatmap.net/cobra/",
@@ -15,21 +15,16 @@
         "public_stats": false
     },
     "version": {
-        "name": "version-1.0.4",
-        "desc": "Version 1.0.4",
-        "vcs_tag": "version-1.0.4",
+        "name": "version-1.0.5",
+        "desc": "Version 1.0.5",
+        "vcs_tag": "version-1.0.5",
         "gpgSign": true
     },
     "files":
     [
       {
-        "includePattern": "modules/cobra-server/target/(.*\\.deb)",
-        "uploadPattern": "$1",
-        "matrixParams": {
-          "deb_distribution": "wheezy",
-          "deb_component": "main",
-          "deb_architecture": "all"
-        }
+        "includePattern": "modules/cobra-server/target/rpm/RPMS/noarch/(.*\\.rpm)",
+        "uploadPattern": "$1"
       }
     ],
     "publish": true

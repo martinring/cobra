@@ -25,7 +25,7 @@ deploy:
   user: martinring
   key:
     secure: o6MheZEOgotRHQ9JIZcJG6aAnT5V2IdOVV3EE1dnWZLxiUGCnnBh1eyanuegUYXcuEoJ03C8urNf0rDQO0LvLW8G88D1GKJFYgGYD2rfnHKMC79y7k80yBKHtRlQwPXG10MoamdeDARGRN8c3Xy1ZAHhwfXJ/iL7zR3Y6B1Drpls0kI2nAjuEa6/dpSarfQmmF/0ngSOcIShU4yKlJ3jeqVEc+UqSFze2SFuhOwWillZlv/M5EjPZl9ukTZE1C3+udRv+a8kVdsF5rFBfKY9dR2VKVOBhs8OyiUCUbDdfYbC/pPbwSy6qJhfLnb0c4j9KtEcunfX4StLvSRB1s2h6pEdBpjwwyOrEHyg6gqOe6bFpVrXOoJ2w81d+0z3CHGOLJO5zd+Gh16JOcitJ9XYa5Dm+E9c5tap/h5rbT3UFHAqxNN5UCQHhnZ2hn6w0VCMGyeaEOxzcsX6OCkZIeQoARz17sNiWGshNDyBq2NUQqdDLOlhd0OSWPdvuu/47IGQ8wzL0sQFXFVVJPU6c8/Vn8MxT4SVOPfI/+yR5oLBfZnjISO0678zM8uBxHOsbAfF0jRmJJQ1o0JL8AMyt7u7Dd7FzCQ4zwwv0Hf73uu49g28v80EwYcvifaT1QiqOeC2dJ10ORT1TsLs48m+ctdLIcoTU6Vf1m+gL8MLiDGMPt4=
-  file: .bintray-rpm.yml
+  file: .bintray-rpm.json
   skip_cleanup: true
   on:
     tags: true
@@ -34,7 +34,7 @@ deploy:
   user: martinring
   key:
     secure: o6MheZEOgotRHQ9JIZcJG6aAnT5V2IdOVV3EE1dnWZLxiUGCnnBh1eyanuegUYXcuEoJ03C8urNf0rDQO0LvLW8G88D1GKJFYgGYD2rfnHKMC79y7k80yBKHtRlQwPXG10MoamdeDARGRN8c3Xy1ZAHhwfXJ/iL7zR3Y6B1Drpls0kI2nAjuEa6/dpSarfQmmF/0ngSOcIShU4yKlJ3jeqVEc+UqSFze2SFuhOwWillZlv/M5EjPZl9ukTZE1C3+udRv+a8kVdsF5rFBfKY9dR2VKVOBhs8OyiUCUbDdfYbC/pPbwSy6qJhfLnb0c4j9KtEcunfX4StLvSRB1s2h6pEdBpjwwyOrEHyg6gqOe6bFpVrXOoJ2w81d+0z3CHGOLJO5zd+Gh16JOcitJ9XYa5Dm+E9c5tap/h5rbT3UFHAqxNN5UCQHhnZ2hn6w0VCMGyeaEOxzcsX6OCkZIeQoARz17sNiWGshNDyBq2NUQqdDLOlhd0OSWPdvuu/47IGQ8wzL0sQFXFVVJPU6c8/Vn8MxT4SVOPfI/+yR5oLBfZnjISO0678zM8uBxHOsbAfF0jRmJJQ1o0JL8AMyt7u7Dd7FzCQ4zwwv0Hf73uu49g28v80EwYcvifaT1QiqOeC2dJ10ORT1TsLs48m+ctdLIcoTU6Vf1m+gL8MLiDGMPt4=
-  file: .bintray-deb.yml
+  file: .bintray-deb.json
   skip_cleanup: true
   on:
     tags: true

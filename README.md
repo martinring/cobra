@@ -1,17 +1,31 @@
-# **Cobra** <img src="https://travis-ci.org/flatmap/cobra.svg?branch=master"/>
+<img align="right" src="http://www-cps.hb.dfki.de/assets/stylesheets/ric/img/logo_dfki_en.png"/>
+# **Cobra** [![Build Status](https://travis-ci.org/flatmap/cobra.svg?branch=master)](https://travis-ci.org/flatmap/cobra)
 
 Cobra is a modern code and proof presentation framework, leveraging cutting-edge presentation technology together with a state of the art interactive theorem prover to present formalized mathematics as active documents. Cobra provides both an easy way to present proofs and a novel approach to auditorium interaction. The presentation is checked live by the theorem prover, and moreover allows live changes both by the presenter as well as the audience.
 
-Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs as well as [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code
+Cobra currently supports [**Isabelle**](https://isabelle.in.tum.de/index.html) proofs. Support for [**Coq**]() will follow at a later point. 
 
-## Download **Cobra** 1.0.4
+Thanks to the great Isabelle/ML integration, Cobra is also suitable for presentations of [**Standard ML**](http://sml-family.org) code.
 
-There is a pre built binary relase for Cobra.
+In addition, Cobra has (early) support for [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code. Consider these two modes not production ready. They are ready to play around, but are not stable, and don't support any kind of execution of code.
+
+## Install **Cobra** 1.0.5
 
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
-All platforms: [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.4/cobra-1.0.4.zip) | Linux: [deb](https://github.com/flatmap/cobra/releases/download/version-1.0.4/cobra_1.0.4_all.deb)
+### Windows
+
+Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip) and extract anywhere; Add `bin/cobra.bat` to your PATH.
+
+### macOS
+
+Until the notability of the cobra GitHub repository meets the requirements of homebrew-core, we have an own tap:
+
+```sh
+brew tap flatmap/cobra
+brew install cobra
+```
 
 ### Fedora / RHEL
 
@@ -25,7 +39,7 @@ sudo dnf install cobra
 
 ### Ubuntu / Debian
 
-There is a PPA available for Debian / Ubuntu. Releases are signed with bintray's public key. To add it please ececute
+There is a PPA available for Debian / Ubuntu. Releases are signed with bintray's private key. To add the public key please ececute
 
 ```sh
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 
@@ -36,22 +50,27 @@ Now you can add the repo and install cobra
 ```sh
 echo "deb https://dl.bintray.com/flatmap/deb wheezy main" | sudo tee -a /etc/apt/sources.list
 sudo apt-get update
-sudo apt-get install cobra
+sudo apt-get install cobra-presentations
 ```
+
+### Other Platforms
+
+Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip) and extract anywhere; Add `bin/cobra` to your PATH.
 
 ## Getting Started
 
- * **Installation**:
-   * **zip**: extract to arbitrary location and add `bin/cobra` / `bin/cobra.bat` to your path
-   * **other**: follow instructions above
+Cobra presentations are viewed in the browser. Cobra starts a very light and fast web server for every presentation.
+
+Every presentation has an own directory. Every file within the presentation directory is served as a static resource to the web browser.
+
  * **Create a new presentation**: call `cobra new` from the command line and follow the instructions
- * **Start the presentation server**: call `cobra` in the directory of the presentation.
+ * **Start the presentation server**: call `cobra` in the directory of the presentation. Or `cobra <dir>` where `<dir>` is the presentation directory.
  * **View the presentation**: Navigate to localhost:8080 with your web browser.
- * **Edit your presentation**: Configuration can be edited in `cobra.conf`, content in `slides.html`.
+ * **Edit your presentation**: Configuration can be edited in `cobra.conf`, content in `slides.html`. There is no need to restart the presentation server. Changes will be immediately visible in the browser, when files are changed.
 
 ### Presentation Format
 
-The content of a presentation is stored in a file called `slides.html`. Cobra will support a MarkDown slideformat in Version 1.1.
+The content of a presentation is stored in a file called `slides.html`. Cobra will support a MarkDown slide format in Version 1.2.
 
 To add a slide, simply add `<section>` tags to the `slides.html` file. For the general slide format please refer to the **reveal.js** [documentation](https://github.com/hakimel/reveal.js).
 
@@ -198,6 +217,162 @@ lemma x: "A ==> (*(*)A(*)*)"
 They will act the same as manual selections, displaying semantic information about the selected portion.
 
 In Version 1.1, it will be possible to annotate custom text to selected portions.
+
+## Configuration
+
+The file `cobra.conf` can be edited while the server is running, any change will have immediate effect, when the file is saved. Any running presentation will be updated in the browser, this way you can play around with setting until they suit your needs.
+
+`cobra.conf` is a [HOCON](https://github.com/typesafehub/config/blob/master/HOCON.md) style configuration file with the following defaults:
+
+```
+cobra {
+  // display title of the presentation
+  title = "Cobra"
+  // display language of the presentation
+  language = "en"
+
+  theme {
+    // slide theme
+    // standard themes: black|white|league|sky|beige|simple|serif|blood|night|
+    //                  moon|solarized
+    // or reference to user theme (e.g. "/theme/mytheme.css")
+    slides = "white"
+
+    // code theme
+    // standard themes: 3024-day|3024-night|abcdef|ambiance-mobile|ambiance|
+    //                  base16-dark|base16-light|bespin|blackboard|cobalt|
+    //                  colorforth|dracula|eclipse|elegant|erlang-dark|hopscotch|
+    //                  icecoder|isotope|lesser-dark|liquibyte|material|mbo|
+    //                  mdn-like|midnight|monokai|neat|neo|night|paraiso-dark|
+    //                  paraiso-light|pastel-on-dark|railscasts|rubyblue|seti|
+    //                  solarized|the-matrix|tomorrow-night-bright|
+    //                  tomorrow-night-eighties|ttcn|twilight|vibrant-ink|
+    //                  xq-dark|xq-light|yeti|zenburn
+    // or reference to user theme (e.g. "/theme/my-code-theme.css")    
+    code = "default"
+  }
+
+  // network interface to bind on
+  binding {
+    interface = "localhost"
+    port = 8080
+  }
+
+  // environment variables
+  env {
+    // overrides ISABELLE_HOME environment variable
+    // isabelle_home = "..." 
+  }
+
+  // reveal.js related settings
+  reveal {
+    // Display controls in the bottom right corner
+    controls = true
+
+    // Display a presentation progress bar
+    progress = true
+
+    // Display the page number of the current slide
+    slideNumber = false
+
+    // Push each slide change to the browser history
+    history = true
+
+    // Enable keyboard shortcuts for navigation
+    keyboard = true
+
+    // Enable the slide overview mode
+    overview = true
+
+    // Vertical centering of slides
+    center = false
+
+    // Enables touch navigation on devices with touch input
+    touch = true
+
+    // Loop the presentation
+    loop = false
+
+    // Change the presentation direction to be RTL
+    rtl = false
+
+    // Randomizes the order of slides each time the presentation loads
+    shuffle = false
+
+    // Turns fragments on and off globally
+    fragments = true
+
+    // Flags if the presentation is running in an embedded mode,
+    // i.e. contained within a limited portion of the screen
+    embedded = false
+
+    // Flags if we should show a help overlay when the questionmark
+    // key is pressed
+    help = true
+
+    // Flags if speaker notes should be visible to all viewers
+    showNotes = false
+
+    // Number of milliseconds between automatically proceeding to the
+    // next slide, disabled when set to 0, this value can be overwritten
+    // by using a data-autoslide attribute on your slides
+    autoSlide = 0
+
+    // Stop auto-sliding after user input
+    autoSlideStoppable = true
+
+    // Use this method for navigation when auto-sliding
+    autoSlideMethod = Reveal.navigateNext
+
+    // Enable slide navigation via mouse wheel
+    mouseWheel = false
+
+    // Hides the address bar on mobile devices
+    hideAddressBar = true
+
+    // Opens links in an iframe preview overlay
+    previewLinks = false
+
+    // Transition style
+    transition = "default" // none/fade/slide/convex/concave/zoom
+
+    // Transition speed
+    transitionSpeed = "default" // default/fast/slow
+
+    // Transition style for full page slide backgrounds
+    backgroundTransition = "default" // none/fade/slide/convex/concave/zoom
+
+    // Number of slides away from the current that are visible
+    viewDistance = 3
+
+    // Parallax background image
+    parallaxBackgroundImage = "" // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+    // Parallax background size
+    parallaxBackgroundSize = "" // CSS syntax, e.g. "2100px 900px"
+
+    // Number of pixels to move the parallax background per slide
+    // - Calculated automatically unless specified
+    // - Set to 0 to disable movement along an axis
+    parallaxBackgroundHorizontal = null
+    parallaxBackgroundVertical = null
+
+    // The "normal" size of the presentation, aspect ratio will be preserved
+    // when the presentation is scaled to fit different resolutions. Can be
+    // specified using percentage units.
+    width = 960
+    height = 700
+
+    // Factor of the display size that should remain empty around the content
+    margin = 0.1
+
+    // Bounds for smallest/largest possible scale to apply to content
+    // Should not be changed, if in-slide code editing should be enabled!
+    minScale = 1.0
+    maxScale = 1.0
+  }
+}
+```
 
 ## License
 
