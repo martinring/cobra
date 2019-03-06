@@ -1,5 +1,6 @@
 <img align="right" src="http://www-cps.hb.dfki.de/assets/stylesheets/ric/img/logo_dfki_en.png"/>
-# **Cobra** [![Build Status](https://travis-ci.org/flatmap/cobra.svg?branch=master)](https://travis-ci.org/flatmap/cobra)
+
+# Cobra [ ![Build Status](https://travis-ci.org/flatmap/cobra.svg?branch=master) ](https://travis-ci.org/flatmap/cobra)
 
 Cobra is a modern code and proof presentation framework, leveraging cutting-edge presentation technology together with a state of the art interactive theorem prover to present formalized mathematics as active documents. Cobra provides both an easy way to present proofs and a novel approach to auditorium interaction. The presentation is checked live by the theorem prover, and moreover allows live changes both by the presenter as well as the audience.
 
@@ -93,7 +94,7 @@ To include Isabelle or Haskell simply replace `scala` class with `isabelle` or `
 
 > Note: When including Isabelle inline you will want to set the `id` of the `code` tag to the name of your theory, because otherwise a name for your theory is generated and will most definitely clash with what you define in your header. (see #12)
 
-####Configuring Inline Messages
+#### Configuring Inline Messages
 
 It is possible to **show inline states** (for Isabelle) by adding the class `states` to a code tag
 
@@ -103,7 +104,7 @@ You can **hide info messages** by adding `no-infos` class
 
 You can **hide warning messages** by adding `no-warnings` class
 
-####External Sources
+#### External Sources
 
 It is possible to include external source files. Simply place a code file within the folder of the presenation. (e.g. `<presentation root>/src/Test.scala`)
 
@@ -115,7 +116,7 @@ You can then include the snippet with
 
 Note, that you don't have to specify the language in this case, since it is recognised from the file extesion.
 
-####Advanced Inclusion Options
+#### Advanced Inclusion Options
 
 Often it is desired to include only parts of larger examples, for example omitting all imports for the presentation:
 
@@ -163,7 +164,7 @@ isabelle code
 
 Snippet names are global and thus have to be unique.
 
-####Code Fragments
+#### Code Fragments
 
 Within presentations it is desirable to not show everything at the beginning or exchange parts of the code. This can be achieved with special syntax:
 
@@ -198,7 +199,7 @@ fibs = {-(-}undefined{-|0 : 1 : zipWith (+) fibs (tail fibs))-}
 lemma x: "A ==> A" (*(*)oops(*|by auto)*)
 ```
 
-####Selection Fragments
+#### Selection Fragments
 
 It is also possible to select parts of the code automatically as such:
 
