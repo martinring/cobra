@@ -2,13 +2,11 @@ package net.flatmap.js.util
 
 import java.nio.ByteBuffer
 
-import org.scalajs.dom._
+import org.scalajs.dom.{console,window,XMLHttpRequest}
 import org.scalajs.dom.raw.WebSocket
 
-import scala.scalajs.js.JSApp
 import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 import scala.scalajs.js.typedarray._
-import scala.scalajs.js
 
 /**
  * Created by martin on 08.09.15.
@@ -18,7 +16,7 @@ abstract class SocketApp[I,O](
   protocol: String,
   heartbeatMessage: O,
   heartbeatAcknowledge: I,
-  autoReload: Boolean = true)(deserialize: ByteBuffer => I, serialize: O => ByteBuffer) extends JSApp {
+  autoReload: Boolean = true)(deserialize: ByteBuffer => I, serialize: O => ByteBuffer) {
 
   private var socket: Option[WebSocket] = None
 
@@ -50,7 +48,7 @@ abstract class SocketApp[I,O](
 
   def postStop() = ()
 
-  def main(): Unit = whenReady {
+  def main(args: Array[String]): Unit = whenReady {
     println("starting")
     val absoluteUrl = if (url.startsWith("ws://")) url
       else if (url.startsWith("/"))

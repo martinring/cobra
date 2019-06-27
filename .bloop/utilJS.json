@@ -1,0 +1,164 @@
+{
+    "version" : "1.1.2",
+    "project" : {
+        "name" : "utilJS",
+        "directory" : "/Users/martin/Projects/cobra/modules/js-util",
+        "sources" : [
+            "/Users/martin/Projects/cobra/modules/js-util/src/main/scala-2.12",
+            "/Users/martin/Projects/cobra/modules/js-util/src/main/scala",
+            "/Users/martin/Projects/cobra/modules/js-util/src/main/java",
+            "/Users/martin/Projects/cobra/modules/js-util/target/scala-2.12/src_managed/main"
+        ],
+        "dependencies" : [
+        ],
+        "classpath" : [
+            "/Users/martin/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.8.jar",
+            "/Users/martin/.ivy2/cache/org.scala-js/scalajs-library_2.12/jars/scalajs-library_2.12-1.0.0-M7.jar",
+            "/Users/martin/.ivy2/cache/org.scala-js/scalajs-dom_sjs1.0.0-M7_2.12/jars/scalajs-dom_sjs1.0.0-M7_2.12-0.9.7.jar"
+        ],
+        "out" : "/Users/martin/Projects/cobra/.bloop/utilJS",
+        "classesDir" : "/Users/martin/Projects/cobra/.bloop/utilJS/scala-2.12/classes",
+        "resources" : [
+            "/Users/martin/Projects/cobra/modules/js-util/src/main/resources",
+            "/Users/martin/Projects/cobra/modules/js-util/target/scala-2.12/resource_managed/main"
+        ],
+        "scala" : {
+            "organization" : "org.scala-lang",
+            "name" : "scala-compiler",
+            "version" : "2.12.8",
+            "options" : [
+                "-deprecation",
+                "-feature",
+                "-P:semanticdb:synthetics:on",
+                "-P:semanticdb:failures:warning",
+                "-P:semanticdb:sourceroot:/Users/martin/Projects/cobra",
+                "-Yrangepos",
+                "-Xplugin-require:semanticdb",
+                "-Xplugin:/Users/martin/.ivy2/cache/org.scala-js/scalajs-compiler_2.12.8/jars/scalajs-compiler_2.12.8-1.0.0-M7.jar",
+                "-Xplugin:/Users/martin/.ivy2/cache/org.scalameta/semanticdb-scalac_2.12.8/jars/semanticdb-scalac_2.12.8-4.1.9.jar"
+            ],
+            "jars" : [
+                "/Users/martin/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.12.8.jar",
+                "/Users/martin/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.8.jar",
+                "/Users/martin/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.8.jar",
+                "/Users/martin/.ivy2/cache/org.scala-lang.modules/scala-xml_2.12/bundles/scala-xml_2.12-1.0.6.jar",
+                "/Users/martin/.ivy2/cache/jline/jline/jars/jline-2.14.6.jar"
+            ],
+            "setup" : {
+                "order" : "mixed",
+                "addLibraryToBootClasspath" : true,
+                "addCompilerToClasspath" : false,
+                "addExtraJarsToClasspath" : false,
+                "manageBootClasspath" : true,
+                "filterLibraryFromClasspath" : true
+            }
+        },
+        "java" : {
+            "options" : [
+            ]
+        },
+        "test" : {
+            "frameworks" : [
+                {
+                    "names" : [
+                        "org.scalacheck.ScalaCheckFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "org.specs2.runner.Specs2Framework",
+                        "org.specs2.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "org.specs.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "org.scalatest.tools.Framework",
+                        "org.scalatest.tools.ScalaTestFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "com.novocode.junit.JUnitFramework"
+                    ]
+                }
+            ],
+            "options" : {
+                "excludes" : [
+                ],
+                "arguments" : [
+                ]
+            }
+        },
+        "platform" : {
+            "name" : "js",
+            "config" : {
+                "version" : "1.0.0-M7",
+                "mode" : "debug",
+                "kind" : "none",
+                "emitSourceMaps" : false,
+                "jsdom" : false,
+                "toolchain" : [
+                ]
+            },
+            "mainClass" : [
+            ]
+        },
+        "resolution" : {
+            "modules" : [
+                {
+                    "organization" : "org.scala-lang",
+                    "name" : "scala-library",
+                    "version" : "2.12.8",
+                    "artifacts" : [
+                        {
+                            "name" : "scala-library",
+                            "path" : "/Users/martin/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.8.jar"
+                        },
+                        {
+                            "name" : "scala-library",
+                            "classifier" : "sources",
+                            "path" : "/Users/martin/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.12.8-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization" : "org.scala-js",
+                    "name" : "scalajs-library_2.12",
+                    "version" : "1.0.0-M7",
+                    "artifacts" : [
+                        {
+                            "name" : "scalajs-library_2.12",
+                            "path" : "/Users/martin/.ivy2/cache/org.scala-js/scalajs-library_2.12/jars/scalajs-library_2.12-1.0.0-M7.jar"
+                        },
+                        {
+                            "name" : "scalajs-library_2.12",
+                            "classifier" : "sources",
+                            "path" : "/Users/martin/.ivy2/cache/org.scala-js/scalajs-library_2.12/srcs/scalajs-library_2.12-1.0.0-M7-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization" : "org.scala-js",
+                    "name" : "scalajs-dom_sjs1.0.0-M7_2.12",
+                    "version" : "0.9.7",
+                    "artifacts" : [
+                        {
+                            "name" : "scalajs-dom_sjs1.0.0-M7_2.12",
+                            "path" : "/Users/martin/.ivy2/cache/org.scala-js/scalajs-dom_sjs1.0.0-M7_2.12/jars/scalajs-dom_sjs1.0.0-M7_2.12-0.9.7.jar"
+                        },
+                        {
+                            "name" : "scalajs-dom_sjs1.0.0-M7_2.12",
+                            "classifier" : "sources",
+                            "path" : "/Users/martin/.ivy2/cache/org.scala-js/scalajs-dom_sjs1.0.0-M7_2.12/srcs/scalajs-dom_sjs1.0.0-M7_2.12-0.9.7-sources.jar"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

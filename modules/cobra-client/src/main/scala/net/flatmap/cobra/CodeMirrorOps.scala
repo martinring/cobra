@@ -1,7 +1,7 @@
 package net.flatmap.cobra
 
 import net.flatmap.collaboration._
-import net.flatmap.js.codemirror._
+import net.flatmap.js.codemirror.{Doc,CodeMirror,Clearable,EditorChange,TextMarkerOptions}
 import net.flatmap.js.reveal.Reveal
 import org.scalajs.dom.raw.HTMLElement
 

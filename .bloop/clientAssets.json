@@ -1,0 +1,172 @@
+{
+    "version" : "1.1.2",
+    "project" : {
+        "name" : "clientAssets",
+        "directory" : "/Users/martin/Projects/cobra/modules/cobra-client",
+        "sources" : [
+        ],
+        "dependencies" : [
+        ],
+        "classpath" : [
+            "/Users/martin/.ivy2/cache/org.webjars.npm/katex/jars/katex-0.9.0.jar",
+            "/Users/martin/.ivy2/cache/org.webjars.npm/match-at/jars/match-at-0.1.1.jar",
+            "/Users/martin/.ivy2/cache/org.webjars.npm/octicons/jars/octicons-8.5.0.jar",
+            "/Users/martin/.ivy2/cache/org.webjars.npm/object-assign/jars/object-assign-4.1.1.jar"
+        ],
+        "out" : "/Users/martin/Projects/cobra/.bloop/clientAssets",
+        "classesDir" : "/Users/martin/Projects/cobra/.bloop/clientAssets/scala-2.12/classes",
+        "resources" : [
+            "/Users/martin/Projects/cobra/modules/cobra-client/src/main/resources",
+            "/Users/martin/Projects/cobra/modules/cobra-client/target/assets/scala-2.12/resource_managed/main"
+        ],
+        "scala" : {
+            "organization" : "org.scala-lang",
+            "name" : "scala-compiler",
+            "version" : "2.12.8",
+            "options" : [
+                "-deprecation",
+                "-feature",
+                "-P:semanticdb:synthetics:on",
+                "-P:semanticdb:failures:warning",
+                "-P:semanticdb:sourceroot:/Users/martin/Projects/cobra",
+                "-Yrangepos",
+                "-Xplugin-require:semanticdb",
+                "-Xplugin:/Users/martin/.ivy2/cache/org.scalameta/semanticdb-scalac_2.12.8/jars/semanticdb-scalac_2.12.8-4.1.9.jar"
+            ],
+            "jars" : [
+                "/Users/martin/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.12.8.jar",
+                "/Users/martin/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.8.jar",
+                "/Users/martin/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.8.jar",
+                "/Users/martin/.ivy2/cache/org.scala-lang.modules/scala-xml_2.12/bundles/scala-xml_2.12-1.0.6.jar",
+                "/Users/martin/.ivy2/cache/jline/jline/jars/jline-2.14.6.jar"
+            ],
+            "setup" : {
+                "order" : "mixed",
+                "addLibraryToBootClasspath" : true,
+                "addCompilerToClasspath" : false,
+                "addExtraJarsToClasspath" : false,
+                "manageBootClasspath" : true,
+                "filterLibraryFromClasspath" : true
+            }
+        },
+        "java" : {
+            "options" : [
+            ]
+        },
+        "test" : {
+            "frameworks" : [
+                {
+                    "names" : [
+                        "org.scalacheck.ScalaCheckFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "org.specs2.runner.Specs2Framework",
+                        "org.specs2.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "org.specs.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "org.scalatest.tools.Framework",
+                        "org.scalatest.tools.ScalaTestFramework"
+                    ]
+                },
+                {
+                    "names" : [
+                        "com.novocode.junit.JUnitFramework"
+                    ]
+                }
+            ],
+            "options" : {
+                "excludes" : [
+                ],
+                "arguments" : [
+                ]
+            }
+        },
+        "platform" : {
+            "name" : "jvm",
+            "config" : {
+                "home" : "/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/jre",
+                "options" : [
+                ]
+            },
+            "mainClass" : [
+            ]
+        },
+        "resolution" : {
+            "modules" : [
+                {
+                    "organization" : "org.webjars.npm",
+                    "name" : "katex",
+                    "version" : "0.9.0",
+                    "artifacts" : [
+                        {
+                            "name" : "katex",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/katex/jars/katex-0.9.0.jar"
+                        },
+                        {
+                            "name" : "katex",
+                            "classifier" : "sources",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/katex/srcs/katex-0.9.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization" : "org.webjars.npm",
+                    "name" : "match-at",
+                    "version" : "0.1.1",
+                    "artifacts" : [
+                        {
+                            "name" : "match-at",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/match-at/jars/match-at-0.1.1.jar"
+                        },
+                        {
+                            "name" : "match-at",
+                            "classifier" : "sources",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/match-at/srcs/match-at-0.1.1-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization" : "org.webjars.npm",
+                    "name" : "octicons",
+                    "version" : "8.5.0",
+                    "artifacts" : [
+                        {
+                            "name" : "octicons",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/octicons/jars/octicons-8.5.0.jar"
+                        },
+                        {
+                            "name" : "octicons",
+                            "classifier" : "sources",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/octicons/srcs/octicons-8.5.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization" : "org.webjars.npm",
+                    "name" : "object-assign",
+                    "version" : "4.1.1",
+                    "artifacts" : [
+                        {
+                            "name" : "object-assign",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/object-assign/jars/object-assign-4.1.1.jar"
+                        },
+                        {
+                            "name" : "object-assign",
+                            "classifier" : "sources",
+                            "path" : "/Users/martin/.ivy2/cache/org.webjars.npm/object-assign/srcs/object-assign-4.1.1-sources.jar"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

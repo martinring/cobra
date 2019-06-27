@@ -1,6 +1,5 @@
 package net.flatmap.cobra
 
-import net.flatmap.cobra.isabelle.{IsabelleMode, IsabelleModeConfig, IsabelleModeState}
 import net.flatmap.js.codemirror.{CodeMirror, CodeMirrorConfiguration}
 import net.flatmap.js.reveal._
 import net.flatmap.js.util._
@@ -134,8 +133,6 @@ object CobraJS extends SocketApp[ServerMessage,ClientMessage]("/socket","cobra",
   }
 
   override def preStart(): Unit = {
-    CodeMirror.defineMode[IsabelleModeState]("isabelle", IsabelleMode.apply _)
-    CodeMirror.defineMIME("text/x-isabelle","isabelle")
     send(WatchFile("slides.html"))
     initialize()
   }

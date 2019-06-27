@@ -2,7 +2,7 @@ package net.flatmap.js
 
 import java.util.regex.Pattern
 
-import org.scalajs.dom._
+import org.scalajs.dom.{window,document,Document,Node,EventTarget,NodeList,NamedNodeMap}
 
 import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
@@ -46,7 +46,7 @@ package object util {
 
   implicit class RegexStrings(val sc: StringContext) extends AnyVal {
     def r(args: Any*): Regex = {
-      sc.checkLengths(args)
+      StringContext.checkLengths(args,sc.parts.toSeq)
       sc.parts.zip(args ++ Seq("")).map { case (s,a) =>
         s + Pattern.quote(a.toString)
       }.mkString.r
@@ -64,11 +64,11 @@ package object util {
   }
 
   implicit class AttributeMap(val underlying: NamedNodeMap) extends mutable.Map[String,String] {
-    def -=(key: String) = {
+    def subtractOne(key: String) = {
       underlying.removeNamedItem(key)
       this
     }
-    def +=(kv: (String, String)) = {
+    def addOne(kv: (String, String)) = {
       val (key,value) = kv
       val attr = document.createAttribute(key)
       attr.value = value

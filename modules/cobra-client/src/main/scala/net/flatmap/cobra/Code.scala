@@ -2,9 +2,8 @@ package net.flatmap.cobra
 
 import java.util.UUID
 
-import net.flatmap.cobra.isabelle.Symbols
 import net.flatmap.collaboration.{Annotations, ClientInterface, EditorInterface, Operation}
-import net.flatmap.js.codemirror._
+import net.flatmap.js.codemirror.{Doc,CodeMirror,Clearable,EditorChange,TextMarkerOptions,LinkedDocOptions}
 import net.flatmap.js.reveal.{Reveal, RevealEvents}
 import org.scalajs.dom.{Element, console, raw}
 import net.flatmap.js.util._
@@ -126,12 +125,8 @@ object Code {
             val elem = org.scalajs.dom.document.createElement("div").asInstanceOf[HTMLElement]
             elem.classes += "info"
             elem.classes += "cm-m-"+mode.name
-            if (mode == Isabelle) {
-              elem.innerHTML = body
-            } else {
-              CodeMirror.runMode(body,mode.mime,elem)
-              elem.classes += "pre"
-            }
+            CodeMirror.runMode(body,mode.mime,elem)
+            elem.classes += "pre"
             hoverInfo.foreach(_.clear())
             hoverInfo.clear()
             val ops = js.Dynamic.literal(insertAt = 0)
@@ -235,7 +230,6 @@ object Code {
         val root = doc.rootDoc.getOrElse(doc)
         val offset = root.indexFromPos(CodeMirror.Pos(doc.firstLine(),0))
         var firstFragmentRegistered = false
-        if (mde == Isabelle) Symbols.enable(editor)
         def registerFirstFragment(fragment: HTMLElement) = if (!firstFragmentRegistered) {
           Reveal.on(RevealEvents.FragmentHidden) { _ =>
             if (!fragment.classes.contains("visible"))

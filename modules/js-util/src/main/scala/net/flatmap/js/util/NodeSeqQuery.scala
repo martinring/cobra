@@ -31,9 +31,10 @@ trait NodeSeqQuery extends EventSource[Node] { self =>
   }
   object classes extends collection.mutable.Set[String] {
     def contains(elem: String): Boolean = elements.headOption.exists(_.classList.contains(elem))
-    def iterator: Iterator[String] = elements.headOption.toIterator.flatMap(h => Iterator.tabulate(h.classList.length)(h.classList.item))
-    def += (elem: String): this.type = { elements.foreach(_.classList.add(elem)); this }
-    def -= (elem: String): this.type = { elements.foreach(_.classList.remove(elem)); this }
+    def iterator: Iterator[String] = elements.headOption.iterator.flatMap(h => Iterator.tabulate(h.classList.length)(h.classList.item))
+    def addOne (elem: String): this.type = { elements.foreach(_.classList.add(elem)); this }
+    def subtractOne (elem: String): this.type = { elements.foreach(_.classList.remove(elem)); this }
+    def clear(): Unit = { elements.foreach(x => for (i <- 0 to x.classList.length) x.classList.remove(x.classList.item(i))) }
   }
   def remove(e: Node) = foreachNode(_.removeChild(e))
   def remove($: Seq[Node]) = foreachNode(e => $.foreach(e.removeChild(_)))

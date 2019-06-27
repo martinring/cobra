@@ -2,30 +2,32 @@ package net.flatmap.cobra
 
 import java.nio.file.{Path, StandardWatchEventKinds, WatchEvent}
 
-import better.files._
-import FileWatcher._
 import akka.{Done, NotUsed}
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message}
+import akka.stream._
 import akka.stream.scaladsl._
 import akka.util.ByteString
-import java.awt.Desktop
-import net.flatmap.cobra.util._
-
-import scala.io
 import akka.actor._
 import akka.event.{LogSource, Logging}
 import akka.http.scaladsl.model.{HttpHeader, HttpMethods, HttpProtocols}
 import akka.stream.{ActorMaterializer, OverflowStrategy, scaladsl}
+import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.CacheDirectives
+import akka.http.scaladsl.server.Directives._
+
+import better.files._
+import FileWatcher._
+import java.awt.Desktop
+import net.flatmap.cobra.util._
+
+import scala.io
 import com.typesafe.config._
 import org.webjars.WebJarAssetLocator
 
 import scala.collection.mutable
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
-import scala.collection.JavaConversions._
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.CacheDirectives
-import akka.http.scaladsl.server.Directives._
+import scala.jdk.CollectionConverters._
 import org.reactivestreams.{Publisher, Subscriber, Subscription}
 
 import scala.util.control.NonFatal
@@ -69,11 +71,11 @@ class CobraServer(val directory: File) {
   def interface = config.getString("binding.interface")
   def port = config.getInt("binding.port")
 
-  def reveal = config.getConfig("reveal").entrySet().toIterable.map { kv =>
+  def reveal = config.getConfig("reveal").entrySet().asScala.map { kv =>
     kv.getKey -> kv.getValue.render(ConfigRenderOptions.concise())
   }.toMap
 
-  def env = config.getConfig("env").entrySet().toIterable.map { kv =>
+  def env = config.getConfig("env").entrySet().asScala.map { kv =>
     kv.getKey.toUpperCase() -> kv.getValue.unwrapped().toString
   }.toMap
 
@@ -114,7 +116,7 @@ class CobraServer(val directory: File) {
     }
 
     override def subscribe(s: Subscriber[_ >: Config]): Unit = {
-      listeners += s -> 0
+      listeners.addOne(s -> 0L)
       val sub = new Subscription {
         override def cancel(): Unit = listeners -= s
         override def request(n: Long): Unit = if (n > 0) {
@@ -129,28 +131,28 @@ class CobraServer(val directory: File) {
   val configs = Source.fromPublisher(configsPublisher)
 
   def revealOptions = configs.map { conf =>
-    conf.getConfig("reveal").entrySet().toIterable.map { kv =>
+    conf.getConfig("reveal").entrySet().asScala.map { kv =>
       kv.getKey -> kv.getValue.render()
     }.toMap
-  }.scan((reveal,true)) {
+  }.scan((reveal,true: Boolean)) {
       case ((o,_),n) => (n,o != n)
     }.collect {
       case (n,true) => RevealOptionsUpdate(n)
     }
 
-  def titles = configs.map(_.getString("title")).scan((title,true)) {
+  def titles = configs.map(_.getString("title")).scan((title,true: Boolean)) {
     case ((o,_),n) => (n,o != n)
   }.collect {
     case (n,true) => TitleUpdate(n)
   }
 
-  def languages = configs.map(_.getString("language")).scan((lang,true)) {
+  def languages = configs.map(_.getString("language")).scan((lang,true: Boolean)) {
     case ((o,_),n) => (n,o != n)
   }.collect {
     case (n,true) => LanguageUpdate(n)
   }
 
-  def themes = configs.map(x => (slidesTheme(x),codeTheme(x))).scan(((slidesTheme(config),codeTheme(config)),false)) {
+  def themes = configs.map(x => (slidesTheme(x),codeTheme(x))).scan(((slidesTheme(config),codeTheme(config)),false: Boolean)) {
     case ((o,_),n) => (n,o != n)
   }.collect {
     case ((slides,code),true) => ThemeUpdate(code,slides)
@@ -163,6 +165,7 @@ class CobraServer(val directory: File) {
   val indexRaw = io.Source.fromInputStream(
     getClass.getClassLoader.getResourceAsStream(locator.getFullPath("cobra-client","index.html"))
   ).mkString
+
 
   def index = indexRaw
     .replaceAll("""\{ *language *\}""",lang)
@@ -184,7 +187,10 @@ class CobraServer(val directory: File) {
     } ~
     path(_segmentStringToPathMatcher("lib") / "codemirror" / "theme" / "default.css") {
       complete(HttpEntity(ContentType(MediaTypes.`text/css`, HttpCharsets.`UTF-8`), "/* default cm theme */"))
-    }
+    } ~
+    path("slides.html")(
+      complete(HttpEntity(ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`), Math.renderAll((directory / "slides.html").contentAsString)))
+    )
   } ~ getFromDirectory(directory.toString) }
 
   def deserialize: PartialFunction[Message,Source[ClientMessage,NotUsed]] = {

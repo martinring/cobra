@@ -1,9 +1,6 @@
 package net.flatmap.cobra
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
-import net.flatmap.cobra.ghc.HaskellService
-import net.flatmap.cobra.isabelle.IsabelleService
-import net.flatmap.cobra.scalac.ScalaService
 import net.flatmap.collaboration.{Annotations, Document, Server}
 
 import scala.util.{Failure, Success}
@@ -11,11 +8,7 @@ import scala.util.{Failure, Success}
 object SnippetServer {
   def props(env: Map[String,String]) = Props(classOf[SnippetServer],env)
 
-  val services: Map[Mode,LanguageService] = Map(
-    Isabelle -> IsabelleService,
-    Scala -> ScalaService,
-    Haskell -> HaskellService
-  )
+  val services: Map[Mode,LanguageService] = Map.empty
 }
 
 /**

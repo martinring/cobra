@@ -1,10 +1,10 @@
-import net.flatmap.js.ScalaJSWeb.webjarDependenciesOf
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 cancelable in Global := true
 
 val commonSettings = Seq(
-  scalaVersion := "2.11.8",
-  version := "1.0.5",
+  scalaVersion := "2.13.0",
+  version := "1.0.6",
   maintainer := "Martin Ring",
   organization := "net.flatmap",
   scalacOptions ++= Seq("-deprecation","-feature"),
@@ -12,7 +12,7 @@ val commonSettings = Seq(
   mappings in (Compile, packageDoc) := Seq()
 )
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.13.0"
 
 lazy val iconGlob = sys.props("os.name").toLowerCase match {
   case os if os.contains("mac") ⇒ "*.icns"
@@ -25,6 +25,8 @@ lazy val server = (project in file("modules/cobra-server"))
   .enablePlugins(JavaAppPackaging,UniversalPlugin,LinuxPlugin,RpmPlugin,DebianPlugin,WindowsPlugin)
   .settings(commonSettings :_*)
   .settings(
+    fork := true,
+    run / baseDirectory := file("."),
     name in Universal := "cobra",
     packageName in Universal := "cobra-" + version.value,
     name := "cobra",
@@ -40,43 +42,35 @@ lazy val server = (project in file("modules/cobra-server"))
                             |to present proofs and a novel approach to auditorium interaction. The
                             |presentation is checked live by the theorem prover, and moreover
                             |allows live changes both by the presenter as well as the audience.""".stripMargin.split('\n').mkString(" "),
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.10",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.10",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http"   % "10.1.8" ,
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.23",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7",
     libraryDependencies += "org.webjars" % "webjars-locator" % "0.32",
     libraryDependencies += "org.scala-lang" % "scala-compiler" % "2.11.8",
-    libraryDependencies += "org.scala-refactoring" %% "org.scala-refactoring.library" % "0.6.2",
-    libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.16.0",
-    libraryDependencies += "com.github.pathikrit" %% "better-files-akka" % "2.16.0"
+    libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.8.0",
+    libraryDependencies += "com.github.pathikrit" %% "better-files-akka" % "3.8.0",
+    libraryDependencies += "org.webjars.npm" % "katex" % "0.9.0"
   ).dependsOn(commonJVM, clientAssets)
 
 lazy val clientAssets  = (project in file("modules/cobra-client"))
-  .enablePlugins(SbtWeb,PlayScalaJS)
+  .enablePlugins(SbtWeb)
   .settings(commonSettings :_*)
   .settings(
     autoScalaLibrary := false,
     scalaJSProjects := Seq(client),
-    mappings in Assets <++= scalaJSDev.map { mappings =>
-      mappings.map { case (file,path) =>
-        file -> s"js/$path"
-      }
-    },
     (sourceDirectories in Compile) := Seq.empty,
     (unmanagedSourceDirectories in Compile) := Seq.empty,
-    (compile in Compile) <<= (compile in Compile) dependsOn (LessKeys.less in Assets),
-    pipelineStages := Seq(scalaJSProd),
+    pipelineStages in Assets := Seq(scalaJSPipeline),
     target := target.value / "assets",
     name := "cobra.client.assets",
     moduleName := "cobra-client",
-    watchSources <++= (sourceDirectory in Assets) map { assets =>
-      (assets ** "*").get
-    },
     includeFilter in (Assets, LessKeys.less) := "cobra.less" | "print.less",
-    libraryDependencies <++= webjarDependenciesOf(client)
-  )
+    libraryDependencies ++= Seq(
+      "org.webjars.npm" % "octicons" % "8.5.0")
+  ).dependsOn(client)
 
-lazy val client     = (project in file("modules/cobra-client"))
-  .enablePlugins(ScalaJSPlay)
+lazy val client = (project in file("modules/cobra-client"))
+  .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings :_*)
   .settings(
     target := target.value / "js",
@@ -85,11 +79,9 @@ lazy val client     = (project in file("modules/cobra-client"))
     artifactPath in (Compile,fastOptJS) :=
       ((crossTarget in fastOptJS).value /
         ((moduleName in fastOptJS).value + ".js")),
-    artifactPath in (Compile,fullOptJS) <<= artifactPath in (Compile,fastOptJS),
-    persistLauncher in Compile := true,
-    persistLauncher in Test := false,
-    libraryDependencies += "org.webjars" % "MathJax" % "2.6.1",
-    libraryDependencies += "org.webjars.bower" % "octicons" % "4.3.0"
+    artifactPath in (Compile,fullOptJS) := (artifactPath in (Compile,fastOptJS)).value,
+    skip in packageJSDependencies := false,
+    scalaJSUseMainModuleInitializer := true
   ).dependsOn(reveal,codemirror,utilJS,commonJS)
 
 lazy val utilJS = (project in file("modules/js-util"))
@@ -97,17 +89,17 @@ lazy val utilJS = (project in file("modules/js-util"))
   .settings(commonSettings :_*)
   .settings(
     name := "util.js",
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
     skip in packageJSDependencies := false
   )
 
-lazy val common = (crossProject in file("modules/cobra-common"))
+lazy val common = crossProject(JSPlatform, JVMPlatform).in(file("modules/cobra-common"))
   .settings(commonSettings :_*)
   .settings(
     name := "cobra.common",
-    libraryDependencies += "me.chrons" %%% "boopickle" % "1.2.4"
+    libraryDependencies += "io.suzaku" %%% "boopickle" % "1.3.1"
   ).jvmSettings(
-    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
   )
 
 lazy val commonJS = common.js
@@ -122,9 +114,9 @@ lazy val reveal = (project in file("modules/js-bindings/reveal-js"))
   .settings(
     name := "reveal.js",
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
-    jsDependencies += "org.webjars.bower" % "reveal.js" % "3.3.0" / "reveal.js",
-    jsDependencies += "org.webjars.bower" % "reveal.js" % "3.3.0" / "lib/js/head.min.js" dependsOn "reveal.js",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
+    jsDependencies := Seq(
+      "org.webjars.bowergithub.hakimel" % "reveal.js" % "3.8.0" / "reveal.js"),
     skip in packageJSDependencies := false
   ).dependsOn(utilJS)
 
@@ -134,14 +126,15 @@ lazy val codemirror = (project in file("modules/js-bindings/codemirror"))
   .settings(
     name := "codemirror",
     unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "addon/runmode/runmode.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/haskell/haskell.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/clike/clike.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/htmlmixed/htmlmixed.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/javascript/javascript.js" dependsOn "codemirror.js",
-    jsDependencies += "org.webjars.bower" % "codemirror" % "5.19.0" / "mode/css/css.js" dependsOn "codemirror.js",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
+    jsDependencies := Seq(
+      "org.webjars.npm" % "codemirror" % "5.48.0" / "lib/codemirror.js",
+      "org.webjars.npm" % "codemirror" % "5.48.0" / "addon/runmode/runmode.js" dependsOn "lib/codemirror.js",
+      "org.webjars.npm" % "codemirror" % "5.48.0" / "mode/haskell/haskell.js" dependsOn "lib/codemirror.js",
+      "org.webjars.npm" % "codemirror" % "5.48.0" / "mode/clike/clike.js" dependsOn "lib/codemirror.js",
+      "org.webjars.npm" % "codemirror" % "5.48.0" / "mode/htmlmixed/htmlmixed.js" dependsOn "lib/codemirror.js",
+      "org.webjars.npm" % "codemirror" % "5.48.0" / "mode/javascript/javascript.js" dependsOn "lib/codemirror.js",
+      "org.webjars.npm" % "codemirror" % "5.48.0" / "mode/css/css.js" dependsOn "lib/codemirror.js"),
     skip in packageJSDependencies := false
   ).dependsOn(utilJS)
 
