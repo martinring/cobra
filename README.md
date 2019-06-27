@@ -9,14 +9,14 @@ Thanks to the great Isabelle/ML integration, Cobra is also suitable for presenta
 
 In addition, Cobra has (early) support for [**Scala**](http://www.scala-lang.org/) and [**Haskell**](http://haskell.org) code. Consider these two modes not production ready. They are ready to play around, but are not stable, and don't support any kind of execution of code.
 
-## Install **Cobra** 1.0.5
+## Install **Cobra** 1.0.6
 
 > **Note, that Java 8 or higher is required for cobra to run.**
 > **It will fail to start, when used with Java 7 or below!**
 
 ### Windows
 
-Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip) and extract anywhere; Add `bin/cobra.bat` to your PATH.
+Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.6/cobra-1.0.6.zip) and extract anywhere; Add `bin/cobra.bat` to your PATH.
 
 ### macOS
 
@@ -55,7 +55,7 @@ sudo apt-get install cobra-presentations
 
 ### Other Platforms
 
-Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.5/cobra-1.0.5.zip) and extract anywhere; Add `bin/cobra` to your PATH.
+Download [zip](https://github.com/flatmap/cobra/releases/download/version-1.0.6/cobra-1.0.6.zip) and extract anywhere; Add `bin/cobra` to your PATH.
 
 ## Getting Started
 

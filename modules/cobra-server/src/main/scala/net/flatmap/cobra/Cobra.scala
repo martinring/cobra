@@ -8,7 +8,7 @@ import better.files.Dsl.SymbolicOperations
   * Created by martin on 03.02.16.
   */
 object Cobra extends App {
-  val version = "1.0.5"
+  val version = "1.0.6"
 
   private def assume(cond: Boolean, msg: String) = if (!cond) {
     println("failed to initialize: " + msg)
@@ -16,13 +16,13 @@ object Cobra extends App {
   }
 
   private def printLogo() = {
-    println( """        ____      _                     """)
-    println( """       / ___|___ | |__  _ __ __ _ TM    """)
-    println( """      | |   / _ \| '_ \| '__/ _` |      """)
-    println( """      | |__| (_) | |_) | | | (_| |      """)
-    println( """       \____\___/|_.__/|_|  \__,_|      """)
-    println( """________________________________________""")
-    println(s"""| version $version - (c) 2016 Martin Ring |""")
+    println( """            ____      _                     """)
+    println( """           / ___|___ | |__  _ __ __ _ TM    """)
+    println( """          | |   / _ \| '_ \| '__/ _` |      """)
+    println( """          | |__| (_) | |_) | | | (_| |      """)
+    println( """           \____\___/|_.__/|_|  \__,_|      """)
+    println( """______________________________________________""")
+    println(s"""| version $version - (c) 2016-2019 Martin Ring |""")
     println()
   }
 
